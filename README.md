@@ -23,3 +23,7 @@ The Sentinel is designed to autonomously explore and navigate unknown environmen
 
 ### Advisor
 * Assist. Prof. Dr. Serdar ARSLAN
+
+### Project Website
+* https://sentinelvehicle.wordpress.com/
+  
