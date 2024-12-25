@@ -4,7 +4,7 @@
 
 ### Project Description
 
-<div class='text-justify'> 
+<div align="justify">
 The Sentinel is designed to autonomously explore and navigate unknown environments with precision. As a compact and highly functional vehicle, its main feature is generating a 3D map of the areas scanned by sensors and cameras. These maps enable the Sentinel to effortlessly identify optimal paths and locate key areas. Additionally, it utilizes object detection algorithms to distinguish between static and dynamic objects, ensuring accurate identification and marking of obstacles or objects on the map. This combination of autonomous mapping and object recognition makes the Sentinel an invaluable tool for exploration in challenging environments, such as war zones or dangerous areas contaminated by chemical or nuclear particles.
 </div>
 
