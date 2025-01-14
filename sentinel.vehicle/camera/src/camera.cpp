@@ -1,13 +1,8 @@
 #include "camera.hpp"
-#include <iostream>
-#include <cstring>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <signal.h>
-#include <functional>
-#include <string>
 
-Camera::Camera()
+#ifdef LIBCAMERA
+
+Camera::Camera(const CameraConfiguration &camera_configuration) : camera_configuration{camera_configuration}
 {
   this->init_camera();
   this->init_frame_allocator();
@@ -63,8 +58,8 @@ void Camera::init_camera()
   libcamera::StreamConfiguration &stream_config = this->config->at(0);
 
   stream_config.pixelFormat = libcamera::formats::RGB888;
-  stream_config.size.width = 640;
-  stream_config.size.height = 480;
+  stream_config.size.width = this->camera_configuration.width;
+  stream_config.size.height = this->camera_configuration.height;
   if (this->config->validate() == libcamera::CameraConfiguration::Invalid)
   {
     throw std::runtime_error("Invalid configuration");
@@ -150,3 +145,51 @@ void Camera::requestComplete(libcamera::Request *request)
   request->reuse(libcamera::Request::ReuseBuffers);
   this->camera->queueRequest(request);
 }
+
+#else
+
+Camera::Camera(const CameraConfiguration &camera_configuration) : camera_configuration{camera_configuration}
+{
+}
+
+Camera::~Camera()
+{
+  if (this->capture.isOpened())
+  {
+    this->capture.release();
+  }
+}
+
+void Camera::start()
+{
+  this->capture.open("/sentinel/static/video.mp4");
+
+  if (!this->capture.isOpened())
+  {
+    throw std::runtime_error("Error: Could not open the video file!");
+  }
+
+  cv::Mat frame;
+  std::vector<uchar> buffer;
+  cv::Size target_size(640, 480);
+  while (true)
+  {
+    this->capture >> frame;
+    if (frame.empty())
+    {
+      break;
+    }
+
+    cv::resize(frame, frame, target_size);
+    bool result = cv::imencode(this->camera_configuration.encoding, frame, buffer);
+    if (!result)
+    {
+      throw std::runtime_error("Error: Could not encode frame.");
+    }
+
+    this->notify(buffer.data(), buffer.size());
+  }
+  std::cout << "End of video reached." << std::endl;
+}
+
+#endif
