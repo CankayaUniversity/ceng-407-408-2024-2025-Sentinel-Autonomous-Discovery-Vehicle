@@ -12,7 +12,7 @@ public:
 public:
   CameraRequestObserver() = default;
   virtual ~CameraRequestObserver() = default;
-  virtual void completed(void *frame, size_t frame_size) = 0;
+  virtual void completed(void *frame, size_t frame_size, int id) = 0;
 };
 
 class CameraRequestSubject
@@ -23,7 +23,7 @@ public:
 
 public:
   void attach(CameraRequestObserver::SharedPtr observer);
-  void notify(void *frame, size_t frame_size);
+  void notify(void *frame, size_t frame_size, int id);
 
 private:
   std::vector<CameraRequestObserver::SharedPtr> observers;

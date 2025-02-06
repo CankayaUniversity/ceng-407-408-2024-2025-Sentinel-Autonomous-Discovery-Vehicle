@@ -2,7 +2,18 @@
 
 #ifdef LIBCAMERA
 
-Camera::Camera(const CameraConfiguration &camera_configuration) : camera_configuration{camera_configuration}
+#include <iostream>
+#include <cstring>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <signal.h>
+#include <functional>
+#include <string>
+
+static int id = 0;
+
+Camera::Camera(const CameraConfiguration &camera_configuration)
+    : camera_configuration{camera_configuration}, compression_params{cv::IMWRITE_JPEG_QUALITY, 90}
 {
   this->init_camera();
   this->init_frame_allocator();
@@ -57,7 +68,7 @@ void Camera::init_camera()
 
   libcamera::StreamConfiguration &stream_config = this->config->at(0);
 
-  stream_config.pixelFormat = libcamera::formats::RGB888;
+  stream_config.pixelFormat = this->camera_configuration.pixel_format;
   stream_config.size.width = this->camera_configuration.width;
   stream_config.size.height = this->camera_configuration.height;
   if (this->config->validate() == libcamera::CameraConfiguration::Invalid)
@@ -137,9 +148,12 @@ void Camera::requestComplete(libcamera::Request *request)
     const libcamera::FrameMetadata &metadata = buffer->metadata();
     size_t byteused = metadata.planes()[0].bytesused;
     void *mem = buffer_mem.find(buffer)->second;
-    void *dest = malloc(byteused);
-    memcpy(dest, mem, byteused);
-    this->notify(dest, byteused);
+
+    cv::Mat frame(this->camera_configuration.height, this->camera_configuration.width, CV_8UC3, mem);
+    std::vector<uchar> jpegData;
+    cv::imencode(this->camera_configuration.encoding, frame, jpegData, this->compression_params);
+
+    this->notify(jpegData.data(), jpegData.size(), id++);
   }
 
   request->reuse(libcamera::Request::ReuseBuffers);
@@ -162,7 +176,7 @@ Camera::~Camera()
 
 void Camera::start()
 {
-  this->capture.open("/sentinel/static/video.mp4");
+  this->capture.open("../../static/video.mp4");
 
   if (!this->capture.isOpened())
   {
@@ -171,7 +185,9 @@ void Camera::start()
 
   cv::Mat frame;
   std::vector<uchar> buffer;
-  cv::Size target_size(640, 480);
+  cv::Size target_size(this->camera_configuration.width, this->camera_configuration.height);
+  int id = 0;
+
   while (true)
   {
     this->capture >> frame;
@@ -179,17 +195,11 @@ void Camera::start()
     {
       break;
     }
+    buffer = std::vector<uchar>(frame.begin<uchar>(), frame.end<uchar>());
 
-    cv::resize(frame, frame, target_size);
-    bool result = cv::imencode(this->camera_configuration.encoding, frame, buffer);
-    if (!result)
-    {
-      throw std::runtime_error("Error: Could not encode frame.");
-    }
-
-    this->notify(buffer.data(), buffer.size());
+    this->notify(buffer.data(), buffer.size(), id++);
   }
-  std::cout << "End of video reached." << std::endl;
+  std::cout << "End of video reached. " << std::endl;
 }
 
 #endif

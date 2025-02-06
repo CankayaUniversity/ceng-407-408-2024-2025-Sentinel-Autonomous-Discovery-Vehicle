@@ -5,14 +5,22 @@
 #include <string>
 #include <memory>
 #include <opencv2/opencv.hpp>
-
 #include "observer.hpp"
+
+#define LIBCAMERA
+
+#ifdef LIBCAMERA
+#include <libcamera/libcamera.h>
+#endif
 
 struct CameraConfiguration
 {
   int width;
   int height;
   int fps;
+#ifdef LIBCAMERA
+  libcamera::PixelFormat pixel_format;
+#endif
   std::string encoding;
 };
 
@@ -35,6 +43,7 @@ private:
 
 private:
   const CameraConfiguration &camera_configuration;
+  std::vector<int> compression_params;
 
 private:
   std::shared_ptr<libcamera::CameraManager> camera_manager;

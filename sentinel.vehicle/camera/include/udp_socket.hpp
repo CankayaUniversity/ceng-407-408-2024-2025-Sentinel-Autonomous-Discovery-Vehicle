@@ -9,13 +9,14 @@
 class UdpSocket
 {
 public:
-  UdpSocket(const std::string &vehicle_host, int vehicle_port, const std::string &computer_host, int computer_port);
+  UdpSocket(const std::string &vehicle_host, int vehicle_port, const std::string &computer_host, int computer_port, int chunk_size);
   ~UdpSocket();
 
 public:
   inline bool is_open() { return UdpSocket::open; }
+  static void quit_handler(int signal);
 
-  void send(void *data, int size);
+  void send(void *data, int size, int id);
 
 private:
   void create();
@@ -24,14 +25,14 @@ private:
   void configure_computer();
   void bind();
 
-  static void quit_handler(int signal);
-
 private:
   std::string vehicle_host;
   int vehicle_port;
 
   std::string computer_host;
   int computer_port;
+
+  int chunk_size;
 
 private:
   struct sockaddr_in vehicle_addr;
