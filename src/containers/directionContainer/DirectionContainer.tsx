@@ -69,7 +69,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
 
         const loader = new GLTFLoader();
         loader.load(
-            '/models/sample_car.glb',
+            '/models/sentinel.glb',
             (gltf) => {
                 const model = gltf.scene;
                 model.scale.set(0.5, 0.5, 0.5);
@@ -80,6 +80,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
                 const size = new THREE.Vector3();
                 boundingBox.getSize(size);
                 camera.position.z = Math.max(size.x, size.y, size.z) * cameraPositionMultiplier;
+                camera.position.y = 5;
             },
             undefined,
             (error) => {
