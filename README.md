@@ -1,29 +1,50 @@
-# CENG-407-408-2024-2025-Sentinel-Autonomous-Discovery-Vehicle
+# React + TypeScript + Vite
 
-## Sentinel: Autonomous Discovery Vehicle
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-### Project Description
+Currently, two official plugins are available:
 
-<div align="justify">
-The Sentinel is designed to autonomously explore and navigate unknown environments with precision. As a compact and highly functional vehicle, its main feature is generating a 3D map of the areas scanned by sensors and cameras. These maps enable the Sentinel to effortlessly identify optimal paths and locate key areas. Additionally, it utilizes object detection algorithms to distinguish between static and dynamic objects, ensuring accurate identification and marking of obstacles or objects on the map. This combination of autonomous mapping and object recognition makes the Sentinel an invaluable tool for exploration in challenging environments, such as war zones or dangerous areas contaminated by chemical or nuclear particles.
-</div>
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
+## Expanding the ESLint configuration
 
+If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
 
-### Team Members
+- Configure the top-level `parserOptions` property like this:
 
-|   |   |  
-|---|:-:| 
-|[Burak ATEŞ ](https://github.com/AtesBurak1) |  202011010  |
-|[Turgut Utku ALTINKAYA](https://github.com/UtkuAltnkaya)  |  202011036   |
-|[Yunus Emre DİNÇEL](https://github.com/yunusemredincell )   |   202011078   |
-|[İlteriş SAMUR](https://github.com/ilterissamur)  |  202111056   |
-|[Bayram Alper KILIÇ](https://github.com/alperrkilic)  |  202111401   | 
+```js
+export default tseslint.config({
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
+```
 
+- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
+- Optionally add `...tseslint.configs.stylisticTypeChecked`
+- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
 
-### Advisor
-* Assist. Prof. Dr. Serdar ARSLAN
+```js
+// eslint.config.js
+import react from 'eslint-plugin-react'
 
-### Project Website
-* https://sentinelvehicle.wordpress.com/
-  
+export default tseslint.config({
+  // Set the react version
+  settings: { react: { version: '18.3' } },
+  plugins: {
+    // Add the react plugin
+    react,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended rules
+    ...react.configs.recommended.rules,
+    ...react.configs['jsx-runtime'].rules,
+  },
+})
+```

@@ -3,3 +3,4 @@ build
 install
 log
 *.mp4
+node_modules

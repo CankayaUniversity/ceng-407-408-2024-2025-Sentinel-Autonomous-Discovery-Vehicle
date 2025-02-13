@@ -1,0 +1,23 @@
+.camera-container,
+.container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.webcam-feed {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    transition: opacity 0.5s;
+}
+
+.camera-container:hover .webcam-feed {
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.camera-container:hover .pause-button {
+    visibility: visible;
+}
