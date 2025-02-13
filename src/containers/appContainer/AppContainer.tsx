@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import CameraContainer from '../cameraContainer/CameraContainer';
 import MapContainer from '../mapContainer/MapContainer';
 import { darkThemeBorderColor, lightThemeBorderColor } from '../../constants/themeConstants';
+import DirectionContainer from '../directionContainer/DirectionContainer';
 
 const AppContainer = () => {
 
@@ -64,7 +65,9 @@ const AppContainer = () => {
                         </Grid>
                         <Grid size={6}>
                             <Box sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}>
-
+                                <DirectionContainer
+                                    initialAngle={0}
+                                />
                             </Box>
                         </Grid>
                     </Grid>
