@@ -5,7 +5,7 @@ import { ThemeType } from '../../definitions/themeDefinitions';
 const initialState: ThemeType = {
     theme: darkTheme,
     mode: 'dark',
-    isAppbarOpen: true,
+    isAppbarOpen: false,
 };
 
 const themeSlice = createSlice({

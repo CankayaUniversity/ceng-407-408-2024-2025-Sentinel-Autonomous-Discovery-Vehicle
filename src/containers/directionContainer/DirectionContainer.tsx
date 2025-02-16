@@ -20,7 +20,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
             : state.theme.theme.palette.background.paper
     );
 
-    const cameraPositionMultiplier: number = 1; // Change this to adjust the camera position
+    const cameraPositionMultiplier: number = 1.28; // Change this to adjust the camera position
 
     useEffect(() => {
         angleRef.current = angle;
@@ -80,7 +80,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
                 const size = new THREE.Vector3();
                 boundingBox.getSize(size);
                 camera.position.z = Math.max(size.x, size.y, size.z) * cameraPositionMultiplier;
-                camera.position.y = 5;
+                camera.position.y = size.y / 3;
             },
             undefined,
             (error) => {

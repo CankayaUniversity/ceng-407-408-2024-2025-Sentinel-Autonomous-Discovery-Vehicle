@@ -53,11 +53,6 @@ const AppBarContainer = () => {
 
     return (
         <Box sx={{ position: "relative" }}>
-            {/* {
-                (!open) ? <motion.div className="hamburgerMenu" animate={open ? 'open' : 'closed'}>
-                    <ToggleButton setOpen={setOpen} appBarStyles={closeAppBarStyles} />
-                </motion.div> : <></>
-            } */}
             <Drawer sx={{ position: "relative", zIndex: 1, }} variant="persistent" open={open} onClose={toggleDrawer(false)}>
                 {DrawerList}
             </Drawer>

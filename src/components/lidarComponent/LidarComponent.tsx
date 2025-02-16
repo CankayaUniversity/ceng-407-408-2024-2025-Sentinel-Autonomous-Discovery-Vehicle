@@ -8,6 +8,7 @@ const LidarComponent = () => {
     const [isDataStreaming, setIsDataStreaming] = useState<boolean>();
 
     useEffect(() => {
+        //TODO
         const ros = new ROSLIB.Ros({
             url: 'ws://localhost:9090',
         });

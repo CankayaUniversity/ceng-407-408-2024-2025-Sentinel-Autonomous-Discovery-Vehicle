@@ -17,6 +17,7 @@ const CameraContainer: React.FC = () => {
         let imageSubscriber: ROSLIB.Topic | null = null;
 
         if (isPlaying) {
+            //TODO
             ros = new ROSLIB.Ros({
                 url: "ws://localhost:9090",
             });
