@@ -1,10 +1,10 @@
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import { useSelector } from 'react-redux';
-import type { AppState } from './store/mainStore';
-import AppContainer from './containers/appContainer/AppContainer';
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import type { RootState } from "./store/mainStore";
+import AppContainer from "./containers/appContainer/AppContainer";
+import { useSelector } from "react-redux";
 
 function App() {
-  const theme = useSelector((state: AppState) => state.theme.theme);
+  const theme = useSelector((state: RootState) => state.theme.theme);
 
   return (
     <ThemeProvider theme={theme}>

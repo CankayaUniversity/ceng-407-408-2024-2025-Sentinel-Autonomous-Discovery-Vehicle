@@ -5,7 +5,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import React, { useEffect, useRef, useState } from 'react';
 import { tabLabelStyles } from '../../constants/styleConstants';
-import TwoDimensionalMapComponent from '../../components/mapComponents/twoDİmensionalMapComponent/TwoDimensionalMapComponent';
+import TwoDimensionalMapComponent from '../../components/mapComponents/twoDimensionalMapComponent/TwoDimensionalMapComponent';
 import ThreeDimensionalMapComponent from '../../components/mapComponents/threeDimensionalMapComponent/ThreeDimensionalMapComponent';
 import LidarComponent from '../../components/lidarComponent/LidarComponent';
 

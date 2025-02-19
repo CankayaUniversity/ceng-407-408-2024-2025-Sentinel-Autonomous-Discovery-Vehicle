@@ -11,18 +11,18 @@ import ToggleButton from '../../components/buttons/toggleButton/ToggleButton';
 import "./AppBarContainer.css";
 import { openAppBarStyles } from '../../constants/styleConstants';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { RootState } from '../../store/mainStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../store/mainStore';
-import { setIsAppbarOpen } from '../../store/reducers/themeReducer';
+import { setIsAppBarOpen } from '../../store/reducers/applicationReducer';
+
 
 const AppBarContainer = () => {
 
-    const open = useSelector((state: AppState) => state.theme.isAppbarOpen);
-
+    const open = useSelector((state: RootState) => state.app.isAppBarOpen);
     const dispatch = useDispatch();
 
     const toggleDrawer = (newOpen: boolean) => () => {
-        dispatch(setIsAppbarOpen(newOpen));
+        dispatch(setIsAppBarOpen(newOpen));
     };
 
     const DrawerList = (
@@ -31,7 +31,7 @@ const AppBarContainer = () => {
                 <ListItem disablePadding>
                     <ListItemIcon>
                         <motion.div className="hamburgerMenu" animate={open ? 'open' : 'closed'}>
-                            <ToggleButton setOpen={(value) => dispatch(setIsAppbarOpen(value as any))} appBarStyles={openAppBarStyles} />
+                            <ToggleButton setOpen={(value) => dispatch(setIsAppBarOpen(value as any))} appBarStyles={openAppBarStyles} />
                         </motion.div>
                     </ListItemIcon>
                 </ListItem>

@@ -3,19 +3,19 @@ import DarkModeButton from '../../components/buttons/darkModeButton/DarkModeButt
 import Grid from '@mui/material/Grid2';
 import AppBarContainer from '../appBarContainer/AppBarContainer';
 import { closeAppBarStyles, dataGridStyles } from '../../constants/styleConstants';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../store/mainStore';
+import { RootState } from '../../store/mainStore';
 import HamburgerMenuButton from '../../components/buttons/hamburgerMenuButton/HamburgerMenuButton';
 import { useEffect, useState } from 'react';
 import CameraContainer from '../cameraContainer/CameraContainer';
 import MapContainer from '../mapContainer/MapContainer';
 import { darkThemeBorderColor, lightThemeBorderColor } from '../../constants/themeConstants';
 import DirectionContainer from '../directionContainer/DirectionContainer';
+import { useSelector } from 'react-redux';
 
 const AppContainer = () => {
 
-    const isAppbarOpen = useSelector((state: AppState) => state.theme.isAppbarOpen);
-    const paletteMode = useSelector((state: AppState) => state.theme.theme.palette.mode);
+    const isAppbarOpen = useSelector((state: RootState) => state.app.isAppBarOpen);
+    const paletteMode = useSelector((state: RootState) => state.theme.theme.palette.mode);
     const [appBarGridSize, setAppBarGridSize] = useState<number>();
     const [dataGridSize, setDataGridSize] = useState<number>();
     const [borderColor, setBorderColor] = useState<string>();

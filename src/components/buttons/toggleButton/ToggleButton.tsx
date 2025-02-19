@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion';
 import React from 'react';
 import { ToggleButtonProps } from '../../../definitions/componentTypeDefinitions';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../store/mainStore';
+import { RootState } from '../../../store/mainStore';
+import {  useSelector } from 'react-redux';
 
 
 const ToggleButton: React.FC<ToggleButtonProps> = ({ setOpen, appBarStyles }) => {
+    const theme = useSelector((state: RootState) => state.theme.theme);
 
-    const theme = useSelector((state: AppState) => state.theme.theme);
 
     return (
         <span style={{ cursor: "pointer", position: "absolute", ...appBarStyles }} onClick={() => setOpen((prev) => !prev)}>

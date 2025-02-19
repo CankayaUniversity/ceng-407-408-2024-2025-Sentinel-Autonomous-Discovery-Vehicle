@@ -1,20 +1,27 @@
-import { motion } from 'framer-motion';
-import ToggleButton from '../toggleButton/ToggleButton';
-import { useDispatch, useSelector } from 'react-redux';
-import { setIsAppbarOpen } from '../../../store/reducers/themeReducer';
-import { AppState } from '../../../store/mainStore';
+import { motion } from "framer-motion";
+import ToggleButton from "../toggleButton/ToggleButton";
+import { RootState } from "../../../store/mainStore";
+import { useDispatch, useSelector } from "react-redux";
+import { setIsAppBarOpen } from "../../../store/reducers/applicationReducer";
 
 const HamburgerMenuButton = ({ appBarStyles }: { appBarStyles: any }) => {
+  const open = useSelector((state: RootState) => state.app.isAppBarOpen);
 
-    const open = useSelector((state: AppState) => state.theme.isAppbarOpen);
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
+  return !open ? (
+    <motion.div
+      style={{ position: "absolute" }}
+      animate={open ? "open" : "closed"}
+    >
+      <ToggleButton
+        setOpen={(value) => dispatch(setIsAppBarOpen(value as any))}
+        appBarStyles={appBarStyles}
+      />
+    </motion.div>
+  ) : (
+    <></>
+  );
+};
 
-    return (
-        (!open) ? <motion.div style={{ position: "absolute" }} animate={open ? 'open' : 'closed'}>
-            <ToggleButton setOpen={(value) => dispatch(setIsAppbarOpen(value as any))} appBarStyles={appBarStyles} />
-        </motion.div> : <></>
-    )
-}
-
-export default HamburgerMenuButton
+export default HamburgerMenuButton;

@@ -5,6 +5,8 @@ import { Box, IconButton } from "@mui/material";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import "./CameraContainer.css";
+import { RootState } from "../../store/mainStore";
+import { useSelector } from "react-redux";
 
 const CameraContainer: React.FC = () => {
     const [imageData, setImageData] = useState<string | null>(null);
@@ -12,15 +14,12 @@ const CameraContainer: React.FC = () => {
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    const ros = useSelector((state: RootState) => state.app.ros);
+
     useEffect(() => {
-        let ros: ROSLIB.Ros | null = null;
         let imageSubscriber: ROSLIB.Topic | null = null;
 
         if (isPlaying) {
-            //TODO
-            ros = new ROSLIB.Ros({
-                url: "ws://localhost:9090",
-            });
 
             imageSubscriber = new ROSLIB.Topic({
                 ros: ros,
@@ -46,14 +45,11 @@ const CameraContainer: React.FC = () => {
             if (imageSubscriber) {
                 imageSubscriber.unsubscribe();
             }
-            if (ros) {
-                ros.close();
-            }
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [isPlaying]);
+    }, [isPlaying,ros]);
 
     return (
         <div className="container">

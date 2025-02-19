@@ -1,18 +1,17 @@
 import { Box, CircularProgress } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import ROSLIB from 'roslib';
+import { RootState } from '../../store/mainStore';
+import { useSelector } from 'react-redux';
 
 const LidarComponent = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isDataStreaming, setIsDataStreaming] = useState<boolean>();
 
-    useEffect(() => {
-        //TODO
-        const ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090',
-        });
+    const ros = useSelector((state: RootState) => state.app.ros); 
 
+    useEffect(() => {
         const listener = new ROSLIB.Topic({
             ros: ros,
             name: '/scan',
@@ -62,7 +61,7 @@ const LidarComponent = () => {
         });
 
         return () => listener.unsubscribe();
-    }, []);
+    }, [ros]);
 
     return (
         <> {
