@@ -11,6 +11,7 @@ import MapContainer from '../mapContainer/MapContainer';
 import { darkThemeBorderColor, lightThemeBorderColor } from '../../constants/themeConstants';
 import DirectionContainer from '../directionContainer/DirectionContainer';
 import { useSelector } from 'react-redux';
+import MovementContainer from '../movementContainer/MovementContainer';
 
 const AppContainer = () => {
 
@@ -60,13 +61,13 @@ const AppContainer = () => {
                         </Grid>
                         <Grid size={6}>
                             <Box sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}>
-
+                                <MovementContainer />
                             </Box>
                         </Grid>
                         <Grid size={6}>
                             <Box sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}>
                                 <DirectionContainer
-                                    initialAngle={0}
+                                    initialAngle={270}
                                 />
                             </Box>
                         </Grid>

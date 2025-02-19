@@ -9,8 +9,8 @@ export const closeAppBarStyles = {
 }
 
 export const dataGridStyles = {
-    height: "40vh",
-    borderRadius: "3px",
+    height: "43vh",
+    borderRadius: "10px",
 }
 
 export const centerBoxStyles = {

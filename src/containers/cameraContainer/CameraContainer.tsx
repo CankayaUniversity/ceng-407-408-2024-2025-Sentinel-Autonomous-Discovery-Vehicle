@@ -7,6 +7,7 @@ import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import "./CameraContainer.css";
 import { RootState } from "../../store/mainStore";
 import { useSelector } from "react-redux";
+import { dataGridStyles } from "../../constants/styleConstants";
 
 const CameraContainer: React.FC = () => {
     const [imageData, setImageData] = useState<string | null>(null);
@@ -49,7 +50,7 @@ const CameraContainer: React.FC = () => {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [isPlaying,ros]);
+    }, [isPlaying, ros]);
 
     return (
         <div className="container">
@@ -60,7 +61,7 @@ const CameraContainer: React.FC = () => {
                         onMouseEnter={() => setIsHovered(true)}
                         onMouseLeave={() => setIsHovered(false)}
                     >
-                        <img className="webcam-feed" src={imageData} alt="Webcam Feed" />
+                        <img className="webcam-feed" src={imageData} style={{ borderRadius: dataGridStyles.borderRadius, }} alt="Webcam Feed" />
                         {isHovered && (
                             <IconButton
                                 onClick={() => setIsPlaying(false)}
