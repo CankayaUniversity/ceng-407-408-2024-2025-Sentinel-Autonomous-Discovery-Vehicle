@@ -16,9 +16,13 @@ class ManualMovement(Node):
 
         pygame.init()
         pygame.joystick.init()
-        self.joystick = pygame.joystick.Joystick(0).init()
+        self.joystick = pygame.joystick.Joystick(0)
+        self.joystick.init()
+        self.timer = self.create_timer(0.1, self.publish_data)
+    def get_angle(self, axis_0, axis_1, threshold=0.2):
 
-    def get_angle(axis_0, axis_1, threshold=0.2):
+        if axis_0 == None or axis_1 == None:
+            return None
         if abs(axis_0) < threshold and abs(axis_1) < threshold:
             return None
 
@@ -31,7 +35,8 @@ class ManualMovement(Node):
         return angle_degrees
     
     def calc_speed(self, angle, axis_5):
-
+        if angle == None:
+            return None,None
         speed_factor = 1
         speed = (axis_5 + 1) / 2
         speed *= speed_factor
@@ -56,9 +61,8 @@ class ManualMovement(Node):
             "angle": angle
         }
 
-    def publish(self):
+    def publish_data(self):
         pygame.event.pump()
-
         axis_0 = self.joystick.get_axis(0)
         axis_1 = self.joystick.get_axis(1)
         axis_5 = self.joystick.get_axis(5)
@@ -68,17 +72,16 @@ class ManualMovement(Node):
         left_speed, right_speed = self.calc_speed(angle, axis_5)
 
         data = json.dumps(self.create_dictionary(left_speed, right_speed, angle))
-
-        self.publisher.publish(String(data))
+        msg = String()
+        msg.data = data
+        self.publisher.publish(msg)
         self.get_logger().info("Commands published")
 
 def main(args=None):
     rclpy.init(args=args)
 
     publisher = ManualMovement()
-    while True:
-        publisher.publish()
-        rclpy.spin_once(publisher)
+    rclpy.spin(publisher)
         
 
     publisher.destroy_node()
