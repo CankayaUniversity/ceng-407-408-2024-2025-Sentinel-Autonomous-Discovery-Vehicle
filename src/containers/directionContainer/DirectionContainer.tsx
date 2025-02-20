@@ -29,9 +29,13 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
   const modelSizeRef = useRef<THREE.Vector3 | null>(null);
   const particleRef = useRef<WindParticle[]>([]);
 
+  const movement = useSelector((state: RootState) => state.app.movementData);
+
   useEffect(() => {
-    angleRef.current = angle;
-  }, [angle]);
+    if (movement.angle != null) {
+      angleRef.current = movement.angle;
+    }
+  }, [movement]);
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -78,7 +82,6 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
 
   const loadModel = useCallback(async () => {
     const loader = new GLTFLoader();
-
     const gltf = await loader.loadAsync("/models/sentinel.glb");
     const model = gltf.scene;
     model.scale.set(1, 1, 1);
@@ -112,7 +115,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
         modelCenterPositionRef.current!.x + modelSizeRef.current!.x * 0.5,
         modelCenterPositionRef.current!.y + yPosition / 2,
         modelCenterPositionRef.current!.z +
-          modelSizeRef.current!.z * 0.25 * position,
+        modelSizeRef.current!.z * 0.25 * position,
       ),
       new THREE.Vector3(
         modelCenterPositionRef.current!.x + modelSizeRef.current!.x * 0.5,
@@ -121,7 +124,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
           modelCenterPositionRef.current!.y + modelSizeRef.current!.y / 2,
         ),
         modelCenterPositionRef.current!.z +
-          modelSizeRef.current!.z * 0.5 * position,
+        modelSizeRef.current!.z * 0.5 * position,
       ),
       new THREE.Vector3(
         modelCenterPositionRef.current!.x,
@@ -130,7 +133,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
           modelCenterPositionRef.current!.y + modelSizeRef.current!.y / 2,
         ),
         modelCenterPositionRef.current!.z +
-          modelSizeRef.current!.z * 0.5 * position,
+        modelSizeRef.current!.z * 0.5 * position,
       ),
       new THREE.Vector3(
         modelCenterPositionRef.current!.x - modelSizeRef.current!.x * 0.5,
@@ -139,7 +142,7 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
           modelCenterPositionRef.current!.y + modelSizeRef.current!.y / 2,
         ),
         modelCenterPositionRef.current!.z +
-          modelSizeRef.current!.z * 0.5 * position,
+        modelSizeRef.current!.z * 0.5 * position,
       ),
     ];
 

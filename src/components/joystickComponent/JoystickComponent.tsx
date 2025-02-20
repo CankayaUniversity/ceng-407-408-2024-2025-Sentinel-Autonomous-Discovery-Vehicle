@@ -4,7 +4,8 @@ import { Joystick } from "react-joystick-component";
 import { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
 import { RootState } from '../../store/mainStore';
 import ROSLIB from 'roslib';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setMovementData } from "../../store/reducers/applicationReducer";
 
 const JoystickControl: React.FC = () => {
     const joystickRef = useRef<Joystick>(null);
@@ -15,16 +16,27 @@ const JoystickControl: React.FC = () => {
 
     const ros = useSelector((state: RootState) => state.app.ros);
 
+    const dispatch = useDispatch();
+
     useEffect(() => {
-        //TODO
         const listener = new ROSLIB.Topic({
             ros: ros,
             name: '/movement',
-            messageType: 'sensor_msgs/String',
+            messageType: 'std_msgs/String',
         });
 
         listener.subscribe((message: any) => {
-            console.info(message);
+            let movementData = JSON.parse(message.data);
+            dispatch(setMovementData(movementData));
+
+            console.info(movementData);
+
+            if (movementData.angle == null) {
+                setCoordinates({ x: 0, y: 0 });
+                setColor("#959595");
+            } else {
+                setCoordinates({ x: movementData.left_speed, y: movementData.right_speed });
+            }
         })
 
         return () => listener.unsubscribe();
