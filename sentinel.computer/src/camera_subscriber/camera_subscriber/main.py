@@ -7,8 +7,8 @@ from sensor_msgs.msg import CompressedImage
 class CameraSubscriber(Node):
     def __init__(self):
         super().__init__("camera_subscriber")
-        self.subscription = self.create_subscription(CompressedImage, "raspicam", self.listener_callback, 10)
-        self.get_logger().info("Camera subscriber started")
+        self.subscription = self.create_subscription(CompressedImage, "raspicam/compressed", self.listener_callback, 10)
+        self.get_logger().info("Camera subscriber")
 
     def listener_callback(self, msg):
         try:
