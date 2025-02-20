@@ -67,7 +67,7 @@ const AppContainer = () => {
                         <Grid size={6}>
                             <Box sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}>
                                 <DirectionContainer
-                                    initialAngle={270}
+                                    initialAngle={135}
                                 />
                             </Box>
                         </Grid>

@@ -2,18 +2,37 @@ import { Box } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { Joystick } from "react-joystick-component";
 import { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
+import { RootState } from '../../store/mainStore';
+import ROSLIB from 'roslib';
+import { useSelector } from "react-redux";
 
 const JoystickControl: React.FC = () => {
-    //TODO
     const joystickRef = useRef<Joystick>(null);
 
     const [coordinates, setCoordinates] = useState<any>({ x: 0, y: 0 });
 
     const [color, setColor] = useState<string>("#959595");
 
+    const ros = useSelector((state: RootState) => state.app.ros);
+
+    useEffect(() => {
+        //TODO
+        const listener = new ROSLIB.Topic({
+            ros: ros,
+            name: '/movement',
+            messageType: 'sensor_msgs/String',
+        });
+
+        listener.subscribe((message: any) => {
+            console.info(message);
+        })
+
+        return () => listener.unsubscribe();
+    }, [ros])
+
     useEffect(() => {
         if (coordinates.x != 0 || coordinates.y != 0) {
-            setColor("darkgreen");
+            setColor("#1b4135");
         }
     }, [coordinates])
 
