@@ -1,5 +1,8 @@
 import ROSLIB from "roslib";
-import { ApplicationStateType, MovementDataType } from "../../definitions/applicationTypeDefinitions";
+import {
+  ApplicationStateType,
+  MovementDataType,
+} from "../../definitions/applicationTypeDefinitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ApplicationStateType = {
@@ -9,7 +12,7 @@ const initialState: ApplicationStateType = {
     left_speed: 0,
     right_speed: 0,
     angle: null,
-  }
+  },
 };
 
 const applicationSlice = createSlice({
@@ -20,13 +23,12 @@ const applicationSlice = createSlice({
       state.isAppBarOpen = action.payload;
     },
     setMovementData(state, action: PayloadAction<MovementDataType>) {
-      console.info(action);
+      console.log(action.payload);
 
       state.movementData = action.payload;
-    }
+    },
   },
 });
 
 export const { setIsAppBarOpen, setMovementData } = applicationSlice.actions;
 export default applicationSlice.reducer;
-

@@ -1,4 +1,4 @@
-import { Mesh, TubeGeometry } from "three";
+import { Vector3, Color } from "three";
 
 export type ToggleButtonProps = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -9,12 +9,34 @@ export interface DirectionComponentProps {
   initialAngle: number;
 }
 
-export interface WindParticle {
-  mesh: Mesh;
-  progress: number;
-  speed: number;
-  positions: number[];
-  originalPositions: Float32Array;
-  originalGeometry: TubeGeometry;
+export interface CarModelProps {
+  setCarModelCenter: React.Dispatch<React.SetStateAction<Vector3>>;
+  setCarModelSize: React.Dispatch<React.SetStateAction<Vector3>>;
+  setLightPosition: React.Dispatch<React.SetStateAction<Vector3>>;
+  angle: number;
 }
 
+export interface WindComponentProps {
+  carModelSize: Vector3;
+  carModelCenter: Vector3;
+  height: number;
+  position: number;
+  visiblePoint: number;
+  angle: number;
+  lineWidth?: number;
+  color?: string | Color | number;
+  numberOfPoints?: number;
+}
+
+export interface WindParticlesProps {
+  carModelSize: Vector3;
+  carModelCenter: Vector3;
+  numberOfParticles: number;
+  angle: number;
+}
+
+export interface WindParticleState {
+  visiblePoints: number;
+  speed: number;
+  height: number;
+}
