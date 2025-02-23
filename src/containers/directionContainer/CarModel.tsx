@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { CarModelProps } from "../../definitions/componentTypeDefinitions";
 
-const cameraPositionMultiplier: number = 0.8; // Change this to adjust the camera position
+const cameraPositionMultiplier: number = 1.2;
 
 const CarModel: React.FC<CarModelProps> = ({
   angle,
@@ -22,16 +22,13 @@ const CarModel: React.FC<CarModelProps> = ({
     box.getSize(size);
     const center = new THREE.Vector3();
     box.getCenter(center);
-
-    const offset = Math.max(size.x, size.y, size.z) * cameraPositionMultiplier;
-
     const position = camera.position.set(
-      center.x + offset * 1,
-      center.y + offset,
-      center.z + offset * 1.3
+      center.x + size.x * cameraPositionMultiplier,
+      center.y + size.y * cameraPositionMultiplier * 0.65,
+      center.z + size.z * cameraPositionMultiplier,
     );
 
-    camera.lookAt(center);
+    camera.lookAt(position);
 
     setLightPosition(position);
     setCarModelCenter(center);

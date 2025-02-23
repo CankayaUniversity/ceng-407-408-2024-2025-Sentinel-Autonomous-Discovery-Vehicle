@@ -58,10 +58,11 @@ const WindParticles: React.FC<WindParticlesProps> = ({
         prev.visiblePoints < numberOfPoints.current + 1
           ? {
               ...prev,
+              speed: randomNumber(1, 3),
               visiblePoints: prev.visiblePoints + prev.speed * delta * FPS,
             }
-          : { ...prev, visiblePoints: 2 }
-      )
+          : { ...prev, visiblePoints: 2 },
+      ),
     );
   });
 

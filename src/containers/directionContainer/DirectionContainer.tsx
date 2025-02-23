@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import * as THREE from "three";
 import WindParticles from "./WindParticles";
 import { OrbitControls } from "@react-three/drei";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/mainStore";
+import { setMovementData } from "../../store/reducers/applicationReducer";
 
 const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
   const [carModelSize, setCarModelSize] = useState<THREE.Vector3>(
@@ -15,22 +16,43 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
   const [carModelCenter, setCarModelCenter] = useState<THREE.Vector3>(
     new THREE.Vector3()
   );
-  const [angle, setAngle] = useState(initialAngle);
+
   const [lightPosition, setLightPosition] = useState(
     new THREE.Vector3(5, 10, 5)
   );
 
   const movement = useSelector((state: RootState) => state.app.movementData);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case "a":
-          setAngle((prev) => prev + 10);
+          dispatch(
+            setMovementData({
+              left_speed: 1,
+              right_speed: 1,
+              angle: movement.angle ? movement.angle + 10 : initialAngle + 10,
+            } as any)
+          );
           break;
         case "d":
-          setAngle((prev) => prev - 10);
+          dispatch(
+            setMovementData({
+              left_speed: 1,
+              right_speed: 1,
+              angle: movement.angle ? movement.angle - 10 : initialAngle - 10,
+            } as any)
+          );
           break;
+        default:
+          dispatch(
+            setMovementData({
+              left_speed: 0,
+              right_speed: 0,
+              angle: null,
+            } as any)
+          );
       }
     };
 
@@ -48,15 +70,14 @@ const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
         setCarModelCenter={setCarModelCenter}
         setCarModelSize={setCarModelSize}
         setLightPosition={setLightPosition}
-        angle={angle}
+        angle={movement.angle || movement.old_angle || initialAngle}
       />
-      {/* TODO: Stop animation*/}
-      {!movement.angle && (
+      {movement.angle && (
         <WindParticles
           carModelCenter={carModelCenter}
           carModelSize={carModelSize}
-          numberOfParticles={6}
-          angle={angle}
+          numberOfParticles={12}
+          angle={movement.angle}
         />
       )}
       <OrbitControls />

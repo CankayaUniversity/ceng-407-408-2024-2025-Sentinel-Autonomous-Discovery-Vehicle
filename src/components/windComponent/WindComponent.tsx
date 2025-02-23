@@ -12,7 +12,7 @@ const WindModel: React.FC<WindComponentProps> = React.memo(
     position,
     visiblePoint,
     angle,
-    lineWidth = 1,
+    lineWidth = 1.5,
     numberOfPoints = 100,
     color = 0xa5d4ff,
   }) => {
@@ -20,23 +20,23 @@ const WindModel: React.FC<WindComponentProps> = React.memo(
       return [
         new THREE.Vector3(
           carModelCenter.x + carModelSize.x * 0.5,
-          carModelCenter.y + height * 0.41205,
-          carModelCenter.z + carModelSize.z * 0.25 * position
+          carModelCenter.y + height * 0.45,
+          carModelCenter.z + carModelSize.z * 0.25 * position,
         ),
         new THREE.Vector3(
-          carModelCenter.x + carModelSize.x * 0.5,
+          carModelCenter.x + carModelSize.x * 0.55 - 0.025,
           carModelCenter.y + height * 0.45,
-          carModelCenter.z + carModelSize.z * 0.5 * position
+          carModelCenter.z + (carModelSize.z * 0.5 - 0.025) * position,
         ),
         new THREE.Vector3(
           carModelCenter.x,
           carModelCenter.y + height * 0.4,
-          carModelCenter.z + carModelSize.z * 0.5 * position
+          carModelCenter.z + carModelSize.z * 0.5 * position,
         ),
         new THREE.Vector3(
           carModelCenter.x - carModelSize.x * 0.5,
           carModelCenter.y + height * 0.33,
-          carModelCenter.z + carModelSize.z * 0.5 * position
+          carModelCenter.z + carModelSize.z * 0.5 * position,
         ),
       ];
     }, [carModelCenter, carModelSize, height, position]);
@@ -54,7 +54,7 @@ const WindModel: React.FC<WindComponentProps> = React.memo(
         rotation={[0, THREE.MathUtils.degToRad(angle), 0]}
       />
     );
-  }
+  },
 );
 
 export default WindModel;
