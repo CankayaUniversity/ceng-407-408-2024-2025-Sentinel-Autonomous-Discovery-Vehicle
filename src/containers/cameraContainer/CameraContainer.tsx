@@ -8,12 +8,17 @@ import "./CameraContainer.css";
 import { RootState } from "../../store/mainStore";
 import { useSelector } from "react-redux";
 import { dataGridStyles } from "../../constants/styleConstants";
+import SettingsOverscanOutlinedIcon from '@mui/icons-material/SettingsOverscanOutlined';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+
 
 const CameraContainer: React.FC = () => {
     const [imageData, setImageData] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const ros = useSelector((state: RootState) => state.app.ros);
 
@@ -52,8 +57,35 @@ const CameraContainer: React.FC = () => {
         };
     }, [isPlaying, ros]);
 
+    const handleDialogOpen = () => {
+        setDialogOpen(true);
+    };
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
+
     return (
-        <div className="container">
+        <div className="container" style={{ position: "relative" }}>
+            <IconButton
+                aria-label="fullscreen"
+                sx={{ position: "absolute", top: "0.5rem", right: "0.5rem" }}
+                onClick={handleDialogOpen}
+            >
+                <SettingsOverscanOutlinedIcon />
+            </IconButton>
+            <Dialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogContent>
+                    <Box sx={{ width: '100%', height: '80vh' }}>
+                        <CameraContainer />
+                    </Box>
+                </DialogContent>
+            </Dialog>
             {isPlaying ? (
                 imageData ? (
                     <div

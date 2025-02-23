@@ -62,28 +62,28 @@ const AppContainer = () => {
             spacing={2}
             sx={{ padding: isAppbarOpen ? "5rem 3rem 0 0" : "5rem" }}
           >
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
                 <CameraContainer />
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
                 <MapContainer />
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
                 <MovementContainer />
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
