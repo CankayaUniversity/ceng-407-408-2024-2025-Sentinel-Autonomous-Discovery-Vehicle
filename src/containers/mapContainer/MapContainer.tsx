@@ -59,7 +59,7 @@ const MapContainer = () => {
                 >
                     <IconButton
                         aria-label="fullscreen"
-                        sx={{ position: "absolute", top: "3.5rem", right: "1rem" }}
+                        sx={{ position: "absolute", top: "0.5rem", right: "0.5rem" }}
                         onClick={handleDialogOpen}
                     >
                         <SettingsOverscanOutlinedIcon />
