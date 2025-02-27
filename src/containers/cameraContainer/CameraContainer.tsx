@@ -60,10 +60,7 @@ const CameraContainer: React.FC = () => {
     }, [isPlaying, ros]);
 
     return (
-        <div className="container" style={{ position: "relative" }}>
-            {!isDialogOpen && (
-                <CameraFullScreenButton />
-            )}
+        <>
             {(isPlaying) ? (
                 imageData ? (
                     <div
@@ -95,7 +92,7 @@ const CameraContainer: React.FC = () => {
                     </IconButton>
                 </Box>
             )}
-        </div>
+        </>
     );
 };
 

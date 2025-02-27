@@ -26,10 +26,10 @@ const applicationSlice = createSlice({
       state.movementData = action.payload;
     },
     setIsDialogOpen: (state, action: PayloadAction<boolean>) => {
-      return { ...state, isDialogOpen: action.payload };
+      state.isDialogOpen = action.payload;
     },
     setIsCameraPlaying: (state, action: PayloadAction<boolean>) => {
-      return { ...state, isCameraPlaying: action.payload };
+      state.isCameraPlaying = action.payload;
     },
   },
 });

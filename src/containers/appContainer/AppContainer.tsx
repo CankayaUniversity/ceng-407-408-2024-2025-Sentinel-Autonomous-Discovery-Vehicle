@@ -18,6 +18,7 @@ import {
 import DirectionContainer from "../directionContainer/DirectionContainer";
 import { useSelector } from "react-redux";
 import MovementContainer from "../movementContainer/MovementContainer";
+import CameraFullScreenButton from "../cameraContainer/CameraFullScreenButton";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
@@ -64,7 +65,10 @@ const AppContainer = () => {
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
-                <CameraContainer />
+                <div className="container" style={{ position: "relative" }}>
+                  <CameraFullScreenButton />
+                  <CameraContainer />
+                </div>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, lg: 6 }}>
