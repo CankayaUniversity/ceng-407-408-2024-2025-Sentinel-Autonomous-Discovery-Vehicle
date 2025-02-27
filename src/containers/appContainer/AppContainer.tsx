@@ -28,6 +28,8 @@ const AppContainer = () => {
   const [appBarGridSize, setAppBarGridSize] = useState<number>();
   const [dataGridSize, setDataGridSize] = useState<number>();
   const [borderColor, setBorderColor] = useState<string>();
+  const isCameraDialogOpen = useSelector((state: RootState) => state.app.isCameraDialogOpen);
+  const isMapDialogOpen = useSelector((state: RootState) => state.app.isMapDialogOpen);
 
   useEffect(() => {
     if (isAppbarOpen) {
@@ -67,7 +69,11 @@ const AppContainer = () => {
               >
                 <div className="container" style={{ position: "relative" }}>
                   <CameraFullScreenButton />
-                  <CameraContainer />
+                  {
+                    (!isCameraDialogOpen && !isMapDialogOpen) && (
+                      <CameraContainer />
+                    )
+                  }
                 </div>
               </Box>
             </Grid>

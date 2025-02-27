@@ -6,26 +6,26 @@ import DialogContent from '@mui/material/DialogContent';
 import CameraContainer from './CameraContainer';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/mainStore';
-import { setIsDialogOpen } from '../../store/reducers/applicationReducer';
+import { setIsCameraDialogOpen } from '../../store/reducers/applicationReducer';
 
 const CameraFullScreenButton: React.FC = () => {
     const dispatch = useDispatch();
-    const isDialogOpen = useSelector((state: RootState) => state.app.isDialogOpen);
+    const isCameraDialogOpen = useSelector((state: RootState) => state.app.isCameraDialogOpen);
 
     return (
         <>
             {
-                !isDialogOpen && (
+                !isCameraDialogOpen && (
                     <IconButton
                         aria-label="fullscreen"
                         sx={{ position: "absolute", top: "1rem", right: "1rem", zIndex: 3, }}
-                        onClick={() => dispatch(setIsDialogOpen(true))}
+                        onClick={() => dispatch(setIsCameraDialogOpen(true))}
                     >
                         <SettingsOverscanOutlinedIcon />
                     </IconButton>
                 )
             }
-            <Dialog open={isDialogOpen} onClose={() => dispatch(setIsDialogOpen(false))} maxWidth="lg" fullWidth>
+            <Dialog open={isCameraDialogOpen} onClose={() => dispatch(setIsCameraDialogOpen(false))} maxWidth="lg" fullWidth>
                 <DialogContent>
                     <Box sx={{ width: "100%", height: "80vh" }}>
                         <CameraContainer />

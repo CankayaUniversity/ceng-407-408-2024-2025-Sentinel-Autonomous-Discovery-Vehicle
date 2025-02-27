@@ -2,7 +2,8 @@
 export interface ApplicationStateType {
   isAppBarOpen: boolean;
   movementData: MovementDataType;
-  isDialogOpen: boolean;
+  isCameraDialogOpen: boolean;
+  isMapDialogOpen: boolean;
   isCameraPlaying: boolean;
 }
 

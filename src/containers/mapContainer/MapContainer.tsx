@@ -12,12 +12,17 @@ import IconButton from '@mui/material/IconButton';
 import SettingsOverscanOutlinedIcon from '@mui/icons-material/SettingsOverscanOutlined';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
+import { RootState } from '../../store/mainStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { setIsMapDialogOpen } from '../../store/reducers/applicationReducer';
 
 const MapContainer = () => {
     const [value, setValue] = useState('1');
     const [tabListHeight, setTabListHeight] = useState(0);
     const tabListRef = useRef<HTMLDivElement | null>(null);
-    const [dialogOpen, setDialogOpen] = useState(false);
+    const dispatch = useDispatch();
+    const isMapDialogOpen = useSelector((state: RootState) => state.app.isMapDialogOpen);
+    const isCameraDialogOpen = useSelector((state: RootState) => state.app.isCameraDialogOpen);
 
     useEffect(() => {
         if (tabListRef.current) {
@@ -30,11 +35,11 @@ const MapContainer = () => {
     };
 
     const handleDialogOpen = () => {
-        setDialogOpen(true);
+        dispatch(setIsMapDialogOpen(true));
     };
 
     const handleDialogClose = () => {
-        setDialogOpen(false);
+        dispatch(setIsMapDialogOpen(false));
     };
 
     const getSelectedTabContent = () => {
@@ -80,7 +85,11 @@ const MapContainer = () => {
                     sx={{ width: '100%', height: `calc(100% - ${tabListHeight}px)`, padding: 0 }}
                 >
                     <Box sx={{ width: '100%', height: '100%' }}>
-                        <TwoDimensionalMapComponent />
+                        {
+                            (!isMapDialogOpen && !isCameraDialogOpen) && (
+                                <TwoDimensionalMapComponent />
+                            )
+                        }
                     </Box>
                 </TabPanel>
                 <TabPanel
@@ -88,7 +97,11 @@ const MapContainer = () => {
                     sx={{ width: '100%', height: `calc(100% - ${tabListHeight}px)`, padding: 0 }}
                 >
                     <Box sx={{ width: '100%', height: '100%' }}>
-                        <ThreeDimensionalMapComponent />
+                        {
+                            (!isMapDialogOpen && !isCameraDialogOpen) && (
+                                <ThreeDimensionalMapComponent />
+                            )
+                        }
                     </Box>
                 </TabPanel>
                 <TabPanel
@@ -96,13 +109,17 @@ const MapContainer = () => {
                     sx={{ width: '100%', height: `calc(100% - ${tabListHeight}px)`, padding: 0 }}
                 >
                     <Box sx={{ width: '100%', height: '100%' }}>
-                        <LidarComponent />
+                        {
+                            (!isMapDialogOpen && !isCameraDialogOpen) && (
+                                <LidarComponent />
+                            )
+                        }
                     </Box>
                 </TabPanel>
             </TabContext>
 
             <Dialog
-                open={dialogOpen}
+                open={isMapDialogOpen}
                 onClose={handleDialogClose}
                 maxWidth="lg"
                 fullWidth

@@ -11,7 +11,8 @@ const initialState: ApplicationStateType = {
     right_speed: 0,
     angle: null,
   },
-  isDialogOpen: false,
+  isCameraDialogOpen: false,
+  isMapDialogOpen: false,
   isCameraPlaying: false,
 };
 
@@ -25,8 +26,11 @@ const applicationSlice = createSlice({
     setMovementData(state, action: PayloadAction<MovementDataType>) {
       state.movementData = action.payload;
     },
-    setIsDialogOpen: (state, action: PayloadAction<boolean>) => {
-      state.isDialogOpen = action.payload;
+    setIsCameraDialogOpen: (state, action: PayloadAction<boolean>) => {
+      state.isCameraDialogOpen = action.payload;
+    },
+    setIsMapDialogOpen: (state, action: PayloadAction<boolean>) => {
+      state.isMapDialogOpen = action.payload;
     },
     setIsCameraPlaying: (state, action: PayloadAction<boolean>) => {
       state.isCameraPlaying = action.payload;
@@ -34,5 +38,5 @@ const applicationSlice = createSlice({
   },
 });
 
-export const { setIsAppBarOpen, setMovementData, setIsDialogOpen, setIsCameraPlaying } = applicationSlice.actions;
+export const { setIsAppBarOpen, setMovementData, setIsCameraDialogOpen, setIsMapDialogOpen, setIsCameraPlaying } = applicationSlice.actions;
 export default applicationSlice.reducer;

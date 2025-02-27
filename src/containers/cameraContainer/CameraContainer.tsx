@@ -8,7 +8,6 @@ import "./CameraContainer.css";
 import { RootState } from "../../store/mainStore";
 import { useDispatch, useSelector } from "react-redux";
 import { dataGridStyles } from "../../constants/styleConstants";
-import CameraFullScreenButton from "./CameraFullScreenButton";
 import { setIsCameraPlaying } from "../../store/reducers/applicationReducer";
 import { useRos } from "../../utils/RosContext";
 
@@ -20,8 +19,6 @@ const CameraContainer: React.FC = () => {
     const { ros } = useRos();
 
     const isPlaying = useSelector((state: RootState) => state.app.isCameraPlaying);
-
-    const isDialogOpen = useSelector((state: RootState) => state.app.isDialogOpen);
 
     const dispatch = useDispatch();
 
