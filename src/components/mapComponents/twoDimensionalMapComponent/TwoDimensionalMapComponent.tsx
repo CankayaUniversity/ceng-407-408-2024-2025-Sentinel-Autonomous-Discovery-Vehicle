@@ -1,15 +1,14 @@
 import { Box, CircularProgress } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import ROSLIB from "roslib";
-import { RootState } from "../../../store/mainStore";
-import { useSelector } from "react-redux";
+import { useRos } from "../../../utils/RosContext";
 
 const TwoDimensionalMapComponent = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isDataStreaming, setIsDataStreaming] = useState<boolean>();
 
-  const ros = useSelector((state: RootState) => state.app.ros);
+  const { ros } = useRos();
 
   useEffect(() => {
 

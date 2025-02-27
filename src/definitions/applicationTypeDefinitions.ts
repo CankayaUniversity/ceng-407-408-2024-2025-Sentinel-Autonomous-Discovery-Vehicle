@@ -1,9 +1,9 @@
-import ROSLIB from "roslib";
 
 export interface ApplicationStateType {
   isAppBarOpen: boolean;
-  ros: ROSLIB.Ros;
-  movementData: MovementDataType
+  movementData: MovementDataType;
+  isDialogOpen: boolean;
+  isCameraPlaying: boolean;
 }
 
 

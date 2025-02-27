@@ -1,4 +1,3 @@
-import ROSLIB from "roslib";
 import {
   ApplicationStateType,
   MovementDataType,
@@ -7,12 +6,13 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ApplicationStateType = {
   isAppBarOpen: false,
-  ros: new ROSLIB.Ros({ url: "ws://localhost:9090" }),
   movementData: {
     left_speed: 0,
     right_speed: 0,
     angle: null,
   },
+  isDialogOpen: false,
+  isCameraPlaying: false,
 };
 
 const applicationSlice = createSlice({
@@ -23,12 +23,16 @@ const applicationSlice = createSlice({
       state.isAppBarOpen = action.payload;
     },
     setMovementData(state, action: PayloadAction<MovementDataType>) {
-      console.log(action.payload);
-
       state.movementData = action.payload;
+    },
+    setIsDialogOpen: (state, action: PayloadAction<boolean>) => {
+      return { ...state, isDialogOpen: action.payload };
+    },
+    setIsCameraPlaying: (state, action: PayloadAction<boolean>) => {
+      return { ...state, isCameraPlaying: action.payload };
     },
   },
 });
 
-export const { setIsAppBarOpen, setMovementData } = applicationSlice.actions;
+export const { setIsAppBarOpen, setMovementData, setIsDialogOpen, setIsCameraPlaying } = applicationSlice.actions;
 export default applicationSlice.reducer;
