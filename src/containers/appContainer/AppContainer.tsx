@@ -21,11 +21,9 @@ import MovementContainer from "../movementContainer/MovementContainer";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
-    (state: RootState) => state.app.isAppBarOpen,
+    (state: RootState) => state.app.isAppBarOpen
   );
-  const paletteMode = useSelector(
-    (state: RootState) => state.theme.theme.palette.mode,
-  );
+  const paletteMode = useSelector((state: RootState) => state.theme.mode);
   const [appBarGridSize, setAppBarGridSize] = useState<number>();
   const [dataGridSize, setDataGridSize] = useState<number>();
   const [borderColor, setBorderColor] = useState<string>();
@@ -98,4 +96,3 @@ const AppContainer = () => {
 };
 
 export default AppContainer;
-

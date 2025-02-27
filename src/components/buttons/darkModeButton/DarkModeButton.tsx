@@ -6,14 +6,18 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import { useDispatch, useSelector } from "react-redux";
 
 const DarkModeButton = () => {
-    const dispatch = useDispatch();
-    const theme = useSelector((state: RootState) => state.theme.theme);
+  const dispatch = useDispatch();
+  const themeMode = useSelector((state: RootState) => state.theme.mode);
 
-    return (
-        <Button sx={{ position: "absolute", top: "0.8rem", right: "0.8rem" }} variant="text" onClick={() => dispatch(toggleTheme())}>
-            {theme.palette.mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-        </Button>
-    )
-}
+  return (
+    <Button
+      sx={{ position: "absolute", top: "0.8rem", right: "0.8rem" }}
+      variant="text"
+      onClick={() => dispatch(toggleTheme())}
+    >
+      {themeMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+    </Button>
+  );
+};
 
 export default DarkModeButton;
