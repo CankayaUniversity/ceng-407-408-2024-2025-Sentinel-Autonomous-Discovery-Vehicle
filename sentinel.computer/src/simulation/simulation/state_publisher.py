@@ -23,19 +23,22 @@ class StatePublisher(Node):
         self.movement_subscriber = MovementSubscriber()
         degree = pi / 180.0
         # Define 4 continuous wheels
-        self.joint_state = JointState()
 
+        self.joint_state = JointState()
         self.odom_trans = TransformStamped()
         self.odom_trans.header.frame_id = 'odom'
         self.odom_trans.child_frame_id = 'base_link'
-        self.loop_rate = self.create_rate(10)  # Lower the rate (e.g., 10 Hz or even 5 Hz)
+
+        self.x = 0.0
+        self.y = 0.0
         self.yaw = 0
         self.pitch = 0
         self.roll = 0
+        
+        self.loop_rate = self.create_rate(10)  # Lower the rate (e.g., 10 Hz or even 5 Hz)
    
     def start_simulation_rotation(self):
         executor = MultiThreadedExecutor()
-        #executor.add_node(self)
         executor.add_node(self.movement_subscriber)
 
         try:
@@ -57,10 +60,7 @@ class StatePublisher(Node):
                     wheel_angle = data["angle"] * (pi / 180)  # Convert angle from degrees to radians
                 else:
                     wheel_angle = None
-                if left_speed == None:
-                    left_speed = 0.0
-                if right_speed == None:
-                    right_speed = 0.0
+
                 if wheel_angle == None:
                     wheel_angle = 0.0
                 # Define joint names for the wheels
@@ -70,33 +70,48 @@ class StatePublisher(Node):
                     'base_left_back_joint',
                     'base_right_back_joint'
                 ]
-                delta_x = cos(self.yaw) * (left_speed + right_speed) * 0.05
-                delta_y = sin(self.yaw) * (left_speed + right_speed) * 0.05
-                # Update joint positions and velocities
-                self.joint_state.position = [self.yaw, self.yaw, self.yaw, self.yaw]  # Use self.yaw for correct heading
-                self.joint_state.velocity = [left_speed, right_speed, right_speed, left_speed]
+
+                WHEEL_RADIUS = 0.0325  
+                WHEELBASE = 0.12  
+
+                linear_velocity = (left_speed + right_speed) 
+                angular_velocity = (right_speed - left_speed) / WHEELBASE
+
+                # Calculate position change
+                delta_x = cos(self.yaw) * linear_velocity * 0.05  
+                delta_y = sin(self.yaw) * linear_velocity * 0.05
+                delta_yaw = angular_velocity * 0.01
+
+                # Update pose
+                self.x += delta_x
+                self.y += delta_y
+                self.yaw += delta_yaw
+                self.yaw %= (2 * pi) 
+
+                wheel_angular_velocity_left = left_speed / WHEEL_RADIUS  
+                wheel_angular_velocity_right = right_speed / WHEEL_RADIUS  
+
+                self.joint_state.position = [self.yaw, self.yaw, self.yaw, self.yaw]
+                self.joint_state.velocity = [
+                    wheel_angular_velocity_left,
+                    wheel_angular_velocity_right,
+                    wheel_angular_velocity_left,
+                    wheel_angular_velocity_right,
+                ]
                 self.joint_state.effort = [0.0, 0.0, 0.0, 0.0]
-                # Compute angular velocity based on wheel speed difference
-                angular_velocity = (-left_speed + right_speed) * 0.05  # Adjust gain if needed
-                
+
                 # Update transform to simulate movement
                 self.odom_trans.header.stamp = now.to_msg()
                 self.odom_trans.transform.translation.x += delta_x
                 self.odom_trans.transform.translation.y += delta_y
-                self.odom_trans.transform.translation.z = 0.0  # Assuming constant height
-                self.yaw += angular_velocity  
-                self.yaw %= (2 * pi)
-                # Update the rotation quaternion based on the wheel_angle
-                wheel_angle += angular_velocity  # Apply rotation adjustment based on speed difference
+                self.odom_trans.transform.translation.z = 0.0 
+
+                # Update the rotation quaternion based on yaw
                 self.odom_trans.transform.rotation = self.euler_to_quaternion()
 
                 # Publish joint states and transform
                 self.joint_pub.publish(self.joint_state)
                 self.broadcaster.sendTransform(self.odom_trans)
-
-                if wheel_angle != None:
-                # Keep wheel_angle within 0 to 2π range
-                    wheel_angle %= (2 * pi)
 
 
                 self.loop_rate.sleep()

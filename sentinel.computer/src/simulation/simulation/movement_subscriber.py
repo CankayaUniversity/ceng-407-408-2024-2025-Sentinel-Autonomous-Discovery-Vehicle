@@ -1,7 +1,7 @@
 import rclpy
 import json
 from rclpy.node import Node
-
+from collections import deque
 from std_msgs.msg import String
 
 
@@ -14,15 +14,16 @@ class MovementSubscriber(Node):
             'movement',
             self.listener_callback,
             10)
+        
+        self.data_sub = deque(maxlen=20)
         self.subscription  # prevent unused variable warning
-        self.i = -1
-        self.data_sub = []
+        self.data_sub.append({"left_speed": 0, "right_speed": 0, "angle": 0})
         self.read_speed_angle_data('src/simulation/simulation/movement.json')
+
     def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg.data)
+        #self.get_logger().info('I heard: "%s"' % msg.data)
         data = json.loads(msg.data)
         self.data_sub.append(data)
-        self.i = self.i + 1
 
 
 
@@ -31,27 +32,11 @@ class MovementSubscriber(Node):
             self.data = json.load(file)
 
     def get_movement_data(self):
-        if self.i > -1:
-            return self.data_sub[self.i]
-        return None
+        return self.data_sub[-1]
+    
         # json test
         # self.i = self.i + 1
         # if self.i >= len(self.data['data']):
         #     return None
         # return self.data['data'][self.i]
     
-
-def main(args=None):
-    # rclpy.init(args=args)
-
-    # movement_subscriber = MovementSubscriber()
-
-    # rclpy.spin(movement_subscriber)
-
-    # movement_subscriber.destroy_node()
-    # rclpy.shutdown()
-    pass
-
-
-if __name__ == '__main__':
-    main()
