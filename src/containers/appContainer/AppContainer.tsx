@@ -18,17 +18,18 @@ import {
 import DirectionContainer from "../directionContainer/DirectionContainer";
 import { useSelector } from "react-redux";
 import MovementContainer from "../movementContainer/MovementContainer";
+import CameraFullScreenButton from "../cameraContainer/CameraFullScreenButton";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
-    (state: RootState) => state.app.isAppBarOpen,
+    (state: RootState) => state.app.isAppBarOpen
   );
-  const paletteMode = useSelector(
-    (state: RootState) => state.theme.theme.palette.mode,
-  );
+  const paletteMode = useSelector((state: RootState) => state.theme.mode);
   const [appBarGridSize, setAppBarGridSize] = useState<number>();
   const [dataGridSize, setDataGridSize] = useState<number>();
   const [borderColor, setBorderColor] = useState<string>();
+  const isCameraDialogOpen = useSelector((state: RootState) => state.app.isCameraDialogOpen);
+  const isMapDialogOpen = useSelector((state: RootState) => state.app.isMapDialogOpen);
 
   useEffect(() => {
     if (isAppbarOpen) {
@@ -62,28 +63,35 @@ const AppContainer = () => {
             spacing={2}
             sx={{ padding: isAppbarOpen ? "5rem 3rem 0 0" : "5rem" }}
           >
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
-                <CameraContainer />
+                <div className="container" style={{ position: "relative" }}>
+                  <CameraFullScreenButton />
+                  {
+                    (!isCameraDialogOpen && !isMapDialogOpen) && (
+                      <CameraContainer />
+                    )
+                  }
+                </div>
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
                 <MapContainer />
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >
                 <MovementContainer />
               </Box>
             </Grid>
-            <Grid size={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Box
                 sx={{ border: `1px solid ${borderColor}`, ...dataGridStyles }}
               >

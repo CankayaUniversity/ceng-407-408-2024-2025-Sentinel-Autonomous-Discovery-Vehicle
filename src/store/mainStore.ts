@@ -7,8 +7,8 @@ export const store = configureStore({
     reducer: {
         theme: themeReducer,
         items: itemReducer,
-        app: applicationReducer 
-    },
+        app: applicationReducer
+    }
 });
 
 export type RootState = ReturnType<typeof store.getState>;

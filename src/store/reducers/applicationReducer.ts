@@ -1,4 +1,3 @@
-import ROSLIB from "roslib";
 import {
   ApplicationStateType,
   MovementDataType,
@@ -11,13 +10,15 @@ const roundSmallValues = (value: number, threshold = 1e-3) => {
 
 const initialState: ApplicationStateType = {
   isAppBarOpen: false,
-  ros: new ROSLIB.Ros({ url: "ws://localhost:9090" }),
   movementData: {
     left_speed: 0,
     right_speed: 0,
     angle: null,
     old_angle: null,
   },
+  isCameraDialogOpen: false,
+  isMapDialogOpen: false,
+  isCameraPlaying: false,
 };
 
 const applicationSlice = createSlice({
@@ -45,8 +46,17 @@ const applicationSlice = createSlice({
         right_speed,
       };
     },
+    setIsCameraDialogOpen: (state, action: PayloadAction<boolean>) => {
+      state.isCameraDialogOpen = action.payload;
+    },
+    setIsMapDialogOpen: (state, action: PayloadAction<boolean>) => {
+      state.isMapDialogOpen = action.payload;
+    },
+    setIsCameraPlaying: (state, action: PayloadAction<boolean>) => {
+      state.isCameraPlaying = action.payload;
+    },
   },
 });
 
-export const { setIsAppBarOpen, setMovementData } = applicationSlice.actions;
+export const { setIsAppBarOpen, setMovementData, setIsCameraDialogOpen, setIsMapDialogOpen, setIsCameraPlaying } = applicationSlice.actions;
 export default applicationSlice.reducer;

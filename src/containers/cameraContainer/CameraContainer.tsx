@@ -6,22 +6,26 @@ import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
 import "./CameraContainer.css";
 import { RootState } from "../../store/mainStore";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { dataGridStyles } from "../../constants/styleConstants";
+import { setIsCameraPlaying } from "../../store/reducers/applicationReducer";
+import { useRos } from "../../utils/RosContext";
 
 const CameraContainer: React.FC = () => {
     const [imageData, setImageData] = useState<string | null>(null);
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [isHovered, setIsHovered] = useState<boolean>(false);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const ros = useSelector((state: RootState) => state.app.ros);
+    const { ros } = useRos();
+
+    const isPlaying = useSelector((state: RootState) => state.app.isCameraPlaying);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         let imageSubscriber: ROSLIB.Topic | null = null;
 
         if (isPlaying) {
-
             imageSubscriber = new ROSLIB.Topic({
                 ros: ros,
                 name: "/raspicam/compressed",
@@ -53,8 +57,8 @@ const CameraContainer: React.FC = () => {
     }, [isPlaying, ros]);
 
     return (
-        <div className="container">
-            {isPlaying ? (
+        <>
+            {(isPlaying) ? (
                 imageData ? (
                     <div
                         className="camera-container"
@@ -64,7 +68,7 @@ const CameraContainer: React.FC = () => {
                         <img className="webcam-feed" src={imageData} style={{ borderRadius: dataGridStyles.borderRadius, }} alt="Webcam Feed" />
                         {isHovered && (
                             <IconButton
-                                onClick={() => setIsPlaying(false)}
+                                onClick={() => dispatch(setIsCameraPlaying(false))}
                                 aria-label="Pause"
                                 className="pause-button"
                                 sx={{ position: "absolute", top: "50%", left: "50%", zIndex: 2, transform: "translate(-50%, -50%)" }}
@@ -80,12 +84,12 @@ const CameraContainer: React.FC = () => {
                 )
             ) : (
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
-                    <IconButton onClick={() => setIsPlaying(true)} aria-label="Play">
+                    <IconButton onClick={() => dispatch(setIsCameraPlaying(true))} aria-label="Play">
                         <PlayCircleIcon sx={{ width: "3.5rem", height: "3.5rem" }} />
                     </IconButton>
                 </Box>
             )}
-        </div >
+        </>
     );
 };
 

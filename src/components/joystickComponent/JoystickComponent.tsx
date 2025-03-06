@@ -2,10 +2,10 @@ import { Box } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { Joystick } from "react-joystick-component";
 import { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
-import { RootState } from "../../store/mainStore";
 import ROSLIB from "roslib";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setMovementData } from "../../store/reducers/applicationReducer";
+import { useRos } from "../../utils/RosContext";
 
 const JoystickControl: React.FC = () => {
   const joystickRef = useRef<Joystick>(null);
@@ -14,7 +14,7 @@ const JoystickControl: React.FC = () => {
 
   const [color, setColor] = useState<string>("#959595");
 
-  const ros = useSelector((state: RootState) => state.app.ros);
+  const { ros } = useRos();
 
   const dispatch = useDispatch();
 

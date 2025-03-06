@@ -4,12 +4,15 @@ import App from './App.tsx'
 import { Provider } from 'react-redux';
 import { store } from './store/mainStore.ts';
 import "./index.css";
+import { RosProvider } from './utils/RosContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
 
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <RosProvider>
+        <App />
+      </RosProvider>
     </Provider>
   </StrictMode>,
 )
