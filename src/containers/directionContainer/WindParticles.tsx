@@ -1,69 +1,33 @@
-import { useMemo, useRef, useState } from "react";
-import { useFrame } from "@react-three/fiber";
-import {
-  WindParticlesProps,
-  WindParticleState,
-} from "../../definitions/componentTypeDefinitions";
+import * as THREE from "three";
+import { useRef, useEffect, useMemo } from "react";
+import { WindParticlesProps } from "../../definitions/3dObjectsTypeDefinition";
 import WindModel from "../../components/windComponent/WindComponent";
 
-const randomNumber = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1) + min);
-
-const FPS: number = 60;
-
 const WindParticles: React.FC<WindParticlesProps> = ({
+  robotRef,
+  linearSpeed,
   numberOfParticles,
-  carModelCenter,
-  carModelSize,
-  angle,
 }) => {
-  const numberOfPoints = useRef(100);
+  const robotSizeRef = useRef<THREE.Vector3>(new THREE.Vector3());
+  useEffect(() => {
+    if (!robotRef.current) return;
+    const box = new THREE.Box3().setFromObject(robotRef.current);
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    robotSizeRef.current = size;
+  }, [robotRef]);
 
-  const initialState = useMemo(() => {
+  const windParticleState = useMemo(() => {
     const initialState = [];
     for (let index = 0; index < numberOfParticles; index++) {
       const height = Math.random() / 10;
-
-      initialState[0 * numberOfParticles + index] = {
-        height,
-        speed: randomNumber(1, 3),
-        visiblePoints: 2,
-      };
-
-      initialState[1 * numberOfParticles + index] = {
-        height,
-        speed: randomNumber(1, 3),
-        visiblePoints: 2,
-      };
-      initialState[2 * numberOfParticles + index] = {
-        height,
-        speed: randomNumber(1, 3),
-        visiblePoints: 2,
-      };
-      initialState[3 * numberOfParticles + index] = {
-        height,
-        speed: randomNumber(1, 3),
-        visiblePoints: 2,
-      };
+      initialState[0 * numberOfParticles + index] = height;
+      initialState[1 * numberOfParticles + index] = height;
+      initialState[2 * numberOfParticles + index] = height;
+      initialState[3 * numberOfParticles + index] = height;
     }
     return initialState;
   }, [numberOfParticles]);
-
-  const [windParticleState, setWindParticleState] =
-    useState<WindParticleState[]>(initialState);
-
-  useFrame((_, delta) => {
-    setWindParticleState((prevArr) =>
-      prevArr.map((prev) =>
-        prev.visiblePoints < numberOfPoints.current + 1
-          ? {
-              ...prev,
-              visiblePoints: prev.visiblePoints + prev.speed * delta * FPS,
-            }
-          : { ...prev, visiblePoints: 2 }
-      )
-    );
-  });
 
   return (
     <>
@@ -72,54 +36,38 @@ const WindParticles: React.FC<WindParticlesProps> = ({
           {/* 0, 4, 8, ... */}
           <WindModel
             key={0 * numberOfParticles + i}
-            carModelCenter={carModelCenter}
-            carModelSize={carModelSize}
-            angle={angle}
+            robotSize={robotSizeRef}
+            robotRef={robotRef}
+            linearSpeed={linearSpeed}
             position={1}
-            numberOfPoints={numberOfPoints.current}
-            height={windParticleState[0 * numberOfParticles + i].height}
-            visiblePoint={
-              windParticleState[0 * numberOfParticles + i].visiblePoints
-            }
+            height={windParticleState[0 * numberOfParticles + i]}
           />
           {/* 1, 5, 9, ... */}
           <WindModel
             key={1 * numberOfParticles + i}
-            carModelCenter={carModelCenter}
-            carModelSize={carModelSize}
-            angle={angle}
+            robotSize={robotSizeRef}
+            robotRef={robotRef}
+            linearSpeed={linearSpeed}
             position={1}
-            numberOfPoints={numberOfPoints.current}
-            height={windParticleState[1 * numberOfParticles + i].height * -1}
-            visiblePoint={
-              windParticleState[1 * numberOfParticles + i].visiblePoints
-            }
+            height={windParticleState[1 * numberOfParticles + i] * -1}
           />
           {/* 2, 6, 10, ... */}
           <WindModel
             key={2 * numberOfParticles + i}
-            carModelCenter={carModelCenter}
-            carModelSize={carModelSize}
-            angle={angle}
+            robotSize={robotSizeRef}
+            robotRef={robotRef}
+            linearSpeed={linearSpeed}
             position={-1}
-            numberOfPoints={numberOfPoints.current}
-            height={windParticleState[2 * numberOfParticles + i].height}
-            visiblePoint={
-              windParticleState[2 * numberOfParticles + i].visiblePoints
-            }
+            height={windParticleState[2 * numberOfParticles + i]}
           />
           {/* 3, 7, 11, ... */}
           <WindModel
             key={3 * numberOfParticles + i}
-            carModelCenter={carModelCenter}
-            carModelSize={carModelSize}
-            angle={angle}
+            robotSize={robotSizeRef}
+            robotRef={robotRef}
+            linearSpeed={linearSpeed}
             position={-1}
-            numberOfPoints={numberOfPoints.current}
-            height={windParticleState[3 * numberOfParticles + i].height * -1}
-            visiblePoint={
-              windParticleState[3 * numberOfParticles + i].visiblePoints
-            }
+            height={windParticleState[3 * numberOfParticles + i] * -1}
           />
         </>
       ))}
