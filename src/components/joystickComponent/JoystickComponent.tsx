@@ -28,20 +28,18 @@ const JoystickControl: React.FC = () => {
     listener.subscribe((message: any) => {
       const movementData = JSON.parse(message.data);
       dispatch(setMovementData(movementData));
-
       if (movementData.angle == null) {
-        setCoordinates({ x: 0, y: 0 });
-        setColor("#959595");
-      } else {
-        setCoordinates({
-          x: movementData.left_speed,
-          y: movementData.right_speed,
-        });
+        handleStop();
+        return;
       }
+      const rad = (movementData.angle * Math.PI) / 180;
+      const x = Math.cos(rad);
+      const y = Math.sin(rad);
+      setCoordinates({ x, y });
     });
 
     return () => listener.unsubscribe();
-  }, [ros]);
+  }, [ros, dispatch]);
 
   useEffect(() => {
     if (coordinates.x != 0 || coordinates.y != 0) {

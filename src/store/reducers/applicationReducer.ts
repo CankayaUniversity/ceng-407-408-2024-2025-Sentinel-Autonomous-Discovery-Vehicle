@@ -4,12 +4,17 @@ import {
 } from "../../definitions/applicationTypeDefinitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const roundSmallValues = (value: number, threshold = 1e-3) => {
+  return Math.abs(value) < threshold ? 0 : value;
+};
+
 const initialState: ApplicationStateType = {
   isAppBarOpen: false,
   movementData: {
     left_speed: 0,
     right_speed: 0,
     angle: null,
+    old_angle: null,
   },
   isCameraDialogOpen: false,
   isMapDialogOpen: false,
@@ -24,7 +29,22 @@ const applicationSlice = createSlice({
       state.isAppBarOpen = action.payload;
     },
     setMovementData(state, action: PayloadAction<MovementDataType>) {
-      state.movementData = action.payload;
+      const left_speed = roundSmallValues(action.payload.left_speed);
+      const right_speed = roundSmallValues(action.payload.right_speed);
+      const payloadAngle = action.payload.angle;
+      const angle =
+        left_speed == 0 && right_speed == 0
+          ? null
+          : payloadAngle
+            ? (payloadAngle + 45) % 360
+            : null;
+
+      state.movementData = {
+        old_angle: state.movementData.angle || state.movementData.old_angle,
+        angle,
+        left_speed,
+        right_speed,
+      };
     },
     setIsCameraDialogOpen: (state, action: PayloadAction<boolean>) => {
       state.isCameraDialogOpen = action.payload;
