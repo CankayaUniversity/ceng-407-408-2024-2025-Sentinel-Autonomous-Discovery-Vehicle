@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robot">
+
+    <!-- =================================================================================== -->
+    <!-- |                                   Camera                                        | -->
+    <!-- =================================================================================== -->
+    <!-- Camera !-->
+    <link name="camera">
+        <visual>
+            <geometry>
+                <box size="0.014 0.04 0.035" />
+            </geometry>
+            <material name="Red" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.014 0.04 0.035" />
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.012" x="0.014" y="0.04" z="0.035">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:inertial_box>
+    </link>
+
+    <!-- Body & Camera Joint !-->
+    <joint name="camera_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="camera" />
+        <origin xyz="0.1 0 0.155" rpy="0 0 0" />
+    </joint>
+
+    <gazebo reference="camera">
+        <sensor name="camera" type="camera">
+            <pose> 0 0 0 0 0 0 </pose>
+            <visualize>true</visualize>
+            <update_rate>10</update_rate>
+            <camera>
+                <camera_info_topic>camera/camera_info</camera_info_topic>
+                <horizontal_fov>1.089</horizontal_fov>
+                <image>
+                    <format>R8G8B8</format>
+                    <width>640</width>
+                    <height>480</height>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>8.0</far>
+                </clip>
+            </camera>
+            <topic>camera/image_raw</topic>
+            <gz_frame_id>camera</gz_frame_id>
+        </sensor>
+    </gazebo>
+</robot>
