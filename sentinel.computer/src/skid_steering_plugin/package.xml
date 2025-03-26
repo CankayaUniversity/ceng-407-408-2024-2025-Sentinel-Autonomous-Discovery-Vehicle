@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>skid_steering_plugin</name>
+  <version>0.0.1</version>
+  <description>My Gazebo System Plugin</description>
+  <maintainer email="you@example.com">Your Name</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>libgstreamer1.0-dev</build_depend>
+  <build_depend>libgstreamer-plugins-base1.0-dev</build_depend>
+  <build_depend>gstreamer1.0-plugins-bad</build_depend>
+  <build_depend>gstreamer1.0-libav</build_depend>
+  <build_depend>gstreamer1.0-gl</build_depend>
+
+  <!-- Harmonic (default) -->
+
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
