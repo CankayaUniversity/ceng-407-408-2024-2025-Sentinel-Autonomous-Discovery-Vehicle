@@ -46,6 +46,12 @@ The Sentinel is designed to autonomously explore and navigate unknown environmen
   cd Sentinel
   ```
 
+- Initialize submodules.
+
+  ```bash
+  git submodule update --init --recursive
+  ```
+
 - Change to the directory to install computer packages.
 
   ```bash
