@@ -1,0 +1,10 @@
+<library path="skid_steer_controller">
+    <class name="skid_steer_controller/SkidSteerController"
+        type="skid_steer_controller::SkidSteerController"
+        base_class_type="controller_interface::ChainableControllerInterface">
+        <description>
+            The skid steer drive controller transforms linear and angular velocity messages into
+            signals for each wheel(s) for a differential drive robot.
+        </description>
+    </class>
+</library>
