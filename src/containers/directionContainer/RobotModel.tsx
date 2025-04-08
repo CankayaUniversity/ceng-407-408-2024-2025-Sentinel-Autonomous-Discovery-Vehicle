@@ -5,9 +5,19 @@ import {
 } from "../../definitions/3dObjectsTypeDefinition";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/mainStore";
+import { useRos } from "../../utils/RosContext";
+import ROSLIB from "roslib";
+
+const quaternionToYaw = (q: {
+  x: number;
+  y: number;
+  z: number;
+  w: number;
+}): number => {
+  const siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+  const cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+  return Math.atan2(siny_cosp, cosy_cosp);
+};
 
 const RobotModel: React.FC<RobotModelProps> = ({ ref, linearSpeed }) => {
   const { scene } = useGLTF("/models/sentinel.glb");
@@ -17,10 +27,9 @@ const RobotModel: React.FC<RobotModelProps> = ({ ref, linearSpeed }) => {
     leftBack: null,
     rightBack: null,
   });
-  const position = useRef({ x: 0, y: 0, z: 0 });
-  const yaw = useRef(0);
   const size = useRef<THREE.Vector3>(new THREE.Vector3());
-  const wheelRadius = useRef(0.12);
+  const wheelRadius = useRef(0.035);
+  const lastTimestampRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -43,47 +52,57 @@ const RobotModel: React.FC<RobotModelProps> = ({ ref, linearSpeed }) => {
     });
   }, [ref, scene]);
 
-  const movement = useSelector((state: RootState) => state.app.movementData);
+  const { ros } = useRos();
 
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    if (!movement.angle) {
-      linearSpeed.current = 0;
-      return;
-    }
-    if (delta > 0.1) return;
+  useEffect(() => {
+    const listener = new ROSLIB.Topic({
+      ros: ros,
+      name: "/odom",
+      messageType: "nav_msgs/msg/Odometry",
+    });
 
-    const { left_speed, right_speed } = movement;
+    listener.subscribe((message: any) => {
+      if (!ref.current) return;
 
-    const linearSpeedValue = left_speed + right_speed;
-    const angularSpeed = (right_speed - left_speed) / (size.current.x * 3);
-    linearSpeed.current = linearSpeedValue;
+      const currentTime =
+        message.header.stamp.sec + message.header.stamp.nanosec * 1e-9;
 
-    const deltaX = Math.cos(yaw.current) * linearSpeedValue * delta;
-    const deltaZ = Math.sin(yaw.current) * linearSpeedValue * delta;
-    const deltaYaw = angularSpeed * delta;
+      let deltaTime = 0;
+      if (lastTimestampRef.current !== null) {
+        deltaTime = currentTime - lastTimestampRef.current;
+      }
+      lastTimestampRef.current = currentTime;
 
-    position.current.x += deltaX;
-    position.current.z -= deltaZ;
-    yaw.current = (yaw.current + deltaYaw) % (2 * Math.PI);
+      if (deltaTime === 0) return;
 
-    ref.current.position.x = position.current.x;
-    ref.current.position.z = position.current.z;
-    ref.current.rotation.y = yaw.current;
+      const { position: pos, orientation: quat } = message.pose.pose;
+      const { linear, angular } = message.twist.twist;
 
-    const wheelAngularSpeedLeft = left_speed / wheelRadius.current;
-    const wheelAngularSpeedRight = right_speed / wheelRadius.current;
+      ref.current.position.x = pos.x;
+      ref.current.position.z = -pos.y;
+      ref.current.rotation.y = quaternionToYaw(quat);
+      linearSpeed.current = linear.x;
 
-    const { leftFront, rightFront, leftBack, rightBack } = wheelsRef.current;
+      const leftSpeed = linear.x - (angular.z * 0.128) / 2;
+      const rightSpeed = linear.x + (angular.z * 0.128) / 2;
 
-    if (leftFront && rightFront && leftBack && rightBack) {
-      leftFront.rotation.z += wheelAngularSpeedLeft * delta;
-      leftBack.rotation.z += wheelAngularSpeedLeft * delta;
-      rightFront.rotation.z += wheelAngularSpeedRight * delta;
-      rightBack.rotation.z += wheelAngularSpeedRight * delta;
-    }
-  });
+      const wheelAngularSpeedLeft = leftSpeed / wheelRadius.current;
+      const wheelAngularSpeedRight = rightSpeed / wheelRadius.current;
 
+      const wheelAngularDeltaLeft = wheelAngularSpeedLeft * deltaTime;
+      const wheelAngularDeltaRight = wheelAngularSpeedRight * deltaTime;
+
+      const { leftFront, rightFront, leftBack, rightBack } = wheelsRef.current;
+      if (leftFront && rightFront && leftBack && rightBack) {
+        leftFront.rotation.z += wheelAngularDeltaLeft;
+        leftBack.rotation.z += wheelAngularDeltaLeft;
+        rightFront.rotation.z += wheelAngularDeltaRight;
+        rightBack.rotation.z += wheelAngularDeltaRight;
+      }
+    });
+
+    return () => listener.unsubscribe();
+  }, [ros, ref, linearSpeed]);
   return (
     <group ref={ref}>
       <primitive object={scene} />

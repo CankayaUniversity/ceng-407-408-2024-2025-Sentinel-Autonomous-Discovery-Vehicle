@@ -25,7 +25,7 @@ const FollowCamera: React.FC<FollowCameraProps> = ({ target }) => {
     const newPosition = new THREE.Vector3(
       targetPosition.x + offset.current.x,
       targetPosition.y + offset.current.y,
-      targetPosition.z + offset.current.z,
+      targetPosition.z + offset.current.z
     );
     camera.position.set(newPosition.x, newPosition.y, newPosition.z);
     camera.lookAt(targetPosition);

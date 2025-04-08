@@ -22,7 +22,7 @@ const Scene = () => {
         linearSpeed={linearSpeed}
       />
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.028, 0]}>
-        <planeGeometry args={[100, 100, 100, 100]} />
+        <planeGeometry args={[200, 200, 200, 200]} />
         <meshStandardMaterial wireframe={true} color={"gray"} />
       </mesh>
     </>

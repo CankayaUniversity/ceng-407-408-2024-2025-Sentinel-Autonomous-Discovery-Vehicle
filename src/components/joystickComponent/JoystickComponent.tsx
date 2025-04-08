@@ -4,7 +4,6 @@ import { Joystick } from "react-joystick-component";
 import { IJoystickUpdateEvent } from "react-joystick-component/build/lib/Joystick";
 import ROSLIB from "roslib";
 import { useDispatch } from "react-redux";
-import { setMovementData } from "../../store/reducers/applicationReducer";
 import { useRos } from "../../utils/RosContext";
 
 const JoystickControl: React.FC = () => {
@@ -21,21 +20,15 @@ const JoystickControl: React.FC = () => {
   useEffect(() => {
     const listener = new ROSLIB.Topic({
       ros: ros,
-      name: "/movement",
-      messageType: "std_msgs/String",
+      name: "/skid_steer_cont/cmd_vel",
+      messageType: "geometry_msgs/msg/TwistStamped",
     });
 
     listener.subscribe((message: any) => {
-      const movementData = JSON.parse(message.data);
-      dispatch(setMovementData(movementData));
-      if (movementData.angle == null) {
-        handleStop();
-        return;
-      }
-      const rad = (movementData.angle * Math.PI) / 180;
-      const x = Math.cos(rad);
-      const y = Math.sin(rad);
-      setCoordinates({ x, y });
+      setCoordinates({
+        x: -message.twist.angular.z,
+        y: message.twist.linear.x,
+      });
     });
 
     return () => listener.unsubscribe();

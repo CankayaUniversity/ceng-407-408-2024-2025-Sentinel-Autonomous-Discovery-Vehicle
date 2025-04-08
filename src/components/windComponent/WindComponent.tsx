@@ -52,7 +52,7 @@ const WindModel: React.FC<WindComponentProps> = React.memo(
       }
       const newVisiblePoints =
         visiblePoints.current +
-        speed.current * delta * 60 * linearSpeed.current;
+        speed.current * delta * 60 * linearSpeed.current * 2;
       visiblePoints.current = Math.max(0, newVisiblePoints);
       speed.current = randomNumber(1, 3);
     };

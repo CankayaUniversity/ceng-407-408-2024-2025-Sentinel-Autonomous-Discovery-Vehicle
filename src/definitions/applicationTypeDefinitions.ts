@@ -1,4 +1,3 @@
-
 export interface ApplicationStateType {
   isAppBarOpen: boolean;
   movementData: MovementDataType;
@@ -8,9 +7,6 @@ export interface ApplicationStateType {
 }
 
 export interface MovementDataType {
-  left_speed: number;
-  right_speed: number;
-  angle: number | null;
-  old_angle: number | null;
+  linear: number;
+  angular: number;
 }
-
