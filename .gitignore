@@ -4,3 +4,4 @@ install
 log
 *.mp4
 .cache
+node_modules
