@@ -11,10 +11,10 @@ class YoloSubscriber(Node):
     def __init__(self):
         super().__init__("yolo_ros2_subscriber")
         self.subscription = self.create_subscription(
-            CompressedImage, "raspicam/compressed", self.image_callback, 10
+            CompressedImage, "/camera/image_raw/compressed", self.image_callback, 10
         )
         self.bridge = CvBridge()
-        self.model = YoloModel()
+        self.model = YoloModel(model="yolo11x.pt")
 
     def image_callback(self, msg):
         np_arr = np.frombuffer(msg.data, np.uint8)
