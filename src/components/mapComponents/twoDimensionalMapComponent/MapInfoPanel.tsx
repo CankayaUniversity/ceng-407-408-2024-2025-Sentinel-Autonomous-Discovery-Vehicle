@@ -7,6 +7,7 @@ const MapInfoPanel = ({
     mapData,
     zoomLevel,
     selectedPalette,
+    panelVisibility,
 }: MapInfoPanelProps) => {
 
     return (
@@ -22,7 +23,10 @@ const MapInfoPanel = ({
                 color: 'white',
                 fontSize: '0.75rem',
                 maxWidth: '250px',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                visibility: panelVisibility,
+                opacity: panelVisibility === "visible" ? 1 : 0,
+                transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
             }}
         >
             <div>Topic: {mapTopic}</div>

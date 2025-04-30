@@ -31,6 +31,8 @@ const TwoDimensionalMapComponent = () => {
   const [paletteDialogOpen, setPaletteDialogOpen] = useState(false);
   const { ros } = useRos();
 
+  const [infoPanelVisibility, setInfoPanelVisibility] = useState<string>("hidden");
+
   useEffect(() => {
     if (!ros) return;
 
@@ -248,6 +250,8 @@ const TwoDimensionalMapComponent = () => {
         bgcolor: "#2a2a2a",
         overflow: "hidden"
       }}
+      onMouseEnter={() => setInfoPanelVisibility("visible")}
+      onMouseLeave={() => setInfoPanelVisibility("hidden")}
     >
       {hasReceivedMap ? (
         <Box
@@ -299,6 +303,7 @@ const TwoDimensionalMapComponent = () => {
               mapData={mapData}
               zoomLevel={zoomLevel}
               selectedPalette={selectedPalette}
+              panelVisibility={infoPanelVisibility}
             />
           )}
 

@@ -3,6 +3,7 @@ export interface MapInfoPanelProps {
     mapData: any;
     zoomLevel: number;
     selectedPalette: ColorPaletteKey;
+    panelVisibility: string;
 }
 
 export interface ColorPaletteDialogProps {
