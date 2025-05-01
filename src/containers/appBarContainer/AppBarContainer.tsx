@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -122,8 +121,14 @@ const AppBarContainer = () => {
     };
 
     const DrawerList = (
-        <Box sx={{ width: 270, height: "80vh" }} role="presentation" onClick={toggleDrawer(false)}>
-            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: "inherit", minHeight: "90vh" }}>
+        <Box sx={{
+            width: 270,
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column"
+        }}>
+            {/* Header and Notifications Title */}
+            <Box>
                 <List>
                     <ListItem disablePadding>
                         <ListItemIcon>
@@ -140,6 +145,14 @@ const AppBarContainer = () => {
                             <ListItemText primary={"Notifications"} />
                         </ListItemButton>
                     </ListItem>
+                </List>
+            </Box>
+            <Box sx={{
+                flexGrow: 1,
+                overflow: "auto",
+                maxHeight: "calc(100vh - 160px)"
+            }}>
+                <List>
                     {notifications && notifications.length > 0 ? (
                         notifications.map((item) => (
                             <div key={item.id}>
@@ -197,21 +210,26 @@ const AppBarContainer = () => {
                         </ListItem>
                     )}
                 </List>
-                <Divider />
             </Box>
-            <Box sx={{ width: "inherit", height: "90px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Box>
-                    <Button
-                        color="secondary"
-                        sx={{ height: "2.5rem", }}
-                        variant="contained"
-                        onClick={handleOpenDialog}
-                    >
-                        Generate Report
-                    </Button>
-                </Box>
+            <Box sx={{
+                padding: "16px",
+                borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+                backgroundColor: "background.paper",
+                display: "flex",
+                justifyContent: "center",
+                minHeight: "80px",
+                alignItems: "center"
+            }}>
+                <Button
+                    color="secondary"
+                    sx={{ height: "2.5rem" }}
+                    variant="contained"
+                    onClick={handleOpenDialog}
+                >
+                    Generate Report
+                </Button>
             </Box>
-        </Box >
+        </Box>
     );
 
     return (
