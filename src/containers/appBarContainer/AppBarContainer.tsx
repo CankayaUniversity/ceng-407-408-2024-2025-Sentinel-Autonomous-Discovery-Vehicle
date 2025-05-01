@@ -24,6 +24,7 @@ import { setIsAppBarOpen } from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
 import { NotificationItem } from '../../definitions/notificationTypeDefinitions';
+import { Button } from '@mui/material';
 
 const AppBarContainer = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
@@ -90,81 +91,95 @@ const AppBarContainer = () => {
     };
 
     const DrawerList = (
-        <Box sx={{ width: 270 }} role="presentation" onClick={toggleDrawer(false)}>
-            <List>
-                <ListItem disablePadding>
-                    <ListItemIcon>
-                        <motion.div className="hamburgerMenu" animate={open ? 'open' : 'closed'}>
-                            <ToggleButton setOpen={(value) => dispatch(setIsAppBarOpen(value as any))} appBarStyles={openAppBarStyles} />
-                        </motion.div>
-                    </ListItemIcon>
-                </ListItem>
-                <ListItem disablePadding>
-                    <ListItemButton sx={{ "&:hover": { backgroundColor: "transparent" }, cursor: "default" }}>
+        <Box sx={{ width: 270, height: "80vh" }} role="presentation" onClick={toggleDrawer(false)}>
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: "inherit", minHeight: "90vh" }}>
+                <List>
+                    <ListItem disablePadding>
                         <ListItemIcon>
-                            <NotificationsIcon />
+                            <motion.div className="hamburgerMenu" animate={open ? 'open' : 'closed'}>
+                                <ToggleButton setOpen={(value) => dispatch(setIsAppBarOpen(value as any))} appBarStyles={openAppBarStyles} />
+                            </motion.div>
                         </ListItemIcon>
-                        <ListItemText primary={"Notifications"} />
-                    </ListItemButton>
-                </ListItem>
-                {notifications && notifications.length > 0 ? (
-                    notifications.map((item) => (
-                        <div key={item.id}>
-                            <ListItem onClick={(event) => event.stopPropagation()}>
-                                <Paper
-                                    elevation={0}
-                                    sx={{
-                                        width: "100%",
-                                        padding: "10px",
-                                        display: "flex",
-                                        alignItems: "flex-start",
-                                        backgroundColor: notificationTypeStyles[item.type].backgroundColor,
-                                        borderLeft: notificationTypeStyles[item.type].borderLeft,
-                                        borderRadius: "4px",
-                                        margin: "4px 0",
-                                        position: "relative",
-                                        height: "80px"
-                                    }}
-                                    onMouseEnter={() => setHoveredNotificationId(item.id)}
-                                    onMouseLeave={() => setHoveredNotificationId(null)}
-                                >
-                                    <Box sx={{ marginRight: "10px" }}>
-                                        {notificationTypeStyles[item.type].icon}
-                                    </Box>
-                                    <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "calc(100% - 50px)" }}>
-                                        <Box sx={{ fontSize: "14px" }}>{item.data}</Box>
-                                        <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px" }}>
-                                            {formatTimestamp(item.timestamp)}
-                                        </Box>
-                                    </Box>
-                                    <IconButton
-                                        size="small"
-                                        sx={{
-                                            position: "absolute",
-                                            zIndex: 2,
-                                            top: "4px",
-                                            right: "4px",
-                                            padding: "2px",
-                                            visibility: hoveredNotificationId === item.id ? 'visible' : 'hidden',
-                                            opacity: hoveredNotificationId === item.id ? 1 : 0,
-                                            transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
-                                        }}
-                                        onClick={(event) => deleteNotification(item.id, event)}
-                                        aria-label="delete notification"
-                                    >
-                                        <CloseIcon fontSize="small" />
-                                    </IconButton>
-                                </Paper>
-                            </ListItem>
-                        </div>
-                    ))
-                ) : (
-                    <ListItem sx={{ width: "100%", padding: "5px", justifyContent: "center" }}>
-                        No notifications available.
                     </ListItem>
-                )}
-            </List>
-            <Divider />
+                    <ListItem disablePadding>
+                        <ListItemButton sx={{ "&:hover": { backgroundColor: "transparent" }, cursor: "default" }}>
+                            <ListItemIcon>
+                                <NotificationsIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={"Notifications"} />
+                        </ListItemButton>
+                    </ListItem>
+                    {notifications && notifications.length > 0 ? (
+                        notifications.map((item) => (
+                            <div key={item.id}>
+                                <ListItem onClick={(event) => event.stopPropagation()}>
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            width: "100%",
+                                            padding: "10px",
+                                            display: "flex",
+                                            alignItems: "flex-start",
+                                            backgroundColor: notificationTypeStyles[item.type].backgroundColor,
+                                            borderLeft: notificationTypeStyles[item.type].borderLeft,
+                                            borderRadius: "4px",
+                                            margin: "4px 0",
+                                            position: "relative",
+                                            height: "80px"
+                                        }}
+                                        onMouseEnter={() => setHoveredNotificationId(item.id)}
+                                        onMouseLeave={() => setHoveredNotificationId(null)}
+                                    >
+                                        <Box sx={{ marginRight: "10px" }}>
+                                            {notificationTypeStyles[item.type].icon}
+                                        </Box>
+                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "calc(100% - 50px)" }}>
+                                            <Box sx={{ fontSize: "14px" }}>{item.data}</Box>
+                                            <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px" }}>
+                                                {formatTimestamp(item.timestamp)}
+                                            </Box>
+                                        </Box>
+                                        <IconButton
+                                            size="small"
+                                            sx={{
+                                                position: "absolute",
+                                                zIndex: 2,
+                                                top: "4px",
+                                                right: "4px",
+                                                padding: "2px",
+                                                visibility: hoveredNotificationId === item.id ? 'visible' : 'hidden',
+                                                opacity: hoveredNotificationId === item.id ? 1 : 0,
+                                                transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
+                                            }}
+                                            onClick={(event) => deleteNotification(item.id, event)}
+                                            aria-label="delete notification"
+                                        >
+                                            <CloseIcon fontSize="small" />
+                                        </IconButton>
+                                    </Paper>
+                                </ListItem>
+                            </div>
+                        ))
+                    ) : (
+                        <ListItem sx={{ width: "100%", padding: "5px", color: "gray", justifyContent: "center" }}>
+                            No notifications available.
+                        </ListItem>
+                    )}
+                </List>
+                <Divider />
+            </Box>
+            <Box sx={{ width: "inherit", height: "90px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box>
+                    <Button
+                        color="secondary"
+                        sx={{ height: "2.5rem", }}
+                        variant="contained"
+                        // onClick={ }
+                    >
+                        Generate Report
+                    </Button>
+                </Box>
+            </Box>
         </Box >
     );
 

@@ -4,7 +4,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import React, { useEffect, useRef, useState } from 'react';
-import KeyboardComponent from '../../components/keyboardComponent/KeyboardComponent';
+// import KeyboardComponent from '../../components/keyboardComponent/KeyboardComponent';
 import JoystickComponent from '../../components/joystickComponent/JoystickComponent';
 import { tabLabelStyles } from '../../constants/styleConstants';
 
@@ -34,7 +34,6 @@ const MovementContainer = () => {
                 >
                     <TabList onChange={handleChange} aria-label="movement tabs">
                         <Tab label="Joystick" sx={{ ...tabLabelStyles }} value="1" />
-                        <Tab label="Keyboard" sx={{ ...tabLabelStyles }} value="2" />
                     </TabList>
                 </Box>
                 <TabPanel
@@ -49,7 +48,7 @@ const MovementContainer = () => {
                         <JoystickComponent />
                     </Box>
                 </TabPanel>
-                <TabPanel
+                {/* <TabPanel
                     value="2"
                     sx={{
                         width: '100%',
@@ -60,7 +59,7 @@ const MovementContainer = () => {
                     <Box sx={{ width: '100%', height: '100%' }}>
                         <KeyboardComponent />
                     </Box>
-                </TabPanel>
+                </TabPanel> */}
             </TabContext>
         </Box>
     )

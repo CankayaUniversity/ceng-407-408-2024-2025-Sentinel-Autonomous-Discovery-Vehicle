@@ -6,7 +6,6 @@ import TabPanel from '@mui/lab/TabPanel';
 import React, { useEffect, useRef, useState } from 'react';
 import { tabLabelStyles } from '../../constants/styleConstants';
 import TwoDimensionalMapComponent from '../../components/mapComponents/twoDimensionalMapComponent/TwoDimensionalMapComponent';
-import ThreeDimensionalMapComponent from '../../components/mapComponents/threeDimensionalMapComponent/ThreeDimensionalMapComponent';
 import LidarComponent from '../../components/lidarComponent/LidarComponent';
 import IconButton from '@mui/material/IconButton';
 import SettingsOverscanOutlinedIcon from '@mui/icons-material/SettingsOverscanOutlined';
@@ -47,8 +46,6 @@ const MapContainer = () => {
             case '1':
                 return <TwoDimensionalMapComponent />;
             case '2':
-                return <ThreeDimensionalMapComponent />;
-            case '3':
                 return <LidarComponent />;
             default:
                 return null;
@@ -76,8 +73,7 @@ const MapContainer = () => {
                         indicatorColor="primary"
                     >
                         <Tab label="2D Map" value="1" sx={{ ...tabLabelStyles }} />
-                        <Tab label="3D Map" value="2" sx={{ ...tabLabelStyles }} />
-                        <Tab label="Lidar Scan" value="3" sx={{ ...tabLabelStyles }} />
+                        <Tab label="Lidar Scan" value="2" sx={{ ...tabLabelStyles }} />
                     </TabList>
                 </Box>
                 <TabPanel
@@ -94,18 +90,6 @@ const MapContainer = () => {
                 </TabPanel>
                 <TabPanel
                     value="2"
-                    sx={{ width: '100%', height: `calc(100% - ${tabListHeight}px)`, padding: 0 }}
-                >
-                    <Box sx={{ width: '100%', height: '100%' }}>
-                        {
-                            (!isMapDialogOpen && !isCameraDialogOpen) && (
-                                <ThreeDimensionalMapComponent />
-                            )
-                        }
-                    </Box>
-                </TabPanel>
-                <TabPanel
-                    value="3"
                     sx={{ width: '100%', height: `calc(100% - ${tabListHeight}px)`, padding: 0 }}
                 >
                     <Box sx={{ width: '100%', height: '100%' }}>
