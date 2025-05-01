@@ -9,6 +9,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import { PDFViewer } from '@react-pdf/renderer';
 import { motion } from 'framer-motion';
 import ToggleButton from '../../components/buttons/toggleButton/ToggleButton';
 import "./AppBarContainer.css";
@@ -25,6 +29,8 @@ import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
 import { NotificationItem } from '../../definitions/notificationTypeDefinitions';
 import { Button } from '@mui/material';
+import ReportGenerator from '../reportGenerator/ReportGenerator';
+import { reportTemplateData } from '../reportGenerator/ReportTemplate';
 
 const AppBarContainer = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
@@ -33,6 +39,9 @@ const AppBarContainer = () => {
 
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [hoveredNotificationId, setHoveredNotificationId] = useState<string | null>(null);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+    const [reportData, setReportData] = useState(reportTemplateData);
 
     const notificationTypeStyles = {
         INFO: {
@@ -76,6 +85,20 @@ const AppBarContainer = () => {
         };
     }, [ros]);
 
+    useEffect(() => {
+        if (openDialog) {
+            prepareReportData();
+        }
+    }, [openDialog, notifications]);
+
+    const prepareReportData = () => {
+        setIsGeneratingReport(true);
+
+        //TODO Report Content Will be adjusted
+
+        setIsGeneratingReport(false);
+    };
+
     const toggleDrawer = (newOpen: boolean) => () => {
         dispatch(setIsAppBarOpen(newOpen));
     };
@@ -88,6 +111,14 @@ const AppBarContainer = () => {
     const formatTimestamp = (timestamp: string): string => {
         const date = new Date(timestamp);
         return date.toLocaleString();
+    };
+
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
     };
 
     const DrawerList = (
@@ -174,7 +205,7 @@ const AppBarContainer = () => {
                         color="secondary"
                         sx={{ height: "2.5rem", }}
                         variant="contained"
-                        // onClick={ }
+                        onClick={handleOpenDialog}
                     >
                         Generate Report
                     </Button>
@@ -188,6 +219,42 @@ const AppBarContainer = () => {
             <Drawer sx={{ position: "relative", zIndex: 1, }} variant="persistent" open={open} onClose={toggleDrawer(false)}>
                 {DrawerList}
             </Drawer>
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                aria-labelledby="report-dialog-title"
+                maxWidth="lg"
+                fullWidth
+            >
+                <DialogTitle id="report-dialog-title">
+                    System Notification Report
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleCloseDialog}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent sx={{ height: '80vh' }}>
+                    {isGeneratingReport ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                            Loading report...
+                        </Box>
+                    ) : (
+                        <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+                            <ReportGenerator
+                                content={reportData.content}
+                            />
+                        </PDFViewer>
+                    )}
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 }
