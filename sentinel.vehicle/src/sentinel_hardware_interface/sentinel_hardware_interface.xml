@@ -1,0 +1,9 @@
+<library path="sentinel_hardware_interface">
+    <class name="sentinel_hardware_interface/SentinelHardwareInterface"
+        type="sentinel_hardware_interface::SentinelHardwareInterface"
+        base_class_type="hardware_interface::SystemInterface">
+        <description>
+            Hardware Interface for Sentinel Skid Steer.
+        </description>
+    </class>
+</library>

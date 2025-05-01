@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>sentinel_hardware_interface</name>
+  <version>0.0.0</version>
+  <description>TODO: Package description</description>
+  <maintainer email="utkualt06@outlook.com">utku</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>pluginlib</depend>
+  <depend>hardware_interface</depend>
+  <depend>controller_manager</depend>
+  <depend>rclcpp</depend>
+
+  <build_depend>rpm_message</build_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <exec_depend>ros2_controllers_test_nodes</exec_depend>
+  <exec_depend>joint_state_broadcaster</exec_depend>
+  <exec_depend>skid_steer_controller</exec_depend>
+  <exec_depend>ros2controlcli</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
