@@ -1,6 +1,8 @@
-[submodule "sentinel.computer/src/ros2_control_cmake"]
-	path = sentinel.computer/src/ros2_control_cmake
-	url = https://github.com/ros-controls/ros2_control_cmake.git
-[submodule "sentinel.computer/src/m-explore-ros2"]
-	path = sentinel.computer/src/m-explore-ros2
-	url = https://github.com/Sayantani-Bhattacharya/multiAgent-explore-ros2.git
+[submodule "sentinel.computer/src/common_packages"]
+	path = sentinel.computer/src/common_packages
+	url = git@github.com:CankayaUniversity/ceng-407-408-2024-2025-Sentinel-Autonomous-Discovery-Vehicle.git
+	branch = Common-Packages
+[submodule "sentinel.vehicle/src/common_packages"]
+	path = sentinel.vehicle/src/common_packages
+	url = git@github.com:CankayaUniversity/ceng-407-408-2024-2025-Sentinel-Autonomous-Discovery-Vehicle.git
+	branch = Common-Packages
