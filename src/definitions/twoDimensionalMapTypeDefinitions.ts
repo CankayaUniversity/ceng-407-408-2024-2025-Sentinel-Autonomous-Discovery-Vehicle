@@ -38,4 +38,11 @@ export type ColorPalette = {
     gradient: (value: number) => Color;
 };
 
+export interface StoredMapImage {
+    topic: string;
+    palette: ColorPaletteKey;
+    dataUrl: string;
+    timestamp: string;
+}
+
 export type ColorPaletteKey = 'default' | 'highContrast' | 'heatmap' | 'nightVision' | 'blueprint';

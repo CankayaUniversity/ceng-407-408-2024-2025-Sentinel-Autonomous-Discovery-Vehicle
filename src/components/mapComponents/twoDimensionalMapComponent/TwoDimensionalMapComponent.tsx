@@ -10,7 +10,7 @@ import { ColorPaletteKey } from "../../../definitions/twoDimensionalMapTypeDefin
 import { colorPalettes } from "../../../constants/mapPaletteConstants";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/mainStore";
-import { setGenerateReport } from "../../../store/reducers/applicationReducer";
+import { addGeneratedMap, setGenerateReport } from "../../../store/reducers/applicationReducer";
 
 
 const TwoDimensionalMapComponent = () => {
@@ -37,6 +37,7 @@ const TwoDimensionalMapComponent = () => {
 
   const [infoPanelVisibility, setInfoPanelVisibility] = useState<string>("hidden");
   const generateReport = useSelector((state: RootState) => state.app.generateReport);
+  const storedMapImages = useSelector((state: RootState) => state.app.generatedMaps);
 
   useEffect(() => {
     if (!ros) return;
@@ -84,32 +85,6 @@ const TwoDimensionalMapComponent = () => {
       let completedMaps = 0;
       const totalMaps = allTopics.length * allPalettes.length;
       console.log(`Starting to generate ${totalMaps} maps...`);
-
-      const mapQueue: { fileName: string, dataUrl: string }[] = [];
-      let isDownloading = false;
-
-      const processDownloadQueue = () => {
-        if (isDownloading || mapQueue.length === 0) return;
-
-        isDownloading = true;
-        const { fileName, dataUrl } = mapQueue.shift()!;
-
-        const link = document.createElement('a');
-        link.download = fileName;
-        link.href = dataUrl;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-
-        link.onclick = () => {
-          setTimeout(() => {
-            document.body.removeChild(link);
-            isDownloading = false;
-            processDownloadQueue();
-          }, 100);
-        };
-
-        link.click();
-      };
 
       allTopics.forEach(topic => {
         const listener = new ROSLIB.Topic({
@@ -176,15 +151,15 @@ const TwoDimensionalMapComponent = () => {
 
             ctx.putImageData(imageData, 0, 0);
 
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const cleanTopicName = topic.replace(/\//g, '_').substring(1);
-            const fileName = `ros_map_${cleanTopicName}_${palette}_${timestamp}.png`;
-
+            const timestamp = new Date().toISOString();
             const dataUrl = tempCanvas.toDataURL('image/png');
 
-            mapQueue.push({ fileName, dataUrl });
-
-            processDownloadQueue();
+            dispatch(addGeneratedMap({
+              topic,
+              palette,
+              dataUrl,
+              timestamp
+            }));
 
             completedMaps++;
             checkCompletion();
@@ -198,6 +173,7 @@ const TwoDimensionalMapComponent = () => {
         if (completedMaps >= totalMaps) {
           console.log(`Map generation complete: ${completedMaps}/${totalMaps} maps`);
           dispatch(setGenerateReport(false));
+          console.log(`Total images stored: ${storedMapImages.length}`);
         }
       }
 
@@ -333,12 +309,14 @@ const TwoDimensionalMapComponent = () => {
       }
     }, 5000);
 
+    //TODO Warning Notification should be shown, if no Map received
+
     listener.subscribe((message: any) => {
-      console.log(`Received map data from ${mapTopic}`, {
-        width: message.info.width,
-        height: message.info.height,
-        resolution: message.info.resolution
-      });
+      // console.log(`Received map data from ${mapTopic}`, {
+      //   width: message.info.width,
+      //   height: message.info.height,
+      //   resolution: message.info.resolution
+      // });
 
       clearTimeout(timeoutId);
       setHasReceivedMap(true);

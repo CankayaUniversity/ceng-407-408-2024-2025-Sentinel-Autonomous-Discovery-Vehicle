@@ -3,6 +3,7 @@ import {
   MovementDataType,
 } from "../../definitions/applicationTypeDefinitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
 
 const initialState: ApplicationStateType = {
   isAppBarOpen: false,
@@ -14,6 +15,7 @@ const initialState: ApplicationStateType = {
   isMapDialogOpen: false,
   isCameraPlaying: false,
   generateReport: false,
+  generatedMaps: [],
 };
 
 const applicationSlice = createSlice({
@@ -41,6 +43,15 @@ const applicationSlice = createSlice({
     setGenerateReport: (state, action: PayloadAction<boolean>) => {
       state.generateReport = action.payload;
     },
+    setGeneratedMaps: (state, action: PayloadAction<StoredMapImage[]>) => {
+      state.generatedMaps = action.payload;
+    },
+    addGeneratedMap: (state, action: PayloadAction<StoredMapImage>) => {
+      state.generatedMaps.push(action.payload);
+    },
+    clearGeneratedMaps: (state) => {
+      state.generatedMaps = [];
+    },
   },
 });
 
@@ -51,5 +62,8 @@ export const {
   setIsMapDialogOpen,
   setIsCameraPlaying,
   setGenerateReport,
+  setGeneratedMaps,
+  addGeneratedMap,
+  clearGeneratedMaps,
 } = applicationSlice.actions;
 export default applicationSlice.reducer;

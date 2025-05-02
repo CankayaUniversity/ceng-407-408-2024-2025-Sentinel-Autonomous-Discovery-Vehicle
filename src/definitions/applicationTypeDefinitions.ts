@@ -1,3 +1,5 @@
+import { StoredMapImage } from "./twoDimensionalMapTypeDefinitions";
+
 export interface ApplicationStateType {
   isAppBarOpen: boolean;
   movementData: MovementDataType;
@@ -5,6 +7,7 @@ export interface ApplicationStateType {
   isMapDialogOpen: boolean;
   isCameraPlaying: boolean;
   generateReport: boolean;
+  generatedMaps: StoredMapImage[];
 }
 
 export interface MovementDataType {
