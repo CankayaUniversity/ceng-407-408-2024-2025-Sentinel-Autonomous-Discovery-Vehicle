@@ -26,6 +26,11 @@ def declare_args() -> List[DeclareLaunchArgument]:
             description="Enable autonomous movement with exploration",
         ),
         DeclareLaunchArgument(
+            "use_manual",
+            default_value="true",
+            description="Enable manual movement with teleop nodes",
+        ),
+        DeclareLaunchArgument(
             "use_builtin",
             default_value="true",
             description="Use builtin manual controller (teleop nodes)",
@@ -52,6 +57,7 @@ def generate_launch_description() -> LaunchDescription:
     use_sim_time = "true"
     use_ros2_control = LaunchConfiguration("use_ros2_control")
     use_autonomous = LaunchConfiguration("use_autonomous")
+    use_manual = LaunchConfiguration("use_manual")
     use_builtin = LaunchConfiguration("use_builtin")
     use_3d_map = LaunchConfiguration("use_3d_map")
     timer_period = LaunchConfiguration("timer_period")
@@ -83,6 +89,7 @@ def generate_launch_description() -> LaunchDescription:
             "use_sim_time": use_sim_time,
             "use_builtin": use_builtin,
             "use_autonomous": use_autonomous,
+            "use_manual": use_manual,
         },
     )
 

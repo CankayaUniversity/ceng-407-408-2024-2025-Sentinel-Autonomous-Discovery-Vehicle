@@ -6,3 +6,6 @@
 	path = sentinel.vehicle/src/common_packages
 	url = git@github.com:CankayaUniversity/ceng-407-408-2024-2025-Sentinel-Autonomous-Discovery-Vehicle.git
 	branch = Common-Packages
+[submodule "sentinel.vehicle/src/ydlidar_ros2_driver"]
+	path = sentinel.vehicle/src/ydlidar_ros2_driver
+	url = https://github.com/YDLIDAR/ydlidar_ros2_driver.git
