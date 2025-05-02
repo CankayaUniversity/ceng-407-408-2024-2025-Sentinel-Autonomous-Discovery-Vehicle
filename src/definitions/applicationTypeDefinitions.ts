@@ -4,6 +4,7 @@ export interface ApplicationStateType {
   isCameraDialogOpen: boolean;
   isMapDialogOpen: boolean;
   isCameraPlaying: boolean;
+  generateReport: boolean;
 }
 
 export interface MovementDataType {

@@ -13,6 +13,7 @@ const initialState: ApplicationStateType = {
   isCameraDialogOpen: false,
   isMapDialogOpen: false,
   isCameraPlaying: false,
+  generateReport: false,
 };
 
 const applicationSlice = createSlice({
@@ -37,6 +38,9 @@ const applicationSlice = createSlice({
     setIsCameraPlaying: (state, action: PayloadAction<boolean>) => {
       state.isCameraPlaying = action.payload;
     },
+    setGenerateReport: (state, action: PayloadAction<boolean>) => {
+      state.generateReport = action.payload;
+    },
   },
 });
 
@@ -46,5 +50,6 @@ export const {
   setIsCameraDialogOpen,
   setIsMapDialogOpen,
   setIsCameraPlaying,
+  setGenerateReport,
 } = applicationSlice.actions;
 export default applicationSlice.reducer;

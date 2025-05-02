@@ -8,6 +8,9 @@ import MapInfoPanel from "./MapInfoPanel";
 import ColorPaletteDialog from "./ColorPaletteDialog";
 import { ColorPaletteKey } from "../../../definitions/twoDimensionalMapTypeDefinitions";
 import { colorPalettes } from "../../../constants/mapPaletteConstants";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../store/mainStore";
+import { setGenerateReport } from "../../../store/reducers/applicationReducer";
 
 
 const TwoDimensionalMapComponent = () => {
@@ -30,8 +33,10 @@ const TwoDimensionalMapComponent = () => {
   const [selectedPalette, setSelectedPalette] = useState<ColorPaletteKey>("default");
   const [paletteDialogOpen, setPaletteDialogOpen] = useState(false);
   const { ros } = useRos();
+  const dispatch = useDispatch();
 
   const [infoPanelVisibility, setInfoPanelVisibility] = useState<string>("hidden");
+  const generateReport = useSelector((state: RootState) => state.app.generateReport);
 
   useEffect(() => {
     if (!ros) return;
@@ -57,6 +62,153 @@ const TwoDimensionalMapComponent = () => {
     );
 
   }, [ros]);
+
+  useEffect(() => {
+    if (generateReport === true) {
+
+      const allTopics = [
+        "/map",
+        "/global_costmap/costmap",
+        "/global_costmap/static_layer",
+        "/grid_prob_map"
+      ];
+
+      const allPalettes: ColorPaletteKey[] = [
+        'default',
+        'highContrast',
+        'heatmap',
+        'nightVision',
+        'blueprint'
+      ];
+
+      let completedMaps = 0;
+      const totalMaps = allTopics.length * allPalettes.length;
+      console.log(`Starting to generate ${totalMaps} maps...`);
+
+      const mapQueue: { fileName: string, dataUrl: string }[] = [];
+      let isDownloading = false;
+
+      const processDownloadQueue = () => {
+        if (isDownloading || mapQueue.length === 0) return;
+
+        isDownloading = true;
+        const { fileName, dataUrl } = mapQueue.shift()!;
+
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = dataUrl;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+
+        link.onclick = () => {
+          setTimeout(() => {
+            document.body.removeChild(link);
+            isDownloading = false;
+            processDownloadQueue();
+          }, 100);
+        };
+
+        link.click();
+      };
+
+      allTopics.forEach(topic => {
+        const listener = new ROSLIB.Topic({
+          ros: ros,
+          name: topic,
+          messageType: "nav_msgs/msg/OccupancyGrid",
+        });
+
+        const topicTimeout = setTimeout(() => {
+          console.warn(`Topic ${topic} did not respond within the timeout period`);
+          listener.unsubscribe();
+
+          completedMaps += allPalettes.length;
+          checkCompletion();
+        }, 5000);
+
+        listener.subscribe((message: any) => {
+          clearTimeout(topicTimeout);
+          console.log(`Received map data from ${topic} for report generation`);
+
+          allPalettes.forEach(palette => {
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+
+            if (!ctx) {
+              completedMaps++;
+              checkCompletion();
+              return;
+            }
+
+            const { width, height } = message.info;
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+
+            const imageData = ctx.createImageData(width, height);
+            const paletteColors = colorPalettes[palette];
+
+            for (let y = 0; y < height; y++) {
+              for (let x = 0; x < width; x++) {
+                const index = y * width + x;
+                const pixelIndex = index * 4;
+
+                if (index >= 0 && index < message.data.length) {
+                  const value = message.data[index];
+                  let color;
+
+                  if (value === 100) {
+                    color = paletteColors.occupied;
+                  } else if (value === 0) {
+                    color = paletteColors.free;
+                  } else if (value === -1) {
+                    color = paletteColors.unknown;
+                  } else {
+                    color = paletteColors.gradient(value);
+                  }
+
+                  imageData.data[pixelIndex] = color.r;
+                  imageData.data[pixelIndex + 1] = color.g;
+                  imageData.data[pixelIndex + 2] = color.b;
+                  imageData.data[pixelIndex + 3] = 255;
+                }
+              }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            const cleanTopicName = topic.replace(/\//g, '_').substring(1);
+            const fileName = `ros_map_${cleanTopicName}_${palette}_${timestamp}.png`;
+
+            const dataUrl = tempCanvas.toDataURL('image/png');
+
+            mapQueue.push({ fileName, dataUrl });
+
+            processDownloadQueue();
+
+            completedMaps++;
+            checkCompletion();
+          });
+
+          listener.unsubscribe();
+        });
+      });
+
+      function checkCompletion() {
+        if (completedMaps >= totalMaps) {
+          console.log(`Map generation complete: ${completedMaps}/${totalMaps} maps`);
+          dispatch(setGenerateReport(false));
+        }
+      }
+
+      setTimeout(() => {
+        if (completedMaps < totalMaps) {
+          console.warn(`Timed out waiting for maps. Only generated ${completedMaps}/${totalMaps}`);
+          dispatch(setGenerateReport(false));
+        }
+      }, 30000);
+    }
+  }, [generateReport, ros]);
 
   const handleTopicChange = (newTopic: string) => {
     setMapTopic(newTopic);

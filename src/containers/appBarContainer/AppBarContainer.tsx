@@ -23,7 +23,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
 import { RootState } from '../../store/mainStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { setIsAppBarOpen } from '../../store/reducers/applicationReducer';
+import { setGenerateReport, setIsAppBarOpen } from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
 import { NotificationItem } from '../../definitions/notificationTypeDefinitions';
@@ -41,6 +41,7 @@ const AppBarContainer = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
     const [reportData, setReportData] = useState(reportTemplateData);
+    const generateReport = useSelector((state: RootState) => state.app.generateReport);
 
     const notificationTypeStyles = {
         INFO: {
@@ -92,11 +93,14 @@ const AppBarContainer = () => {
 
     const prepareReportData = () => {
         setIsGeneratingReport(true);
-
-        //TODO Report Content Will be adjusted
-
-        setIsGeneratingReport(false);
+        dispatch(setGenerateReport(true));
     };
+
+    useEffect(() => {
+        if (generateReport !== true) {
+            setIsGeneratingReport(false);
+        }
+    }, [generateReport])
 
     const toggleDrawer = (newOpen: boolean) => () => {
         dispatch(setIsAppBarOpen(newOpen));
@@ -127,7 +131,6 @@ const AppBarContainer = () => {
             display: "flex",
             flexDirection: "column"
         }}>
-            {/* Header and Notifications Title */}
             <Box>
                 <List>
                     <ListItem disablePadding>
