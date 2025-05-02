@@ -32,7 +32,6 @@ import {
 } from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
-import { NotificationItem } from '../../definitions/notificationTypeDefinitions';
 import { Button } from '@mui/material';
 import ReportGenerator from '../reportGenerator/ReportGenerator';
 import { reportTemplateData } from '../reportGenerator/ReportTemplate';
@@ -194,7 +193,8 @@ const AppBarContainer = () => {
                                             borderRadius: "4px",
                                             margin: "4px 0",
                                             position: "relative",
-                                            height: "80px"
+                                            minHeight: "80px",
+                                            maxHeight: "120px"
                                         }}
                                         onMouseEnter={() => setHoveredNotificationId(item.id)}
                                         onMouseLeave={() => setHoveredNotificationId(null)}
@@ -202,9 +202,9 @@ const AppBarContainer = () => {
                                         <Box sx={{ marginRight: "10px" }}>
                                             {notificationTypeStyles[item.type].icon}
                                         </Box>
-                                        <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", width: "calc(100% - 50px)" }}>
+                                        <Box sx={{ display: "flex", position: "relative", flexDirection: "column", justifyContent: "space-between", width: "calc(100% - 50px)" }}>
                                             <Box sx={{ fontSize: "14px" }}>{item.data}</Box>
-                                            <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px" }}>
+                                            <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px", }}>
                                                 {formatTimestamp(item.timestamp)}
                                             </Box>
                                         </Box>

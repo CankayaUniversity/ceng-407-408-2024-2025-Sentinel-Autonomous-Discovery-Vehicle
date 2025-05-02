@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import { Provider } from 'react-redux';
@@ -8,11 +8,9 @@ import { RosProvider } from './utils/RosContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
 
-  <StrictMode>
-    <Provider store={store}>
-      <RosProvider>
-        <App />
-      </RosProvider>
-    </Provider>
-  </StrictMode>,
+  <Provider store={store}>
+    <RosProvider>
+      <App />
+    </RosProvider>
+  </Provider>
 )

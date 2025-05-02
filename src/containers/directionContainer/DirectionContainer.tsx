@@ -3,7 +3,6 @@ import { DirectionComponentProps } from "../../definitions/componentTypeDefiniti
 import Scene from "./Scene";
 
 const DirectionComponent = ({ initialAngle }: DirectionComponentProps) => {
-  console.log(initialAngle);
 
   return (
     <Canvas style={{ height: "100%", width: "100%" }}>

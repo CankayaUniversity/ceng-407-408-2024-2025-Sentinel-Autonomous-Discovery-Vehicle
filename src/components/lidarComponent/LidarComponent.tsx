@@ -2,15 +2,26 @@ import { Box, CircularProgress } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import ROSLIB from 'roslib';
 import { useRos } from '../../utils/RosContext';
+import { useDispatch } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { addNotification } from '../../store/reducers/applicationReducer';
 
 const LidarComponent = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [isDataStreaming, setIsDataStreaming] = useState<boolean>();
+    const dispatch = useDispatch();
 
     const { ros } = useRos();
 
     useEffect(() => {
+        dispatch(addNotification({
+            id: uuidv4(),
+            data: `Subscribing to /scan topic...`,
+            timestamp: new Date().toISOString(),
+            type: "INFO",
+        }));
+
         const listener = new ROSLIB.Topic({
             ros: ros,
             name: '/scan',
@@ -56,6 +67,12 @@ const LidarComponent = () => {
 
             timeoutRef.current = setTimeout(() => {
                 setIsDataStreaming(false);
+                dispatch(addNotification({
+                    id: uuidv4(),
+                    data: `Topic /scan did not respond within the timeout period`,
+                    timestamp: new Date().toISOString(),
+                    type: "WARNING",
+                }));
             }, 2000);
         });
 

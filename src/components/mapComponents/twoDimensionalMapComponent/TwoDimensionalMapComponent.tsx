@@ -10,7 +10,8 @@ import { ColorPaletteKey } from "../../../definitions/twoDimensionalMapTypeDefin
 import { colorPalettes } from "../../../constants/mapPaletteConstants";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/mainStore";
-import { addGeneratedMap, setGenerateReport } from "../../../store/reducers/applicationReducer";
+import { addGeneratedMap, addNotification, setGenerateReport } from "../../../store/reducers/applicationReducer";
+import { v4 as uuidv4 } from 'uuid';
 
 
 const TwoDimensionalMapComponent = () => {
@@ -58,7 +59,12 @@ const TwoDimensionalMapComponent = () => {
         }
       },
       (error: any) => {
-        console.error("Error getting topics:", error);
+        dispatch(addNotification({
+          id: uuidv4(),
+          data: `Error getting topics: ${error}`,
+          timestamp: new Date().toISOString(),
+          type: "INFO",
+        }));
       }
     );
 
@@ -84,7 +90,12 @@ const TwoDimensionalMapComponent = () => {
 
       let completedMaps = 0;
       const totalMaps = allTopics.length * allPalettes.length;
-      console.log(`Starting to generate ${totalMaps} maps...`);
+      dispatch(addNotification({
+        id: uuidv4(),
+        data: `Starting to generate ${totalMaps} maps...`,
+        timestamp: new Date().toISOString(),
+        type: "INFO",
+      }));
 
       allTopics.forEach(topic => {
         const listener = new ROSLIB.Topic({
@@ -94,7 +105,12 @@ const TwoDimensionalMapComponent = () => {
         });
 
         const topicTimeout = setTimeout(() => {
-          console.warn(`Topic ${topic} did not respond within the timeout period`);
+          dispatch(addNotification({
+            id: uuidv4(),
+            data: `Topic ${topic} did not respond within the timeout period`,
+            timestamp: new Date().toISOString(),
+            type: "WARNING",
+          }));
           listener.unsubscribe();
 
           completedMaps += allPalettes.length;
@@ -103,7 +119,6 @@ const TwoDimensionalMapComponent = () => {
 
         listener.subscribe((message: any) => {
           clearTimeout(topicTimeout);
-          console.log(`Received map data from ${topic} for report generation`);
 
           allPalettes.forEach(palette => {
             const tempCanvas = document.createElement('canvas');
@@ -171,15 +186,18 @@ const TwoDimensionalMapComponent = () => {
 
       function checkCompletion() {
         if (completedMaps >= totalMaps) {
-          console.log(`Map generation complete: ${completedMaps}/${totalMaps} maps`);
           dispatch(setGenerateReport(false));
-          console.log(`Total images stored: ${storedMapImages.length}`);
         }
       }
 
       setTimeout(() => {
         if (completedMaps < totalMaps) {
-          console.warn(`Timed out waiting for maps. Only generated ${completedMaps}/${totalMaps}`);
+          dispatch(addNotification({
+            id: uuidv4(),
+            data: `Timed out waiting for maps. Only generated ${completedMaps}/${totalMaps}`,
+            timestamp: new Date().toISOString(),
+            type: "WARNING",
+          }));
           dispatch(setGenerateReport(false));
         }
       }, 30000);
@@ -293,7 +311,12 @@ const TwoDimensionalMapComponent = () => {
   useEffect(() => {
     if (!ros) return;
 
-    console.log(`Subscribing to ${mapTopic}`);
+    dispatch(addNotification({
+      id: uuidv4(),
+      data: `Subscribing to ${mapTopic}`,
+      timestamp: new Date().toISOString(),
+      type: "INFO",
+    }));
 
     const listener = new ROSLIB.Topic({
       ros: ros,
@@ -303,21 +326,19 @@ const TwoDimensionalMapComponent = () => {
 
     const timeoutId = setTimeout(() => {
       if (!hasReceivedMap) {
-        console.log(`No data received from ${mapTopic} after 5 seconds`);
+        dispatch(addNotification({
+          id: uuidv4(),
+          data: `No data received from ${mapTopic} after 5 seconds`,
+          timestamp: new Date().toISOString(),
+          type: "WARNING",
+        }));
         listener.unsubscribe();
         setIsLoading(false);
       }
     }, 5000);
 
-    //TODO Warning Notification should be shown, if no Map received
 
     listener.subscribe((message: any) => {
-      // console.log(`Received map data from ${mapTopic}`, {
-      //   width: message.info.width,
-      //   height: message.info.height,
-      //   resolution: message.info.resolution
-      // });
-
       clearTimeout(timeoutId);
       setHasReceivedMap(true);
       setIsLoading(false);
