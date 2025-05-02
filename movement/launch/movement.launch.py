@@ -14,6 +14,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     use_builtin = LaunchConfiguration("use_builtin")
     use_autonomous = LaunchConfiguration("use_autonomous")
+    use_manual = LaunchConfiguration("use_manual")
     package = "movement"
 
     manual_movement = IncludeLaunchDescription(
@@ -28,6 +29,7 @@ def generate_launch_description():
             "use_sim_time": use_sim_time,
             "use_builtin": use_builtin,
         }.items(),
+        condition=IfCondition(use_manual),
     )
     autonomous_movement = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -69,6 +71,11 @@ def generate_launch_description():
                 "use_autonomous",
                 default_value="true",
                 description="Use autonomous mode",
+            ),
+            DeclareLaunchArgument(
+                "use_manual",
+                default_value="true",
+                description="Use manual mode",
             ),
             manual_movement,
             autonomous_movement,
