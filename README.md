@@ -94,4 +94,4 @@ The Sentinel is designed to autonomously explore and navigate unknown environmen
 
 #### Frontend
 
-<i><a href="">See Frontend Installation</a></i>
+<i><a href="https://github.com/CankayaUniversity/ceng-407-408-2024-2025-Sentinel-Autonomous-Discovery-Vehicle/tree/sentinel-frontend">See Frontend Installation</a></i>
