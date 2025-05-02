@@ -1,3 +1,5 @@
+import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
+
 export const reportTemplateData = {
     content: {
         title: 'Sentinel System Report',
@@ -12,7 +14,7 @@ export const reportTemplateData = {
             {
                 title: 'Generated Maps',
                 content: 'This section presents the generated maps, including the 2D map, global costmap, and other relevant spatial representations produced during the mapping process.',
-                images: [] as string[],
+                images: [] as StoredMapImage[],
             },
             {
                 title: 'Summary of Detected Object Types',

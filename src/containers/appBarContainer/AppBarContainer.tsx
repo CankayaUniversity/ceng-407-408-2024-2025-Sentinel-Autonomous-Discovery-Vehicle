@@ -23,7 +23,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
 import { RootState } from '../../store/mainStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { setGenerateReport, setIsAppBarOpen } from '../../store/reducers/applicationReducer';
+import { clearGeneratedMaps, setGenerateReport, setIsAppBarOpen } from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
 import { NotificationItem } from '../../definitions/notificationTypeDefinitions';
@@ -42,6 +42,7 @@ const AppBarContainer = () => {
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
     const [reportData, setReportData] = useState(reportTemplateData);
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
+    const generatedMaps = useSelector((state: RootState) => state.app.generatedMaps);
 
     const notificationTypeStyles = {
         INFO: {
@@ -97,8 +98,23 @@ const AppBarContainer = () => {
     };
 
     useEffect(() => {
-        if (generateReport !== true) {
+        if (generateReport === false) {
             setIsGeneratingReport(false);
+            setReportData(prevData => ({
+                ...prevData,
+                content: {
+                    ...prevData.content,
+                    imageSections: prevData.content.imageSections.map(section =>
+                        section.title === 'Generated Maps'
+                            ? {
+                                ...section,
+                                images: generatedMaps,
+                            }
+                            : section
+                    )
+                }
+            }));
+            dispatch(clearGeneratedMaps());
         }
     }, [generateReport])
 

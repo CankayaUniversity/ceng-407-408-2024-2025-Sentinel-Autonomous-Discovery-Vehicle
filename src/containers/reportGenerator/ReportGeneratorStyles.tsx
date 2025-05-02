@@ -47,9 +47,8 @@ export const reportStyles = StyleSheet.create({
         alignItems: 'center'
     },
     image: {
-        width: 200,
+        width: 220,
         height: 150,
-        objectFit: 'cover',
         marginBottom: 10
     },
     caption: {

@@ -24,16 +24,18 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content }) => {
                         <Text style={reportStyles.sectionTitle}>{section.title}</Text>
                         <Text style={reportStyles.sectionContent}>{section.content}</Text>
                         <View style={reportStyles.imageGrid}>
-                            {section.images && section.images.length > 0 ? (
-                                section.images.map((src, imgIndex) => (
+                            {section.images.map((img, imgIndex) => {
+                                const src = typeof img === 'string' ? img : img.dataUrl;
+                                return (
                                     <View key={`image-${index}-${imgIndex}`} style={reportStyles.imageItem}>
                                         <Image src={src} style={reportStyles.image} />
-                                        <Text style={reportStyles.caption}>Figure {imgIndex + 1}: Image from {section.title}</Text>
+                                        <Text style={reportStyles.caption}>
+                                            Figure {imgIndex + 1}: Image from {section.title}
+                                            {typeof img !== 'string' && ` | Topic: ${img.topic} | Palette: ${img.palette}`}
+                                        </Text>
                                     </View>
-                                ))
-                            ) : (
-                                <Text style={reportStyles.noImageText}>No images available for this section</Text>
-                            )}
+                                );
+                            })}
                         </View>
                     </View>
                 ))}

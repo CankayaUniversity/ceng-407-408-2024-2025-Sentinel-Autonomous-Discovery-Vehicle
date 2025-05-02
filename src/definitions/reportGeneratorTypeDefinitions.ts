@@ -1,3 +1,5 @@
+import { StoredMapImage } from "./twoDimensionalMapTypeDefinitions";
+
 export interface DataContentSection {
     title: string;
     content: string;
@@ -6,7 +8,7 @@ export interface DataContentSection {
 export interface ImageContentSection {
     title: string;
     content: string;
-    images: string[];
+    images: (string | StoredMapImage)[];
 }
 
 export interface ReportContent {
