@@ -38,4 +38,4 @@
   npm run dev
   ```
 
-<p style="text-align: right;">Update Date 02.06.2025</p>
+<p style="text-align: right;">Update Date 02.05.2025</p>

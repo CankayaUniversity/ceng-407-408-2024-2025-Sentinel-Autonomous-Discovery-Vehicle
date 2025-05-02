@@ -35,6 +35,7 @@ import ROSLIB from "roslib";
 import { Button } from '@mui/material';
 import ReportGenerator from '../reportGenerator/ReportGenerator';
 import { reportTemplateData } from '../reportGenerator/ReportTemplate';
+import { v4 as uuidv4 } from 'uuid';
 
 const AppBarContainer = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
@@ -48,6 +49,7 @@ const AppBarContainer = () => {
     const [reportData, setReportData] = useState(reportTemplateData);
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
     const generatedMaps = useSelector((state: RootState) => state.app.generatedMaps);
+    const isAppBarOpen = useSelector((state: RootState) => state.app.isAppBarOpen);
 
     const notificationTypeStyles = {
         INFO: {
@@ -104,7 +106,6 @@ const AppBarContainer = () => {
 
     useEffect(() => {
         if (generateReport === false) {
-            setIsGeneratingReport(false);
             setReportData(prevData => ({
                 ...prevData,
                 content: {
@@ -119,9 +120,66 @@ const AppBarContainer = () => {
                     )
                 }
             }));
+
+            const detectedObjectsTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/get_object_request',
+                messageType: 'std_msgs/String'
+            });
+
+            const message = new ROSLIB.Message({
+                data: 'get_detected_objects'
+            });
+
+            detectedObjectsTopic.publish(message);
+
+            const responseTopic = new ROSLIB.Topic({
+                ros: ros,
+                name: '/get_object_links',
+                messageType: 'std_msgs/String'
+            });
+
+            responseTopic.subscribe((msg) => {
+                try {
+                    const objectLinks = JSON.parse((message as any).data);
+
+                    dispatch(addNotification({
+                        id: uuidv4(),
+                        data: `Object Links Received from /get_detected_objects`,
+                        timestamp: new Date().toISOString(),
+                        type: "INFO",
+                    }));
+
+                    setReportData(prevData => ({
+                        ...prevData,
+                        content: {
+                            ...prevData.content,
+                            imageSections: prevData.content.imageSections.map(section =>
+                                section.title === 'Summary of Detected Object Types'
+                                    ? {
+                                        ...section,
+                                        images: objectLinks,
+                                    }
+                                    : section
+                            )
+                        }
+                    }));
+
+                    responseTopic.unsubscribe();
+                } catch (error) {
+                    dispatch(addNotification({
+                        id: uuidv4(),
+                        data: `Failed to parse object links JSON: ${error}`,
+                        timestamp: new Date().toISOString(),
+                        type: "ERROR",
+                    }));
+                }
+            });
+
+            setIsGeneratingReport(false);
             dispatch(clearGeneratedMaps());
         }
-    }, [generateReport, dispatch])
+    }, [generateReport, dispatch]);
 
     const toggleDrawer = (newOpen: boolean) => () => {
         dispatch(setIsAppBarOpen(newOpen));
@@ -145,6 +203,10 @@ const AppBarContainer = () => {
         setOpenDialog(false);
     };
 
+    const handleToggle = () => {
+        dispatch(setIsAppBarOpen(!isAppBarOpen));
+    };
+
     const DrawerList = (
         <Box sx={{
             width: 270,
@@ -157,7 +219,7 @@ const AppBarContainer = () => {
                     <ListItem disablePadding>
                         <ListItemIcon>
                             <motion.div className="hamburgerMenu" animate={open ? 'open' : 'closed'}>
-                                <ToggleButton setOpen={(value) => dispatch(setIsAppBarOpen(value as any))} appBarStyles={openAppBarStyles} />
+                                <ToggleButton setOpen={handleToggle} appBarStyles={openAppBarStyles} />
                             </motion.div>
                         </ListItemIcon>
                     </ListItem>
