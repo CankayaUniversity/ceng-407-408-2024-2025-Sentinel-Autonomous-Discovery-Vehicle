@@ -4,6 +4,7 @@ import {
 } from "../../definitions/applicationTypeDefinitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
+import { NotificationItem } from "../../definitions/notificationTypeDefinitions";
 
 const initialState: ApplicationStateType = {
   isAppBarOpen: false,
@@ -16,6 +17,7 @@ const initialState: ApplicationStateType = {
   isCameraPlaying: false,
   generateReport: false,
   generatedMaps: [],
+  notifications: [],
 };
 
 const applicationSlice = createSlice({
@@ -52,6 +54,17 @@ const applicationSlice = createSlice({
     clearGeneratedMaps: (state) => {
       state.generatedMaps = [];
     },
+    addNotification: (state, action: PayloadAction<NotificationItem>) => {
+      state.notifications.unshift(action.payload);
+    },
+    removeNotification: (state, action: PayloadAction<string>) => {
+      state.notifications = state.notifications.filter(
+        notification => notification.id !== action.payload
+      );
+    },
+    clearNotifications: (state) => {
+      state.notifications = [];
+    },
   },
 });
 
@@ -65,5 +78,8 @@ export const {
   setGeneratedMaps,
   addGeneratedMap,
   clearGeneratedMaps,
+  addNotification,
+  removeNotification,
+  clearNotifications,
 } = applicationSlice.actions;
 export default applicationSlice.reducer;

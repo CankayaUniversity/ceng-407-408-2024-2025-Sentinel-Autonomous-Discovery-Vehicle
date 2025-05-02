@@ -1,3 +1,4 @@
+import { NotificationItem } from "./notificationTypeDefinitions";
 import { StoredMapImage } from "./twoDimensionalMapTypeDefinitions";
 
 export interface ApplicationStateType {
@@ -8,6 +9,7 @@ export interface ApplicationStateType {
   isCameraPlaying: boolean;
   generateReport: boolean;
   generatedMaps: StoredMapImage[];
+  notifications: NotificationItem[];
 }
 
 export interface MovementDataType {

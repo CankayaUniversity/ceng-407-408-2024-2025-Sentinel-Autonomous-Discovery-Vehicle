@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -23,7 +23,13 @@ import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
 import { RootState } from '../../store/mainStore';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearGeneratedMaps, setGenerateReport, setIsAppBarOpen } from '../../store/reducers/applicationReducer';
+import {
+    clearGeneratedMaps,
+    setGenerateReport,
+    setIsAppBarOpen,
+    removeNotification,
+    addNotification
+} from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
 import { NotificationItem } from '../../definitions/notificationTypeDefinitions';
@@ -33,10 +39,10 @@ import { reportTemplateData } from '../reportGenerator/ReportTemplate';
 
 const AppBarContainer = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
+    const notifications = useSelector((state: RootState) => state.app.notifications);
     const dispatch = useDispatch();
     const { ros } = useRos();
 
-    const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [hoveredNotificationId, setHoveredNotificationId] = useState<string | null>(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
@@ -73,7 +79,7 @@ const AppBarContainer = () => {
         const handleNotification = (message: ROSLIB.Message) => {
             try {
                 const notification = JSON.parse((message as any).data);
-                setNotifications(prev => [notification, ...prev]);
+                dispatch(addNotification(notification));
             } catch (error) {
                 console.error('Error parsing notification message:', error);
             }
@@ -84,7 +90,7 @@ const AppBarContainer = () => {
         return () => {
             notificationsTopic.unsubscribe();
         };
-    }, [ros]);
+    }, [ros, dispatch]);
 
     useEffect(() => {
         if (openDialog) {
@@ -116,7 +122,7 @@ const AppBarContainer = () => {
             }));
             dispatch(clearGeneratedMaps());
         }
-    }, [generateReport])
+    }, [generateReport, dispatch])
 
     const toggleDrawer = (newOpen: boolean) => () => {
         dispatch(setIsAppBarOpen(newOpen));
@@ -124,7 +130,7 @@ const AppBarContainer = () => {
 
     const deleteNotification = (id: string, event: React.MouseEvent) => {
         event.stopPropagation();
-        setNotifications(notifications.filter(notification => notification.id !== id));
+        dispatch(removeNotification(id));
     };
 
     const formatTimestamp = (timestamp: string): string => {
