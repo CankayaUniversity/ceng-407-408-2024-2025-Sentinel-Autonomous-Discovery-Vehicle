@@ -20,4 +20,10 @@ export interface ReportContent {
 
 export interface ReportGeneratorProps {
     content: ReportContent;
+    missionInformation: MissionInformation,
+}
+
+export interface MissionInformation {
+    type: string,
+    objectsToBeDetected: string[],
 }

@@ -11,6 +11,12 @@ import IconButton from '@mui/material/IconButton';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import FormControl from '@mui/material/FormControl';
+import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
 import { PDFViewer } from '@react-pdf/renderer';
 import { motion } from 'framer-motion';
 import ToggleButton from '../../components/buttons/toggleButton/ToggleButton';
@@ -32,7 +38,7 @@ import {
 } from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
-import { Button } from '@mui/material';
+import { Button, Chip } from '@mui/material';
 import ReportGenerator from '../reportGenerator/ReportGenerator';
 import { reportTemplateData } from '../reportGenerator/ReportTemplate';
 import { v4 as uuidv4 } from 'uuid';
@@ -50,6 +56,12 @@ const AppBarContainer = () => {
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
     const generatedMaps = useSelector((state: RootState) => state.app.generatedMaps);
     const isAppBarOpen = useSelector((state: RootState) => state.app.isAppBarOpen);
+
+    //TODO Object Classes will be listed dynamically
+    const [isMissionTypeDialogOpen, setIsMissionTypeDialogOpen] = useState(false);
+    const [missionType, setMissionType] = useState('');
+    const [objectClasses, setObjectClasses] = useState(["Table", "Person", "Bag"]);
+    const [selectedObjects, setSelectedObjects] = useState([]);
 
     const notificationTypeStyles = {
         INFO: {
@@ -139,9 +151,9 @@ const AppBarContainer = () => {
                 messageType: 'std_msgs/String'
             });
 
-            responseTopic.subscribe((msg) => {
+            responseTopic.subscribe((responseTopicMessage) => {
                 try {
-                    const objectLinks = JSON.parse((message as any).data);
+                    const objectLinks = JSON.parse((responseTopicMessage as any).data);
 
                     dispatch(addNotification({
                         id: uuidv4(),
@@ -195,7 +207,30 @@ const AppBarContainer = () => {
         return date.toLocaleString();
     };
 
-    const handleOpenDialog = () => {
+    const handleGenerateReportClick = () => {
+        setIsMissionTypeDialogOpen(true);
+    };
+
+    const handleMissionTypeDialogClose = () => {
+        setIsMissionTypeDialogOpen(false);
+    };
+
+    const handleMissionTypeSelect = (event: any) => {
+        setMissionType(event.target.value);
+        setSelectedObjects([]);
+    };
+
+    const handleObjectChange = (event: any) => {
+        const {
+            target: { value },
+        } = event;
+        setSelectedObjects(
+            typeof value === 'string' ? value.split(',') : value,
+        );
+    };
+
+    const handleMissionTypeConfirm = () => {
+        setIsMissionTypeDialogOpen(false);
         setOpenDialog(true);
     };
 
@@ -311,7 +346,7 @@ const AppBarContainer = () => {
                     color="secondary"
                     sx={{ height: "2.5rem" }}
                     variant="contained"
-                    onClick={handleOpenDialog}
+                    onClick={handleGenerateReportClick}
                 >
                     Generate Report
                 </Button>
@@ -325,6 +360,111 @@ const AppBarContainer = () => {
                 {DrawerList}
             </Drawer>
             <Dialog
+                open={isMissionTypeDialogOpen}
+                onClose={handleMissionTypeDialogClose}
+                aria-labelledby="mission-type-dialog-title"
+            >
+                <DialogTitle id="mission-type-dialog-title">
+                    Select Mission Type
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleMissionTypeDialogClose}
+                        sx={{
+                            position: 'absolute',
+                            right: 8,
+                            top: 8,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent sx={{ minWidth: '500px', height: "180px", margin: "1rem" }}>
+                    <Box sx={{ mb: 3, paddingTop: "10px" }}>
+                        <FormControl fullWidth>
+                            <InputLabel id="mission-type-label">Mission Type</InputLabel>
+                            <Select
+                                labelId="mission-type-label"
+                                id="mission-type-select"
+                                value={missionType}
+                                label="Mission Type"
+                                onChange={handleMissionTypeSelect}
+                            >
+                                <MenuItem value="Rescue">Rescue</MenuItem>
+                                <MenuItem value="Find and Detect">Find and Detect Objects</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box sx={{ mb: 2 }}>
+                        <FormControl fullWidth disabled={missionType !== 'Find and Detect'}>
+                            <InputLabel
+                                id="object-select-label"
+                                sx={{
+                                    px: 1,
+                                }}
+                            >
+                                Target Objects
+                            </InputLabel>
+                            <Select
+                                labelId="object-select-label"
+                                id="object-select"
+                                multiple
+                                value={selectedObjects}
+                                label="Target Objects"
+                                onChange={handleObjectChange}
+                                renderValue={(selected) => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {selected.map((value) => (
+                                            <Chip key={value} label={value} size="small" />
+                                        ))}
+                                    </Box>
+                                )}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 224,
+                                            width: 250,
+                                        },
+                                        sx: {
+                                            bgcolor: 'background.paper',
+                                        }
+                                    }
+                                }}
+                            >
+                                {objectClasses.map((className) => (
+                                    <MenuItem key={className} value={className}>
+                                        {className}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            {missionType === 'Find and Detect' && selectedObjects.length === 0 && (
+                                <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                                    Please select at least one target object
+                                </Typography>
+                            )}
+                        </FormControl>
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant="outlined"
+                        sx={{ width: "100px", height: "2.2rem" }}
+                        onClick={handleMissionTypeDialogClose}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleMissionTypeConfirm}
+                        disabled={!missionType || (missionType === 'Find and Detect' && selectedObjects.length === 0)}
+                        color="primary"
+                        variant="contained"
+                        sx={{ width: "100px", height: "2.2rem" }}
+                    >
+                        Continue
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
                 open={openDialog}
                 onClose={handleCloseDialog}
                 aria-labelledby="report-dialog-title"
@@ -332,7 +472,7 @@ const AppBarContainer = () => {
                 fullWidth
             >
                 <DialogTitle id="report-dialog-title">
-                    System Notification Report
+                    {missionType} Mission Report
                     <IconButton
                         aria-label="close"
                         onClick={handleCloseDialog}
@@ -354,7 +494,13 @@ const AppBarContainer = () => {
                     ) : (
                         <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
                             <ReportGenerator
-                                content={reportData.content}
+                                content={{
+                                    ...reportData.content,
+                                }}
+                                missionInformation={{
+                                    type: missionType,
+                                    objectsToBeDetected: selectedObjects,
+                                }}
                             />
                         </PDFViewer>
                     )}

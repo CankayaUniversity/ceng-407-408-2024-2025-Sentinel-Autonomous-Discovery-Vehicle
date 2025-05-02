@@ -3,7 +3,10 @@ import { Page, Text, View, Document, Image } from '@react-pdf/renderer';
 import { reportStyles } from './ReportGeneratorStyles';
 import { ReportGeneratorProps } from '../../definitions/reportGeneratorTypeDefinitions';
 
-const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content }) => {
+const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInformation }) => {
+
+    console.info("Mission Info", missionInformation); // TODO Render images based on the mission
+
     return (
         <Document>
             <Page size="A4" style={reportStyles.page}>
