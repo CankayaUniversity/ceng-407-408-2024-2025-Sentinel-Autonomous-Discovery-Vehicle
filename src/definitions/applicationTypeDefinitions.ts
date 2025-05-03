@@ -16,3 +16,7 @@ export interface MovementDataType {
   linear: number;
   angular: number;
 }
+
+export interface NotificationListProps {
+  notifications: NotificationItem[];
+}

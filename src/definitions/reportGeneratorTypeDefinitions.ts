@@ -27,3 +27,17 @@ export interface MissionInformation {
     type: string,
     objectsToBeDetected: string[],
 }
+
+export interface MissionTypeDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onConfirm: (type: string, objects: string[]) => void;
+    objectClasses: string[];
+}
+
+export interface ReportViewDialogProps {
+    open: boolean;
+    onClose: () => void;
+    missionType: string;
+    selectedObjects: string[];
+}

@@ -6,80 +6,36 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import FormControl from '@mui/material/FormControl';
-import Typography from '@mui/material/Typography';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import { PDFViewer } from '@react-pdf/renderer';
+import Button from '@mui/material/Button';
 import { motion } from 'framer-motion';
-import ToggleButton from '../../components/buttons/toggleButton/ToggleButton';
-import "./AppBarContainer.css";
-import { openAppBarStyles } from '../../constants/styleConstants';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import InfoIcon from '@mui/icons-material/Info';
-import WarningIcon from '@mui/icons-material/Warning';
-import ErrorIcon from '@mui/icons-material/Error';
-import CloseIcon from '@mui/icons-material/Close';
-import { RootState } from '../../store/mainStore';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    clearGeneratedMaps,
-    setGenerateReport,
     setIsAppBarOpen,
-    removeNotification,
     addNotification
 } from '../../store/reducers/applicationReducer';
 import { useRos } from '../../utils/RosContext';
 import ROSLIB from "roslib";
-import { Button, Chip } from '@mui/material';
-import ReportGenerator from '../reportGenerator/ReportGenerator';
-import { reportTemplateData } from '../reportGenerator/ReportTemplate';
-import { v4 as uuidv4 } from 'uuid';
+import "./AppBarContainer.css";
+import { openAppBarStyles } from '../../constants/styleConstants';
+import ToggleButton from '../../components/buttons/toggleButton/ToggleButton';
+import NotificationList from './NotificationList';
+import MissionTypeDialog from '../../dialogs/MissionTypeDialog';
+import ReportViewDialog from '../../dialogs/ReportViewDialog';
+import { RootState } from '../../store/mainStore';
 
-const AppBarContainer = () => {
+const AppBarContainer: React.FC = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
     const notifications = useSelector((state: RootState) => state.app.notifications);
+    const isAppBarOpen = useSelector((state: RootState) => state.app.isAppBarOpen);
     const dispatch = useDispatch();
     const { ros } = useRos();
 
-    const [hoveredNotificationId, setHoveredNotificationId] = useState<string | null>(null);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
-    const [reportData, setReportData] = useState(reportTemplateData);
-    const generateReport = useSelector((state: RootState) => state.app.generateReport);
-    const generatedMaps = useSelector((state: RootState) => state.app.generatedMaps);
-    const isAppBarOpen = useSelector((state: RootState) => state.app.isAppBarOpen);
-
-    //TODO Object Classes will be listed dynamically
     const [isMissionTypeDialogOpen, setIsMissionTypeDialogOpen] = useState(false);
+    const [openReportDialog, setOpenReportDialog] = useState(false);
     const [missionType, setMissionType] = useState('');
     const [objectClasses, setObjectClasses] = useState(["Table", "Person", "Bag"]);
-    const [selectedObjects, setSelectedObjects] = useState([]);
-
-    const notificationTypeStyles = {
-        INFO: {
-            backgroundColor: 'rgba(33, 150, 243, 0.1)',
-            borderLeft: '4px solid #2196f3',
-            icon: <InfoIcon sx={{ color: '#2196f3' }} />
-        },
-        WARNING: {
-            backgroundColor: 'rgba(255, 152, 0, 0.1)',
-            borderLeft: '4px solid #ff9800',
-            icon: <WarningIcon sx={{ color: '#ff9800' }} />
-        },
-        ERROR: {
-            backgroundColor: 'rgba(244, 67, 54, 0.1)',
-            borderLeft: '4px solid #f44336',
-            icon: <ErrorIcon sx={{ color: '#f44336' }} />
-        }
-    };
+    const [selectedObjects, setSelectedObjects] = useState<string[]>([]);
 
     useEffect(() => {
         if (!ros) return;
@@ -89,9 +45,10 @@ const AppBarContainer = () => {
             messageType: 'std_msgs/String'
         });
 
-        const handleNotification = (message: ROSLIB.Message) => {
+        const handleNotification = (message: any) => {
             try {
-                const notification = JSON.parse((message as any).data);
+                console.info(message.data);
+                const notification = JSON.parse(message.data);
                 dispatch(addNotification(notification));
             } catch (error) {
                 console.error('Error parsing notification message:', error);
@@ -105,106 +62,8 @@ const AppBarContainer = () => {
         };
     }, [ros, dispatch]);
 
-    useEffect(() => {
-        if (openDialog) {
-            prepareReportData();
-        }
-    }, [openDialog, notifications]);
-
-    const prepareReportData = () => {
-        setIsGeneratingReport(true);
-        dispatch(setGenerateReport(true));
-    };
-
-    useEffect(() => {
-        if (generateReport === false) {
-            setReportData(prevData => ({
-                ...prevData,
-                content: {
-                    ...prevData.content,
-                    imageSections: prevData.content.imageSections.map(section =>
-                        section.title === 'Generated Maps'
-                            ? {
-                                ...section,
-                                images: generatedMaps,
-                            }
-                            : section
-                    )
-                }
-            }));
-
-            const detectedObjectsTopic = new ROSLIB.Topic({
-                ros: ros,
-                name: '/get_object_request',
-                messageType: 'std_msgs/String'
-            });
-
-            const message = new ROSLIB.Message({
-                data: 'get_detected_objects'
-            });
-
-            detectedObjectsTopic.publish(message);
-
-            const responseTopic = new ROSLIB.Topic({
-                ros: ros,
-                name: '/get_object_links',
-                messageType: 'std_msgs/String'
-            });
-
-            responseTopic.subscribe((responseTopicMessage) => {
-                try {
-                    const objectLinks = JSON.parse((responseTopicMessage as any).data);
-
-                    dispatch(addNotification({
-                        id: uuidv4(),
-                        data: `Object Links Received from /get_detected_objects`,
-                        timestamp: new Date().toISOString(),
-                        type: "INFO",
-                    }));
-
-                    setReportData(prevData => ({
-                        ...prevData,
-                        content: {
-                            ...prevData.content,
-                            imageSections: prevData.content.imageSections.map(section =>
-                                section.title === 'Summary of Detected Object Types'
-                                    ? {
-                                        ...section,
-                                        images: objectLinks,
-                                    }
-                                    : section
-                            )
-                        }
-                    }));
-
-                    responseTopic.unsubscribe();
-                } catch (error) {
-                    dispatch(addNotification({
-                        id: uuidv4(),
-                        data: `Failed to parse object links JSON: ${error}`,
-                        timestamp: new Date().toISOString(),
-                        type: "ERROR",
-                    }));
-                }
-            });
-
-            setIsGeneratingReport(false);
-            dispatch(clearGeneratedMaps());
-        }
-    }, [generateReport, dispatch]);
-
     const toggleDrawer = (newOpen: boolean) => () => {
         dispatch(setIsAppBarOpen(newOpen));
-    };
-
-    const deleteNotification = (id: string, event: React.MouseEvent) => {
-        event.stopPropagation();
-        dispatch(removeNotification(id));
-    };
-
-    const formatTimestamp = (timestamp: string): string => {
-        const date = new Date(timestamp);
-        return date.toLocaleString();
     };
 
     const handleGenerateReportClick = () => {
@@ -215,27 +74,15 @@ const AppBarContainer = () => {
         setIsMissionTypeDialogOpen(false);
     };
 
-    const handleMissionTypeSelect = (event: any) => {
-        setMissionType(event.target.value);
-        setSelectedObjects([]);
-    };
-
-    const handleObjectChange = (event: any) => {
-        const {
-            target: { value },
-        } = event;
-        setSelectedObjects(
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
-
-    const handleMissionTypeConfirm = () => {
+    const handleMissionTypeConfirm = (type: string, objects: string[]) => {
+        setMissionType(type);
+        setSelectedObjects(objects);
         setIsMissionTypeDialogOpen(false);
-        setOpenDialog(true);
+        setOpenReportDialog(true);
     };
 
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
+    const handleCloseReportDialog = () => {
+        setOpenReportDialog(false);
     };
 
     const handleToggle = () => {
@@ -273,65 +120,7 @@ const AppBarContainer = () => {
                 overflow: "auto",
                 maxHeight: "calc(100vh - 160px)"
             }}>
-                <List>
-                    {notifications && notifications.length > 0 ? (
-                        notifications.map((item) => (
-                            <div key={item.id}>
-                                <ListItem onClick={(event) => event.stopPropagation()}>
-                                    <Paper
-                                        elevation={0}
-                                        sx={{
-                                            width: "100%",
-                                            padding: "10px",
-                                            display: "flex",
-                                            alignItems: "flex-start",
-                                            backgroundColor: notificationTypeStyles[item.type].backgroundColor,
-                                            borderLeft: notificationTypeStyles[item.type].borderLeft,
-                                            borderRadius: "4px",
-                                            margin: "4px 0",
-                                            position: "relative",
-                                            minHeight: "80px",
-                                            maxHeight: "120px"
-                                        }}
-                                        onMouseEnter={() => setHoveredNotificationId(item.id)}
-                                        onMouseLeave={() => setHoveredNotificationId(null)}
-                                    >
-                                        <Box sx={{ marginRight: "10px" }}>
-                                            {notificationTypeStyles[item.type].icon}
-                                        </Box>
-                                        <Box sx={{ display: "flex", position: "relative", flexDirection: "column", justifyContent: "space-between", width: "calc(100% - 50px)" }}>
-                                            <Box sx={{ fontSize: "14px" }}>{item.data}</Box>
-                                            <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px", }}>
-                                                {formatTimestamp(item.timestamp)}
-                                            </Box>
-                                        </Box>
-                                        <IconButton
-                                            size="small"
-                                            sx={{
-                                                position: "absolute",
-                                                zIndex: 2,
-                                                top: "4px",
-                                                right: "4px",
-                                                padding: "2px",
-                                                visibility: hoveredNotificationId === item.id ? 'visible' : 'hidden',
-                                                opacity: hoveredNotificationId === item.id ? 1 : 0,
-                                                transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
-                                            }}
-                                            onClick={(event) => deleteNotification(item.id, event)}
-                                            aria-label="delete notification"
-                                        >
-                                            <CloseIcon fontSize="small" />
-                                        </IconButton>
-                                    </Paper>
-                                </ListItem>
-                            </div>
-                        ))
-                    ) : (
-                        <ListItem sx={{ width: "100%", padding: "5px", color: "gray", justifyContent: "center" }}>
-                            No notifications available.
-                        </ListItem>
-                    )}
-                </List>
+                <NotificationList notifications={notifications} />
             </Box>
             <Box sx={{
                 padding: "16px",
@@ -359,153 +148,20 @@ const AppBarContainer = () => {
             <Drawer sx={{ position: "relative", zIndex: 1, }} variant="persistent" open={open} onClose={toggleDrawer(false)}>
                 {DrawerList}
             </Drawer>
-            <Dialog
+
+            <MissionTypeDialog
                 open={isMissionTypeDialogOpen}
                 onClose={handleMissionTypeDialogClose}
-                aria-labelledby="mission-type-dialog-title"
-            >
-                <DialogTitle id="mission-type-dialog-title">
-                    Select Mission Type
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleMissionTypeDialogClose}
-                        sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 8,
-                            color: (theme) => theme.palette.grey[500],
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent sx={{ minWidth: '500px', height: "180px", margin: "1rem" }}>
-                    <Box sx={{ mb: 3, paddingTop: "10px" }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="mission-type-label">Mission Type</InputLabel>
-                            <Select
-                                labelId="mission-type-label"
-                                id="mission-type-select"
-                                value={missionType}
-                                label="Mission Type"
-                                onChange={handleMissionTypeSelect}
-                            >
-                                <MenuItem value="Rescue">Rescue</MenuItem>
-                                <MenuItem value="Find and Detect">Find and Detect Objects</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
-                    <Box sx={{ mb: 2 }}>
-                        <FormControl fullWidth disabled={missionType !== 'Find and Detect'}>
-                            <InputLabel
-                                id="object-select-label"
-                                sx={{
-                                    px: 1,
-                                }}
-                            >
-                                Target Objects
-                            </InputLabel>
-                            <Select
-                                labelId="object-select-label"
-                                id="object-select"
-                                multiple
-                                value={selectedObjects}
-                                label="Target Objects"
-                                onChange={handleObjectChange}
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                        {selected.map((value) => (
-                                            <Chip key={value} label={value} size="small" />
-                                        ))}
-                                    </Box>
-                                )}
-                                MenuProps={{
-                                    PaperProps: {
-                                        style: {
-                                            maxHeight: 224,
-                                            width: 250,
-                                        },
-                                        sx: {
-                                            bgcolor: 'background.paper',
-                                        }
-                                    }
-                                }}
-                            >
-                                {objectClasses.map((className) => (
-                                    <MenuItem key={className} value={className}>
-                                        {className}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                            {missionType === 'Find and Detect' && selectedObjects.length === 0 && (
-                                <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                                    Please select at least one target object
-                                </Typography>
-                            )}
-                        </FormControl>
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        variant="outlined"
-                        sx={{ width: "100px", height: "2.2rem" }}
-                        onClick={handleMissionTypeDialogClose}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={handleMissionTypeConfirm}
-                        disabled={!missionType || (missionType === 'Find and Detect' && selectedObjects.length === 0)}
-                        color="primary"
-                        variant="contained"
-                        sx={{ width: "100px", height: "2.2rem" }}
-                    >
-                        Continue
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                aria-labelledby="report-dialog-title"
-                maxWidth="lg"
-                fullWidth
-            >
-                <DialogTitle id="report-dialog-title">
-                    {missionType} Mission Report
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleCloseDialog}
-                        sx={{
-                            position: 'absolute',
-                            right: 8,
-                            top: 8,
-                            color: (theme) => theme.palette.grey[500],
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                </DialogTitle>
-                <DialogContent sx={{ height: '80vh' }}>
-                    {isGeneratingReport ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                            Loading report...
-                        </Box>
-                    ) : (
-                        <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-                            <ReportGenerator
-                                content={{
-                                    ...reportData.content,
-                                }}
-                                missionInformation={{
-                                    type: missionType,
-                                    objectsToBeDetected: selectedObjects,
-                                }}
-                            />
-                        </PDFViewer>
-                    )}
-                </DialogContent>
-            </Dialog>
+                onConfirm={handleMissionTypeConfirm}
+                objectClasses={objectClasses}
+            />
+
+            <ReportViewDialog
+                open={openReportDialog}
+                onClose={handleCloseReportDialog}
+                missionType={missionType}
+                selectedObjects={selectedObjects}
+            />
         </Box>
     );
 }
