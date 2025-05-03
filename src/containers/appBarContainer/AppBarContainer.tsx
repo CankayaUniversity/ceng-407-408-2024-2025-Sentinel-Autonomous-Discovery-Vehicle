@@ -144,8 +144,8 @@ const AppBarContainer: React.FC = () => {
     );
 
     return (
-        <Box sx={{ position: "relative" }}>
-            <Drawer sx={{ position: "relative", zIndex: 1, }} variant="persistent" open={open} onClose={toggleDrawer(false)}>
+        <Box sx={{ position: "relative", }}>
+            <Drawer sx={{ position: "relative", zIndex: 20, }} variant="persistent" open={open} onClose={toggleDrawer(false)}>
                 {DrawerList}
             </Drawer>
 
