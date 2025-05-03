@@ -7,6 +7,7 @@ export interface ApplicationStateType {
   isCameraDialogOpen: boolean;
   isMapDialogOpen: boolean;
   isCameraPlaying: boolean;
+  isDetectFrameEnabled: boolean;
   generateReport: boolean;
   generatedMaps: StoredMapImage[];
   notifications: NotificationItem[];

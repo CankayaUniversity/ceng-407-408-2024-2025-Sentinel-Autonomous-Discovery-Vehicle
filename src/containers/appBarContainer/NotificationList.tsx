@@ -72,7 +72,10 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                                     {notificationTypeStyles[item.type].icon}
                                 </Box>
                                 <Box sx={{ display: "flex", position: "relative", flexDirection: "column", justifyContent: "space-between", width: "calc(100% - 50px)" }}>
-                                    <Box sx={{ fontSize: "14px" }}>{item.data}</Box>
+                                    <Box sx={{ fontSize: "14px" }}>
+                                        {item.data} {item.data.includes("New object detected") && ` (${item.id})`}
+                                        {/* TODO if it is an object, it should be clickable, the image will be opened. */}
+                                    </Box>
                                     <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px", }}>
                                         {formatTimestamp(item.timestamp)}
                                     </Box>

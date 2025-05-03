@@ -8,8 +8,9 @@ import "./CameraContainer.css";
 import { RootState } from "../../store/mainStore";
 import { useDispatch, useSelector } from "react-redux";
 import { dataGridStyles } from "../../constants/styleConstants";
-import { setIsCameraPlaying } from "../../store/reducers/applicationReducer";
+import { addNotification, setIsCameraPlaying } from "../../store/reducers/applicationReducer";
 import { useRos } from "../../utils/RosContext";
+import { v4 as uuidv4 } from 'uuid';
 
 const CameraContainer: React.FC = () => {
   const [imageData, setImageData] = useState<string | null>(null);
@@ -23,16 +24,26 @@ const CameraContainer: React.FC = () => {
   );
 
   const dispatch = useDispatch();
+  const isDetectFrameEnabled = useSelector((state: RootState) => state.app.isDetectFrameEnabled);
 
   useEffect(() => {
     let imageSubscriber: ROSLIB.Topic | null = null;
 
     if (isPlaying) {
+      let topicName = isDetectFrameEnabled ? "/object_detection_frame" : "/camera/image_raw/compressed";
+
       imageSubscriber = new ROSLIB.Topic({
         ros: ros,
-        name: "/camera/image_raw/compressed",
+        name: topicName,
         messageType: "sensor_msgs/msg/CompressedImage",
       });
+
+      dispatch(addNotification({
+        id: uuidv4(),
+        data: `Subscribing to ${topicName}`,
+        timestamp: new Date().toISOString(),
+        type: "INFO",
+      }));
 
       imageSubscriber.subscribe((message: any) => {
         const base64Image = `data:image/jpeg;base64,${message.data}`;
@@ -56,7 +67,7 @@ const CameraContainer: React.FC = () => {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [isPlaying, ros]);
+  }, [isPlaying, ros, isDetectFrameEnabled]);
 
   return (
     <>

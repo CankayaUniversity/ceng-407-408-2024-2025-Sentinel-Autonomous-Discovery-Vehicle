@@ -19,6 +19,7 @@ import DirectionContainer from "../directionContainer/DirectionContainer";
 import { useSelector } from "react-redux";
 import MovementContainer from "../movementContainer/MovementContainer";
 import CameraFullScreenButton from "../cameraContainer/CameraFullScreenButton";
+import DetectionFrameEnableButton from "../cameraContainer/DetectionFrameEnableButton";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
@@ -69,6 +70,7 @@ const AppContainer = () => {
               >
                 <div className="container" style={{ position: "relative" }}>
                   <CameraFullScreenButton />
+                  <DetectionFrameEnableButton />
                   {
                     (!isCameraDialogOpen && !isMapDialogOpen) && (
                       <CameraContainer />

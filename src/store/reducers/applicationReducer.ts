@@ -15,6 +15,7 @@ const initialState: ApplicationStateType = {
   isCameraDialogOpen: false,
   isMapDialogOpen: false,
   isCameraPlaying: false,
+  isDetectFrameEnabled: false,
   generateReport: false,
   generatedMaps: [],
   notifications: [],
@@ -41,6 +42,9 @@ const applicationSlice = createSlice({
     },
     setIsCameraPlaying: (state, action: PayloadAction<boolean>) => {
       state.isCameraPlaying = action.payload;
+    },
+    setIsDetectFrameEnabled: (state, action: PayloadAction<boolean>) => {
+      state.isDetectFrameEnabled = action.payload;
     },
     setGenerateReport: (state, action: PayloadAction<boolean>) => {
       state.generateReport = action.payload;
@@ -77,6 +81,7 @@ export const {
   setGenerateReport,
   setGeneratedMaps,
   addGeneratedMap,
+  setIsDetectFrameEnabled,
   clearGeneratedMaps,
   addNotification,
   removeNotification,
