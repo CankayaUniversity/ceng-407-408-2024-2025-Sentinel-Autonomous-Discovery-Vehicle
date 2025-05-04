@@ -81,6 +81,7 @@ def generate_launch_description() -> LaunchDescription:
         },
     )
 
+    camera = load_camera()
     lidar = load_lidar()
 
 
@@ -110,6 +111,7 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(movement)
     ld.add_action(mapping)
     ld.add_action(lidar)
+    ld.add_action(camera)
     return ld
 
 
@@ -123,6 +125,15 @@ def get_launch_file(
             )
         ),
         launch_arguments=launch_arguments.items(),
+    )
+
+def load_camera():
+    params_file = os.path.join(get_package_share_directory("sentinel"),'config','camera_params.yaml')
+    return Node(
+        package="camera_publisher",
+        executable="camera",
+        name="camera_publisher",
+        parameters=[params_file]
     )
 
 def load_lidar():

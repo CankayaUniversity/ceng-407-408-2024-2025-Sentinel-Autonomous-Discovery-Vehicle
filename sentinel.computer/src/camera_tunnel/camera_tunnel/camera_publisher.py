@@ -66,7 +66,7 @@ class CameraPublisher(Node):
         self.raw_publisher.publish(raw_image)
         self.camera_info_publisher.publish(self.camera_info)
         
-        self.get_logger().info(f"Image Published")
+        self.get_logger().debug(f"Image Published")
 
     def configure_params(self):
         self.image = bytearray() 

@@ -1,0 +1,11 @@
+camera_publisher:
+  ros__parameters:
+    computer_host: "192.168.151.194"
+    computer_port: 9000
+    vehicle_host: "0.0.0.0"
+    vehicle_port: 8000
+    chunk_size: 60000
+    camera_width: 640
+    camera_height: 480
+    camera_fps: 30
+    camera_encoding: ".jpg"

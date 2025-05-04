@@ -41,6 +41,17 @@ def generate_launch_description() -> LaunchDescription:
     use_manual = LaunchConfiguration("use_manual")
     use_builtin = LaunchConfiguration("use_builtin")
 
+    camera_tunnel = Node(
+        package="camera_tunnel",
+        executable="run",
+        name="camera_tunnel",
+        output="screen",
+        remappings=[
+            ("raspicam/raw","camera/image_raw")
+            ("raspicam/compressed","camera/image_raw/compressed")
+            ("raspicam/camera_info","camera/camera_info")
+        ]
+    )
 
 
     movement = get_launch_file(
@@ -64,6 +75,7 @@ def generate_launch_description() -> LaunchDescription:
     rviz2 = get_rviz2(use_3d_map)
 
     ld = LaunchDescription(declare_args())
+    ld.add_action(camera_tunnel)
     ld.add_action(movement)
     ld.add_action(rviz2)
     ld.add_action(object_detection)

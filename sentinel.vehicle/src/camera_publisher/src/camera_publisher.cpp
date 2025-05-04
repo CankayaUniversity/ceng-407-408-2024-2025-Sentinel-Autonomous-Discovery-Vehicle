@@ -20,7 +20,7 @@ CameraPublisher::~CameraPublisher()
 void CameraPublisher::completed(void *frame, size_t frame_size, int id)
 {
     this->socket->send(frame, frame_size, id);
-    RCLCPP_INFO(this->get_logger(), "Camera Frame Send");
+    RCLCPP_DEBUG(this->get_logger(), "Camera Frame Send");
 }
 
 CameraConfiguration CameraPublisher::camera_configuration()
