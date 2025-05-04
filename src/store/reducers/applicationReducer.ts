@@ -1,11 +1,13 @@
 import {
   ApplicationStateType,
   MovementDataType,
-  FetchObjectWithIdType
+  FetchObjectWithIdType,
 } from "../../definitions/applicationTypeDefinitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
 import { NotificationItem } from "../../definitions/notificationTypeDefinitions";
+import { objectData } from "../../definitions/reportGeneratorTypeDefinitions";
+import { reportTemplateData } from "../../containers/reportGenerator/ReportTemplate";
 
 const initialState: ApplicationStateType = {
   isAppBarOpen: false,
@@ -18,12 +20,17 @@ const initialState: ApplicationStateType = {
   isCameraPlaying: false,
   isDetectFrameEnabled: false,
   generateReport: false,
-  generatedMaps: [],
   notifications: [],
   fetchObjectWithId: {
     id: "",
     fetchObject: false,
-  }
+  },
+  clickedNotificationObject: {
+    id: "",
+    url: "",
+    class: "",
+  },
+  reportData: reportTemplateData,
 };
 
 const applicationSlice = createSlice({
@@ -54,14 +61,78 @@ const applicationSlice = createSlice({
     setGenerateReport: (state, action: PayloadAction<boolean>) => {
       state.generateReport = action.payload;
     },
-    setGeneratedMaps: (state, action: PayloadAction<StoredMapImage[]>) => {
-      state.generatedMaps = action.payload;
+    setGeneratedMapsToReport: (state, action: PayloadAction<StoredMapImage[]>) => {
+      const updatedSections = state.reportData.content.imageSections.map(section => {
+        if (section.title === 'Generated Maps') {
+          return {
+            ...section,
+            images: action.payload
+          };
+        }
+        return section;
+      });
+
+      state.reportData = {
+        ...state.reportData,
+        content: {
+          ...state.reportData.content,
+          imageSections: updatedSections
+        }
+      };
     },
-    addGeneratedMap: (state, action: PayloadAction<StoredMapImage>) => {
-      state.generatedMaps.push(action.payload);
+    addGeneratedMapToReport: (state, action: PayloadAction<StoredMapImage>) => {
+      try {
+        const newMap = {
+          topic: String(action.payload.topic || ""),
+          palette: String(action.payload.palette || ""),
+          dataUrl: String(action.payload.dataUrl || ""),
+          timestamp: String(action.payload.timestamp || new Date().toISOString())
+        };
+
+        const updatedSections = state.reportData.content.imageSections.map(section => {
+          if (section.title === 'Generated Maps') {
+            const currentImages = [...(section.images as StoredMapImage[] || [])];
+            return {
+              ...section,
+              images: [...currentImages, newMap]
+            };
+          }
+          return section;
+        });
+
+        state.reportData = {
+          ...state.reportData,
+          content: {
+            ...state.reportData.content,
+            imageSections: updatedSections as any
+          }
+        };
+      } catch (error) {
+        console.error("Error in addGeneratedMapToReport reducer:", error);
+      }
     },
-    clearGeneratedMaps: (state) => {
-      state.generatedMaps = [];
+    clearGeneratedMapsFromReport: (state) => {
+      try {
+        const updatedSections = state.reportData.content.imageSections.map(section => {
+          if (section.title === 'Generated Maps') {
+            return {
+              ...section,
+              images: [] as StoredMapImage[]
+            };
+          }
+          return section;
+        });
+
+        state.reportData = {
+          ...state.reportData,
+          content: {
+            ...state.reportData.content,
+            imageSections: updatedSections as any
+          }
+        };
+      } catch (error) {
+        console.error("Error in clearGeneratedMapsFromReport reducer:", error);
+      }
     },
     addNotification: (state, action: PayloadAction<NotificationItem>) => {
       state.notifications.unshift(action.payload);
@@ -83,6 +154,41 @@ const applicationSlice = createSlice({
         fetchObject: false
       };
     },
+    setClickedNotificationObject: (state, action: PayloadAction<objectData>) => {
+      state.clickedNotificationObject = action.payload;
+    },
+    resetClickedNotificationObject: (state) => {
+      state.clickedNotificationObject = {
+        id: "",
+        url: "",
+        class: ""
+      };
+    },
+    setReportData: (state, action: PayloadAction<typeof reportTemplateData>) => {
+      state.reportData = action.payload;
+    },
+    setReportObjectData: (state, action: PayloadAction<objectData[]>) => {
+      const updatedSections = state.reportData.content.imageSections.map(section => {
+        if (section.title === 'Summary of Detected Object Types') {
+          return {
+            ...section,
+            images: action.payload
+          };
+        }
+        return section;
+      });
+
+      state.reportData = {
+        ...state.reportData,
+        content: {
+          ...state.reportData.content,
+          imageSections: updatedSections
+        }
+      };
+    },
+    resetReportData: (state) => {
+      state.reportData = JSON.parse(JSON.stringify(reportTemplateData));
+    },
   },
 });
 
@@ -93,14 +199,19 @@ export const {
   setIsMapDialogOpen,
   setIsCameraPlaying,
   setGenerateReport,
-  setGeneratedMaps,
-  addGeneratedMap,
   setIsDetectFrameEnabled,
-  clearGeneratedMaps,
   addNotification,
   removeNotification,
   clearNotifications,
   setFetchObjectWithId,
   resetFetchObjectFlag,
+  setClickedNotificationObject,
+  resetClickedNotificationObject,
+  setGeneratedMapsToReport,
+  addGeneratedMapToReport,
+  clearGeneratedMapsFromReport,
+  setReportData,
+  setReportObjectData,
+  resetReportData
 } = applicationSlice.actions;
 export default applicationSlice.reducer;

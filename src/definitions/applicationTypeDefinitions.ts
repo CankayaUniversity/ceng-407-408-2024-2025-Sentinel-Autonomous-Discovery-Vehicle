@@ -1,5 +1,6 @@
+import { reportTemplateData } from "../containers/reportGenerator/ReportTemplate";
 import { NotificationItem } from "./notificationTypeDefinitions";
-import { StoredMapImage } from "./twoDimensionalMapTypeDefinitions";
+import { objectData } from "./reportGeneratorTypeDefinitions";
 
 export interface ApplicationStateType {
   isAppBarOpen: boolean;
@@ -9,9 +10,10 @@ export interface ApplicationStateType {
   isCameraPlaying: boolean;
   isDetectFrameEnabled: boolean;
   generateReport: boolean;
-  generatedMaps: StoredMapImage[];
   notifications: NotificationItem[];
   fetchObjectWithId: FetchObjectWithIdType;
+  clickedNotificationObject: objectData;
+  reportData: typeof reportTemplateData;
 }
 
 export interface FetchObjectWithIdType {

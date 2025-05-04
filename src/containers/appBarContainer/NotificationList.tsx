@@ -44,6 +44,13 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
         return date.toLocaleString();
     };
 
+    // TODO When Clicked on detected object notification, image should pop up.
+    const renderImageIfObjectNotification = (notificationData: string, notificationId: string) => {
+        if (notificationData.includes("New object detected")) {
+            console.info("CLICKED, ObjectId: ", notificationId);
+        }
+    }
+
     return (
         <List>
             {notifications && notifications.length > 0 ? (
@@ -63,10 +70,12 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                                     margin: "4px 0",
                                     position: "relative",
                                     minHeight: "80px",
-                                    maxHeight: "120px"
+                                    maxHeight: "120px",
+                                    cursor: "pointer",
                                 }}
                                 onMouseEnter={() => setHoveredNotificationId(item.id)}
                                 onMouseLeave={() => setHoveredNotificationId(null)}
+                                onClick={() => renderImageIfObjectNotification(item.data, item.id)}
                             >
                                 <Box sx={{ marginRight: "10px" }}>
                                     {notificationTypeStyles[item.type].icon}
@@ -74,7 +83,6 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                                 <Box sx={{ display: "flex", position: "relative", flexDirection: "column", justifyContent: "space-between", width: "calc(100% - 50px)" }}>
                                     <Box sx={{ fontSize: "14px" }}>
                                         {item.data} {item.data.includes("New object detected") && ` (${item.id})`}
-                                        {/* TODO if it is an object, it should be clickable, the image will be opened. */}
                                     </Box>
                                     <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px", }}>
                                         {formatTimestamp(item.timestamp)}

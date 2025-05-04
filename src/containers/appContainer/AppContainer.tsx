@@ -16,10 +16,13 @@ import {
   lightThemeBorderColor,
 } from "../../constants/themeConstants";
 import DirectionContainer from "../directionContainer/DirectionContainer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MovementContainer from "../movementContainer/MovementContainer";
 import CameraFullScreenButton from "../cameraContainer/CameraFullScreenButton";
 import DetectionFrameEnableButton from "../cameraContainer/DetectionFrameEnableButton";
+import FetchObjectData from "../../utils/FetchObjectData";
+import { setClickedNotificationObject, setReportObjectData } from "../../store/reducers/applicationReducer";
+import { objectData } from "../../definitions/reportGeneratorTypeDefinitions";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
@@ -31,6 +34,7 @@ const AppContainer = () => {
   const [borderColor, setBorderColor] = useState<string>();
   const isCameraDialogOpen = useSelector((state: RootState) => state.app.isCameraDialogOpen);
   const isMapDialogOpen = useSelector((state: RootState) => state.app.isMapDialogOpen);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isAppbarOpen) {
@@ -50,8 +54,20 @@ const AppContainer = () => {
     }
   }, [paletteMode]);
 
+  const handleObjectDataReceived = (objectData: objectData[]) => {
+    dispatch(setReportObjectData(objectData));
+  };
+
+  const handleObjectDataWithIdReceived = (objectData: objectData) => {
+    dispatch(setClickedNotificationObject(objectData));
+  }
+
   return (
     <Box>
+      <FetchObjectData
+        onObjectDataReceived={handleObjectDataReceived}
+        onSpecificObjectReceived={handleObjectDataWithIdReceived}
+      />
       <DarkModeButton />
       <HamburgerMenuButton appBarStyles={closeAppBarStyles} />
       <Grid container>

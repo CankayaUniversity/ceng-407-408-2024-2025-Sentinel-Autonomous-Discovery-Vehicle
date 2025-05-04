@@ -8,18 +8,20 @@ import { RootState } from '../store/mainStore';
 
 interface FetchObjectDataProps {
     onObjectDataReceived?: (objectLinks: any[]) => void;
+    onSpecificObjectReceived?: (objectData: any) => void;
 }
 
 const FetchObjectData: React.FC<FetchObjectDataProps> = ({
     onObjectDataReceived,
+    onSpecificObjectReceived,
 }) => {
     const [isInitialized, setIsInitialized] = useState<boolean>(false);
     const { ros } = useRos();
     const dispatch = useDispatch();
     const hasFetchedRef = useRef<boolean>(false);
+    const latestRequestTypeRef = useRef<'all' | 'specific'>('all');
 
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
-
     const fetchObjectWithId = useSelector((state: RootState) => state.app.fetchObjectWithId);
 
     const [responseTopic, setResponseTopic] = useState<ROSLIB.Topic | null>(null);
@@ -47,8 +49,10 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
                         type: "INFO",
                     }));
 
-                    if (onObjectDataReceived) {
+                    if (latestRequestTypeRef.current === 'all' && onObjectDataReceived) {
                         onObjectDataReceived(objectData);
+                    } else if (latestRequestTypeRef.current === 'specific' && onSpecificObjectReceived) {
+                        onSpecificObjectReceived(objectData);
                     }
                 } catch (error) {
                     dispatch(addNotification({
@@ -82,6 +86,9 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
             }));
             return;
         }
+
+        //TODO
+        latestRequestTypeRef.current = id === "all" ? 'all' : 'specific';
 
         const detectedObjectsTopic = new ROSLIB.Topic({
             ros: ros,
@@ -121,12 +128,14 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
 
     useEffect(() => {
         if (generateReport && isInitialized && !hasFetchedRef.current) {
+            latestRequestTypeRef.current = 'all';
             fetchObjectData("all");
         }
     }, [generateReport, isInitialized]);
 
     useEffect(() => {
         if (fetchObjectWithId.fetchObject === true) {
+            latestRequestTypeRef.current = 'specific';
             fetchObjectData(fetchObjectWithId.id);
         }
     }, [fetchObjectWithId])

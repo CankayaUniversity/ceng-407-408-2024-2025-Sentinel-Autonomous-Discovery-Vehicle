@@ -10,7 +10,7 @@ import { ColorPaletteKey } from "../../../definitions/twoDimensionalMapTypeDefin
 import { colorPalettes } from "../../../constants/mapPaletteConstants";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/mainStore";
-import { addGeneratedMap, addNotification, setGenerateReport } from "../../../store/reducers/applicationReducer";
+import { addNotification, setGenerateReport, addGeneratedMapToReport } from "../../../store/reducers/applicationReducer";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -38,7 +38,6 @@ const TwoDimensionalMapComponent = () => {
 
   const [infoPanelVisibility, setInfoPanelVisibility] = useState<string>("hidden");
   const generateReport = useSelector((state: RootState) => state.app.generateReport);
-  const storedMapImages = useSelector((state: RootState) => state.app.generatedMaps);
 
   useEffect(() => {
     if (!ros) return;
@@ -169,12 +168,14 @@ const TwoDimensionalMapComponent = () => {
             const timestamp = new Date().toISOString();
             const dataUrl = tempCanvas.toDataURL('image/png');
 
-            dispatch(addGeneratedMap({
-              topic,
-              palette,
-              dataUrl,
-              timestamp
-            }));
+            const serializedMapData = {
+              topic: topic,
+              palette: palette,
+              dataUrl: dataUrl,
+              timestamp: timestamp
+            };
+
+            dispatch(addGeneratedMapToReport(serializedMapData));
 
             completedMaps++;
             checkCompletion();

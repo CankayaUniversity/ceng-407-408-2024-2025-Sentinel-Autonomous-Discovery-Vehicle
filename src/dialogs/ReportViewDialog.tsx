@@ -8,26 +8,23 @@ import CloseIcon from '@mui/icons-material/Close';
 import { PDFViewer } from '@react-pdf/renderer';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    clearGeneratedMaps,
+    clearGeneratedMapsFromReport,
     setGenerateReport
 } from '../store/reducers/applicationReducer';
 import ReportGenerator from '../containers/reportGenerator/ReportGenerator';
-import { reportTemplateData } from '../containers/reportGenerator/ReportTemplate';
 import { RootState } from '../store/mainStore';
 import { ReportViewDialogProps } from '../definitions/reportGeneratorTypeDefinitions';
-import FetchObjectData from '../utils/FetchObjectData';
 
 const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, missionType, selectedObjects }) => {
-    const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
-    const [reportData, setReportData] = useState(reportTemplateData);
-    const hasInitialized = useRef(false);
-
     const dispatch = useDispatch();
+    const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
+    const hasInitialized = useRef(false);
+    const reportData = useSelector((state: RootState) => state.app.reportData);
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
-    const generatedMaps = useSelector((state: RootState) => state.app.generatedMaps);
 
     useEffect(() => {
         if (open && !hasInitialized.current) {
+            dispatch(clearGeneratedMapsFromReport());
             setIsGeneratingReport(true);
             dispatch(setGenerateReport(true));
             hasInitialized.current = true;
@@ -38,42 +35,9 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
 
     useEffect(() => {
         if (generateReport === false && isGeneratingReport) {
-            setReportData(prevData => ({
-                ...prevData,
-                content: {
-                    ...prevData.content,
-                    imageSections: prevData.content.imageSections.map(section =>
-                        section.title === 'Generated Maps'
-                            ? {
-                                ...section,
-                                images: generatedMaps,
-                            }
-                            : section
-                    )
-                }
-            }));
-
             setIsGeneratingReport(false);
-            dispatch(clearGeneratedMaps());
         }
-    }, [generateReport, isGeneratingReport, dispatch, generatedMaps]);
-
-    const handleObjectDataReceived = (objectData: any[]) => {
-        setReportData(prevData => ({
-            ...prevData,
-            content: {
-                ...prevData.content,
-                imageSections: prevData.content.imageSections.map(section =>
-                    section.title === 'Summary of Detected Object Types'
-                        ? {
-                            ...section,
-                            images: objectData,
-                        }
-                        : section
-                )
-            }
-        }));
-    };
+    }, [generateReport, isGeneratingReport]);
 
     return (
         <Dialog
@@ -99,9 +63,6 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
                 </IconButton>
             </DialogTitle>
             <DialogContent sx={{ height: '80vh' }}>
-                <FetchObjectData
-                    onObjectDataReceived={handleObjectDataReceived}
-                />
                 {isGeneratingReport ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                         Loading report...
