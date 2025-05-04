@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from collections import deque
 import time
 import uuid
+import copy
 
 
 
@@ -70,11 +71,12 @@ class YoloModel:
             source=frame,
             device=0 if self.device == "cuda" else "cpu",
             verbose=False,
-            conf=0.75,
+            conf=0.90,
             iou=0.45,
         )
 
         boxes = results[0].boxes
+        frame_unboxed = copy.deepcopy(frame)
 
         if boxes is None or len(boxes) == 0:
             return frame  # No detections; return original frame
@@ -102,7 +104,7 @@ class YoloModel:
             x2 = min(w, x2 + margin_x)
             y2 = min(h, y2 + margin_y)
 
-            obj_crop = frame[y1:y2, x1:x2]
+            obj_crop = frame_unboxed[y1:y2, x1:x2]
 
             if obj_crop.size == 0:
                 continue
