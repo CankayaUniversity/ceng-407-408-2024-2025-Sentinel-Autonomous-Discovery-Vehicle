@@ -6,3 +6,4 @@ log
 .cache
 node_modules
 .venv
+*.pt

@@ -102,12 +102,18 @@ def generate_launch_description() -> LaunchDescription:
         },
     )
 
+    object_detection = Node(
+        package="object_detection",
+        executable="run",
+        name="object_detection",
+    )
+
     rviz2 = get_rviz2(use_3d_map)
 
     ros2_control = load_ros2_control(use_ros2_control)
 
     timer_action = TimerAction(
-        period=timer_period, actions=ros2_control + [movement, mapping] + rviz2
+        period=timer_period, actions=ros2_control + [movement, mapping, object_detection] + rviz2
     )
 
     ld = LaunchDescription(declare_args())

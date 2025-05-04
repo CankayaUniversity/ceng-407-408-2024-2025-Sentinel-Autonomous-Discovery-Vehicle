@@ -13,17 +13,11 @@ from launch.actions import (
 )
 from launch_ros.actions import Node
 from launch import LaunchDescription
-from launch.conditions import IfCondition
 from launch_ros.substitutions import FindPackageShare
 
 
 def declare_args() -> List[DeclareLaunchArgument]:
     return [
-        DeclareLaunchArgument(
-            "use_ros2_control",
-            default_value="true",
-            description="Use ros2_control instead of gazebo_control plugin",
-        ),
         DeclareLaunchArgument(
             "use_autonomous",
             default_value="true",
@@ -38,11 +32,10 @@ def declare_args() -> List[DeclareLaunchArgument]:
             "use_builtin",
             default_value="true",
             description="Use builtin manual controller (teleop nodes)",
-        ),
-
+        ), 
         DeclareLaunchArgument(
             "timer_period",
-            default_value="30.0",
+            default_value="3.0",
             description="Timer Period",
         ),
     ]
@@ -51,9 +44,10 @@ def declare_args() -> List[DeclareLaunchArgument]:
 def generate_launch_description() -> LaunchDescription:
     use_sim_time = "false"
     use_3d_map = "false"
+    use_ros2_control = 'true'
 
-    use_ros2_control = LaunchConfiguration("use_ros2_control")
     use_autonomous = LaunchConfiguration("use_autonomous")
+    use_manual = LaunchConfiguration("use_manual")
     use_builtin = LaunchConfiguration("use_builtin")
     timer_period = LaunchConfiguration("timer_period")
 
@@ -74,6 +68,7 @@ def generate_launch_description() -> LaunchDescription:
             "use_sim_time": use_sim_time,
             "use_builtin": use_builtin,
             "use_autonomous": use_autonomous,
+            "use_manual":use_manual,
         },
     )
 
@@ -89,25 +84,23 @@ def generate_launch_description() -> LaunchDescription:
     lidar = load_lidar()
 
 
-    joint_spwaner,skid_spwaner,controller_manager = load_ros2_control(use_ros2_control)
+    joint_spawner,skid_spawner,controller_manager = load_ros2_control()
 
-    delayed_controller_manager = TimerAction(period=3.0, actions=[controller_manager])
+    delayed_controller_manager = TimerAction(period=timer_period, actions=[controller_manager])
 
     delayed_skid_spawner = RegisterEventHandler(
         event_handler=OnProcessStart(
             target_action=controller_manager,
-            on_start=[skid_spwaner],
+            on_start=[skid_spawner],
         )
     )
 
     delayed_joint_broad_spawner = RegisterEventHandler(
         event_handler=OnProcessStart(
             target_action=controller_manager,
-            on_start=[joint_spwaner],
+            on_start=[joint_spawner],
         )
     )
-
-
 
     ld = LaunchDescription(declare_args())
     ld.add_action(model)
@@ -144,7 +137,7 @@ def load_lidar():
     )
 
 
-def load_ros2_control(use_ros2_control: LaunchConfiguration):
+def load_ros2_control():
     robot_description = Command(['ros2 param get --hide-type /robot_state_publisher robot_description'])
     controller_params_file = os.path.join(get_package_share_directory("model"),'config','ros2_controllers.yaml')
     controller_manager = Node(
@@ -157,12 +150,10 @@ def load_ros2_control(use_ros2_control: LaunchConfiguration):
         package="controller_manager",
         executable="spawner",
         arguments=["joint_broad"],
-        condition=IfCondition(use_ros2_control),
     )
     skid_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["skid_steer_cont"],
-        condition=IfCondition(use_ros2_control),
     )
     return [joint_spawner, skid_spawner,controller_manager]

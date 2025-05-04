@@ -16,11 +16,6 @@ from launch_ros.substitutions import FindPackageShare
 def declare_args() -> List[DeclareLaunchArgument]:
     return [
         DeclareLaunchArgument(
-            "use_ros2_control",
-            default_value="true",
-            description="Use ros2_control instead of gazebo_control plugin",
-        ),
-        DeclareLaunchArgument(
             "use_autonomous",
             default_value="false",
             description="Enable autonomous movement with exploration",
@@ -28,17 +23,12 @@ def declare_args() -> List[DeclareLaunchArgument]:
         DeclareLaunchArgument(
             "use_manual",
             default_value="true",
-            description="Enable manual movement with teleop nodes",
+            description="Enable manual movement",
         ),
         DeclareLaunchArgument(
             "use_builtin",
             default_value="true",
             description="Use builtin manual controller (teleop nodes)",
-        ),
-        DeclareLaunchArgument(
-            "timer_period",
-            default_value="30.0",
-            description="Timer Period",
         ),
     ]
 
@@ -47,21 +37,11 @@ def generate_launch_description() -> LaunchDescription:
     use_sim_time = "false"
     use_3d_map = "false"
 
-    use_ros2_control = LaunchConfiguration("use_ros2_control")
     use_autonomous = LaunchConfiguration("use_autonomous")
     use_manual = LaunchConfiguration("use_manual")
     use_builtin = LaunchConfiguration("use_builtin")
-    timer_period = LaunchConfiguration("timer_period")
 
-    model = get_launch_file(
-        package_name="model",
-        launch_file_name="rsp.launch.py",
-        launch_arguments={
-            "use_sim_time": use_sim_time,
-            "use_ros2_control": use_ros2_control,
-            "use_3d_map": use_3d_map,
-        },
-    )
+
 
     movement = get_launch_file(
         package_name="movement",
@@ -74,17 +54,19 @@ def generate_launch_description() -> LaunchDescription:
         },
     )
 
-    rviz2 = get_rviz2(use_3d_map)
-
-
-    timer_action = TimerAction(
-        period=timer_period, actions= [movement, rviz2]
+    object_detection = Node(
+        package="object_detection",
+        executable="run",
+        name="object_detection",
+        output="screen",
     )
 
+    rviz2 = get_rviz2(use_3d_map)
+
     ld = LaunchDescription(declare_args())
-    ld.add_action(model)
     ld.add_action(movement)
-    ld.add_action(timer_action)
+    ld.add_action(rviz2)
+    ld.add_action(object_detection)
 
     return ld
 
