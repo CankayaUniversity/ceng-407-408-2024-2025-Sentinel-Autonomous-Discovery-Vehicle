@@ -32,6 +32,8 @@ The Sentinel is designed to autonomously explore and navigate unknown environmen
 
 - <a href="https://docs.ros.org/en/jazzy/Installation.html">Install the Robot Operating System.</a>
 
+- <a href="https://docs.docker.com/get-started/get-docker/">Install Docker.</a>
+
 - Source ROS dependencies.
 
   ```bash
@@ -82,15 +84,74 @@ The Sentinel is designed to autonomously explore and navigate unknown environmen
   colcon build
   ```
 
+- Start Docker Containers
+
+  ```bash
+  docker compose up -d
+  ```
+
 - Run.
 
   ```bash
   source install/setup.bash
 
-  ros2 launch sentinel sim.launch.py
+  ros2 launch sentinel robot.launch.py
+  # ros2 launch sentinel sim.launch.py # For launching simulation
   ```
 
 #### Vehicle
+
+- <a href="https://docs.ros.org/en/jazzy/Installation.html">Install the Robot Operating System.</a>
+
+- <a href="https://github.com/raspberrypi/libcamera?tab=readme-ov-file#getting-started">Install Libcamera.</a>
+
+- <a href="https://github.com/YDLIDAR/YDLidar-SDK?tab=readme-ov-file#installation">Install YDLidar-Sdk.</a>
+
+- Source ROS dependencies.
+
+  ```bash
+  source /opt/ros/jazzy/setup.bash
+  ```
+
+- Clone the repository.
+
+  ```bash
+  git clone https://github.com/CankayaUniversity/ceng-407-408-2024-2025-Sentinel-Autonomous-Discovery-Vehicle.git Sentinel
+
+  cd Sentinel
+  ```
+
+- Initialize submodules.
+
+  ```bash
+  git submodule update --init --recursive
+  ```
+
+- Change to the directory to install vehicle packages.
+
+  ```bash
+  cd sentinel.vehicle
+  ```
+
+- Install workspace-specific ROS dependencies.
+
+  ```bash
+  rosdep update && rosdep install --from-paths src --ignore-src -r -y
+  ```
+
+- Build ROS packages.
+
+  ```bash
+  colcon build
+  ```
+
+- Run.
+
+  ```bash
+  source install/setup.bash
+
+  ros2 launch sentinel robot.launch.py
+  ```
 
 #### Frontend
 
