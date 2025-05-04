@@ -1,6 +1,7 @@
 import {
   ApplicationStateType,
   MovementDataType,
+  FetchObjectWithIdType
 } from "../../definitions/applicationTypeDefinitions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
@@ -19,6 +20,10 @@ const initialState: ApplicationStateType = {
   generateReport: false,
   generatedMaps: [],
   notifications: [],
+  fetchObjectWithId: {
+    id: "",
+    fetchObject: false,
+  }
 };
 
 const applicationSlice = createSlice({
@@ -69,6 +74,15 @@ const applicationSlice = createSlice({
     clearNotifications: (state) => {
       state.notifications = [];
     },
+    setFetchObjectWithId: (state, action: PayloadAction<FetchObjectWithIdType>) => {
+      state.fetchObjectWithId = action.payload;
+    },
+    resetFetchObjectFlag: (state) => {
+      state.fetchObjectWithId = {
+        ...state.fetchObjectWithId,
+        fetchObject: false
+      };
+    },
   },
 });
 
@@ -86,5 +100,7 @@ export const {
   addNotification,
   removeNotification,
   clearNotifications,
+  setFetchObjectWithId,
+  resetFetchObjectFlag,
 } = applicationSlice.actions;
 export default applicationSlice.reducer;

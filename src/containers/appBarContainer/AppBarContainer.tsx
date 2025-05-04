@@ -34,7 +34,7 @@ const AppBarContainer: React.FC = () => {
     const [isMissionTypeDialogOpen, setIsMissionTypeDialogOpen] = useState(false);
     const [openReportDialog, setOpenReportDialog] = useState(false);
     const [missionType, setMissionType] = useState('');
-    const [objectClasses, setObjectClasses] = useState(["Table", "Person", "Bag"]);
+    const [objectClasses, setObjectClasses] = useState(["Table", "Person", "Bag", "Bench", "tv"]); //TODO Adjustment for all objects, dynamic object list
     const [selectedObjects, setSelectedObjects] = useState<string[]>([]);
 
     useEffect(() => {

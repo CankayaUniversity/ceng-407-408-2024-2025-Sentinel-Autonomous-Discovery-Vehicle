@@ -1,3 +1,4 @@
+import { objectData } from "../../definitions/reportGeneratorTypeDefinitions";
 import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
 
 export const reportTemplateData = {
@@ -19,7 +20,7 @@ export const reportTemplateData = {
             {
                 title: 'Summary of Detected Object Types',
                 content: 'Summary of detected object types and frequencies will be displayed here.',
-                images: [] as string[],
+                images: [] as objectData[],
             }
         ]
     }

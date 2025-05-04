@@ -8,7 +8,13 @@ export interface DataContentSection {
 export interface ImageContentSection {
     title: string;
     content: string;
-    images: (string | StoredMapImage)[];
+    images: (objectData | StoredMapImage)[];
+}
+
+export interface objectData {
+    id: string;
+    class: string;
+    url: string;
 }
 
 export interface ReportContent {

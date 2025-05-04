@@ -11,6 +11,12 @@ export interface ApplicationStateType {
   generateReport: boolean;
   generatedMaps: StoredMapImage[];
   notifications: NotificationItem[];
+  fetchObjectWithId: FetchObjectWithIdType;
+}
+
+export interface FetchObjectWithIdType {
+  id: string;
+  fetchObject: boolean;
 }
 
 export interface MovementDataType {

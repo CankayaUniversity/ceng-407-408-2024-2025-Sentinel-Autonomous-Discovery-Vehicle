@@ -6,19 +6,16 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { PDFViewer } from '@react-pdf/renderer';
-import ROSLIB from "roslib";
-import { v4 as uuidv4 } from 'uuid';
-import { useRos } from '../utils/RosContext';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     clearGeneratedMaps,
-    setGenerateReport,
-    addNotification
+    setGenerateReport
 } from '../store/reducers/applicationReducer';
 import ReportGenerator from '../containers/reportGenerator/ReportGenerator';
 import { reportTemplateData } from '../containers/reportGenerator/ReportTemplate';
 import { RootState } from '../store/mainStore';
 import { ReportViewDialogProps } from '../definitions/reportGeneratorTypeDefinitions';
+import FetchObjectData from '../utils/FetchObjectData';
 
 const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, missionType, selectedObjects }) => {
     const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
@@ -26,7 +23,6 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
     const hasInitialized = useRef(false);
 
     const dispatch = useDispatch();
-    const { ros } = useRos();
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
     const generatedMaps = useSelector((state: RootState) => state.app.generatedMaps);
 
@@ -57,70 +53,26 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
                 }
             }));
 
-            fetchObjectData();
-
             setIsGeneratingReport(false);
             dispatch(clearGeneratedMaps());
         }
-    }, [generateReport, isGeneratingReport, dispatch, ros, generatedMaps]);
+    }, [generateReport, isGeneratingReport, dispatch, generatedMaps]);
 
-    const fetchObjectData = () => {
-        if (!ros) return;
-
-        const detectedObjectsTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: '/get_object_request',
-            messageType: 'std_msgs/String'
-        });
-
-        const message = new ROSLIB.Message({
-            data: 'get_detected_objects'
-        });
-
-        detectedObjectsTopic.publish(message);
-
-        const responseTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: '/get_object_links',
-            messageType: 'std_msgs/String'
-        });
-
-        responseTopic.subscribe((responseTopicMessage: ROSLIB.Message) => {
-            try {
-                const objectLinks = JSON.parse((responseTopicMessage as any).data);
-
-                dispatch(addNotification({
-                    id: uuidv4(),
-                    data: `Object Links Received from /get_detected_objects`,
-                    timestamp: new Date().toISOString(),
-                    type: "INFO",
-                }));
-
-                setReportData(prevData => ({
-                    ...prevData,
-                    content: {
-                        ...prevData.content,
-                        imageSections: prevData.content.imageSections.map(section =>
-                            section.title === 'Summary of Detected Object Types'
-                                ? {
-                                    ...section,
-                                    images: objectLinks,
-                                }
-                                : section
-                        )
-                    }
-                }));
-
-                responseTopic.unsubscribe();
-            } catch (error) {
-                dispatch(addNotification({
-                    id: uuidv4(),
-                    data: `Failed to parse object links JSON: ${error}`,
-                    timestamp: new Date().toISOString(),
-                    type: "ERROR",
-                }));
+    const handleObjectDataReceived = (objectData: any[]) => {
+        setReportData(prevData => ({
+            ...prevData,
+            content: {
+                ...prevData.content,
+                imageSections: prevData.content.imageSections.map(section =>
+                    section.title === 'Summary of Detected Object Types'
+                        ? {
+                            ...section,
+                            images: objectData,
+                        }
+                        : section
+                )
             }
-        });
+        }));
     };
 
     return (
@@ -147,6 +99,9 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
                 </IconButton>
             </DialogTitle>
             <DialogContent sx={{ height: '80vh' }}>
+                <FetchObjectData
+                    onObjectDataReceived={handleObjectDataReceived}
+                />
                 {isGeneratingReport ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                         Loading report...
