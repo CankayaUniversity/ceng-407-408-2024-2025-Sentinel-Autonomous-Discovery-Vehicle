@@ -23,18 +23,20 @@ import NotificationList from './NotificationList';
 import MissionTypeDialog from '../../dialogs/MissionTypeDialog';
 import ReportViewDialog from '../../dialogs/ReportViewDialog';
 import { RootState } from '../../store/mainStore';
+import { objectData } from '../../definitions/reportGeneratorTypeDefinitions';
 
 const AppBarContainer: React.FC = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
     const notifications = useSelector((state: RootState) => state.app.notifications);
     const isAppBarOpen = useSelector((state: RootState) => state.app.isAppBarOpen);
+    const objectLinks: objectData[] = useSelector((state: RootState) => state.app.reportData.content.imageSections[1].images as objectData[]);
     const dispatch = useDispatch();
     const { ros } = useRos();
 
     const [isMissionTypeDialogOpen, setIsMissionTypeDialogOpen] = useState(false);
     const [openReportDialog, setOpenReportDialog] = useState(false);
     const [missionType, setMissionType] = useState('');
-    const [objectClasses, setObjectClasses] = useState(["Table", "Person", "Bag", "Bench", "tv"]); //TODO Adjustment for all objects, dynamic object list
+    const [objectClasses, setObjectClasses] = useState<string[]>(["PERSON"]);
     const [selectedObjects, setSelectedObjects] = useState<string[]>([]);
 
     useEffect(() => {
@@ -61,6 +63,22 @@ const AppBarContainer: React.FC = () => {
             notificationsTopic.unsubscribe();
         };
     }, [ros, dispatch]);
+
+    useEffect(() => {
+        if (objectLinks) {
+            try {
+                let objectClasses: string[] = [];
+                objectLinks.forEach(object => {
+                    if (!objectClasses.includes((object.class).toUpperCase())) {
+                        objectClasses.push((object.class).toUpperCase());
+                    }
+                });
+                setObjectClasses(objectClasses);
+            } catch (error) {
+                console.info("Error: ", error);
+            }
+        }
+    }, [objectLinks])
 
     const toggleDrawer = (newOpen: boolean) => () => {
         dispatch(setIsAppBarOpen(newOpen));

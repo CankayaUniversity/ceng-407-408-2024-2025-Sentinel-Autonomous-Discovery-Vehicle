@@ -1,4 +1,3 @@
-import { useEffect, useState, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -6,42 +5,14 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { PDFViewer } from '@react-pdf/renderer';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-    clearGeneratedMapsFromReport,
-    setGenerateReport,
-    setIsFetchingObjects,
-    setIsGeneratingMaps
-} from '../store/reducers/applicationReducer';
+import { useSelector } from 'react-redux';
 import ReportGenerator from '../containers/reportGenerator/ReportGenerator';
 import { RootState } from '../store/mainStore';
 import { ReportViewDialogProps } from '../definitions/reportGeneratorTypeDefinitions';
 
 const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, missionType, selectedObjects }) => {
-    const dispatch = useDispatch();
-    const [isGeneratingReport, setIsGeneratingReport] = useState<boolean>(false);
-    const hasInitialized = useRef(false);
     const reportData = useSelector((state: RootState) => state.app.reportData);
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
-
-    useEffect(() => {
-        if (open && !hasInitialized.current) {
-            dispatch(clearGeneratedMapsFromReport());
-            setIsGeneratingReport(true);
-            dispatch(setGenerateReport(true));
-            dispatch(setIsFetchingObjects(true));
-            dispatch(setIsGeneratingMaps(true));
-            hasInitialized.current = true;
-        } else if (!open) {
-            hasInitialized.current = false;
-        }
-    }, [open, dispatch]);
-
-    useEffect(() => {
-        if (generateReport === false && isGeneratingReport) {
-            setIsGeneratingReport(false);
-        }
-    }, [generateReport, isGeneratingReport]);
 
     return (
         <Dialog
@@ -67,7 +38,7 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
                 </IconButton>
             </DialogTitle>
             <DialogContent sx={{ height: '80vh' }}>
-                {isGeneratingReport ? (
+                {generateReport ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                         Loading report...
                     </Box>

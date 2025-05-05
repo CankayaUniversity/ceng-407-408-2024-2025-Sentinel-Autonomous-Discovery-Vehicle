@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -14,10 +14,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import { MissionTypeDialogProps } from '../definitions/reportGeneratorTypeDefinitions';
+import { useDispatch } from 'react-redux';
+import { clearGeneratedMapsFromReport, setGenerateReport, setIsFetchingObjects, setIsGeneratingMaps } from '../store/reducers/applicationReducer';
 
 const MissionTypeDialog: React.FC<MissionTypeDialogProps> = ({ open, onClose, onConfirm, objectClasses }) => {
     const [missionType, setMissionType] = useState<string>('');
     const [selectedObjects, setSelectedObjects] = useState<string[]>([]);
+    const dispatch = useDispatch();
+    const hasInitialized = useRef(false);
 
     const handleMissionTypeSelect = (event: SelectChangeEvent) => {
         setMissionType(event.target.value);
@@ -44,6 +48,18 @@ const MissionTypeDialog: React.FC<MissionTypeDialogProps> = ({ open, onClose, on
         setMissionType('');
         setSelectedObjects([]);
     };
+
+    useEffect(() => {
+        if (open && !hasInitialized.current) {
+            dispatch(clearGeneratedMapsFromReport());
+            dispatch(setGenerateReport(true));
+            dispatch(setIsFetchingObjects(true));
+            dispatch(setIsGeneratingMaps(true));
+            hasInitialized.current = true;
+        } else if (!open) {
+            hasInitialized.current = false;
+        }
+    }, [open, dispatch]);
 
     return (
         <Dialog
