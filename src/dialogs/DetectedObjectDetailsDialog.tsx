@@ -3,14 +3,16 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Divider, Chip, IconButton, Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Fade from '@mui/material/Fade';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/mainStore';
 import CloseIcon from '@mui/icons-material/Close';
+import { resetClickedNotificationObject } from '../store/reducers/applicationReducer';
 
 const DetectedObjectDetailsDialog: React.FC = () => {
 
     const [openImage, setOpenImage] = useState<boolean>(false);
     const clickedNotificationObject = useSelector((state: RootState) => state.app.clickedNotificationObject);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (clickedNotificationObject.id !== "") {
@@ -19,6 +21,7 @@ const DetectedObjectDetailsDialog: React.FC = () => {
     }, [clickedNotificationObject])
 
     const handleClose = () => {
+        dispatch(resetClickedNotificationObject());
         setOpenImage(false);
     }
 

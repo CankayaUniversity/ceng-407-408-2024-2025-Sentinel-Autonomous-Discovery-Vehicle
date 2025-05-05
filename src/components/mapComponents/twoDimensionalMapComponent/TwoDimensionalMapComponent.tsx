@@ -10,7 +10,7 @@ import { ColorPaletteKey } from "../../../definitions/twoDimensionalMapTypeDefin
 import { colorPalettes } from "../../../constants/mapPaletteConstants";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../store/mainStore";
-import { addNotification, setGenerateReport, addGeneratedMapToReport } from "../../../store/reducers/applicationReducer";
+import { addNotification, setGenerateReport, addGeneratedMapToReport, setIsGeneratingMaps } from "../../../store/reducers/applicationReducer";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -38,6 +38,8 @@ const TwoDimensionalMapComponent = () => {
 
   const [infoPanelVisibility, setInfoPanelVisibility] = useState<string>("hidden");
   const generateReport = useSelector((state: RootState) => state.app.generateReport);
+  const isGeneratingMaps = useSelector((state: RootState) => state.app.isGeneratingMaps);
+  const isFetchingObjects = useSelector((state: RootState) => state.app.isFetchingObjects);
 
   useEffect(() => {
     if (!ros) return;
@@ -113,7 +115,6 @@ const TwoDimensionalMapComponent = () => {
           listener.unsubscribe();
 
           completedMaps += allPalettes.length;
-          checkCompletion();
         }, 5000);
 
         listener.subscribe((message: any) => {
@@ -125,7 +126,6 @@ const TwoDimensionalMapComponent = () => {
 
             if (!ctx) {
               completedMaps++;
-              checkCompletion();
               return;
             }
 
@@ -178,20 +178,15 @@ const TwoDimensionalMapComponent = () => {
             dispatch(addGeneratedMapToReport(serializedMapData));
 
             completedMaps++;
-            checkCompletion();
+
+            if (completedMaps >= totalMaps) {
+              dispatch(setIsGeneratingMaps(false));
+            }
           });
 
           listener.unsubscribe();
         });
       });
-
-      function checkCompletion() {
-        if (completedMaps >= totalMaps) {
-          dispatch(setGenerateReport(false));
-          // TODO If somehow it becomes false before the object generation, then Objects won't be included in the report.
-          // To solve it, control map generation and objectData separately. 
-        }
-      }
 
       setTimeout(() => {
         if (completedMaps < totalMaps) {
@@ -201,11 +196,20 @@ const TwoDimensionalMapComponent = () => {
             timestamp: new Date().toISOString(),
             type: "WARNING",
           }));
-          dispatch(setGenerateReport(false));
+          dispatch(setIsGeneratingMaps(false));
         }
       }, 30000);
     }
   }, [generateReport, ros]);
+
+  useEffect(() => {
+
+    console.info()
+
+    if (!isGeneratingMaps && !isFetchingObjects) {
+      dispatch(setGenerateReport(false));
+    }
+  }, [isGeneratingMaps, isFetchingObjects])
 
   const handleTopicChange = (newTopic: string) => {
     setMapTopic(newTopic);

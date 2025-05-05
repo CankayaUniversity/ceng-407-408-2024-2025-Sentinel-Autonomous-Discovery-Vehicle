@@ -3,7 +3,7 @@ import ROSLIB from "roslib";
 import { v4 as uuidv4 } from 'uuid';
 import { useRos } from '../utils/RosContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNotification } from '../store/reducers/applicationReducer';
+import { addNotification, setIsFetchingObjects } from '../store/reducers/applicationReducer';
 import { RootState } from '../store/mainStore';
 
 interface FetchObjectDataProps {
@@ -40,13 +40,6 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
                 try {
                     const objectData = JSON.parse((responseTopicMessage as any).data);
 
-                    dispatch(addNotification({
-                        id: uuidv4(),
-                        data: `Object Links Received`,
-                        timestamp: new Date().toISOString(),
-                        type: "INFO",
-                    }));
-
                     if (latestRequestTypeRef.current === 'all' && onObjectDataReceived) {
                         onObjectDataReceived(objectData);
                     } else if (latestRequestTypeRef.current === 'specific' && onSpecificObjectReceived) {
@@ -82,10 +75,20 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
                 timestamp: new Date().toISOString(),
                 type: "WARNING",
             }));
+            dispatch(setIsFetchingObjects(false));
             return;
         }
 
         latestRequestTypeRef.current = id === "all" ? 'all' : 'specific';
+
+        if (id === 'all') {
+            dispatch(addNotification({
+                id: uuidv4(),
+                data: `Object Links Received`,
+                timestamp: new Date().toISOString(),
+                type: "INFO",
+            }));
+        }
 
         const detectedObjectsTopic = new ROSLIB.Topic({
             ros: ros,
@@ -100,6 +103,8 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
         detectedObjectsTopic.publish(message);
 
         hasFetchedRef.current = true;
+
+        dispatch(setIsFetchingObjects(false));
     };
 
     useEffect(() => {

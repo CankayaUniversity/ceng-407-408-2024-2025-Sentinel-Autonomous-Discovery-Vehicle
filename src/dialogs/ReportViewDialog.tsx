@@ -9,7 +9,9 @@ import { PDFViewer } from '@react-pdf/renderer';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     clearGeneratedMapsFromReport,
-    setGenerateReport
+    setGenerateReport,
+    setIsFetchingObjects,
+    setIsGeneratingMaps
 } from '../store/reducers/applicationReducer';
 import ReportGenerator from '../containers/reportGenerator/ReportGenerator';
 import { RootState } from '../store/mainStore';
@@ -27,6 +29,8 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
             dispatch(clearGeneratedMapsFromReport());
             setIsGeneratingReport(true);
             dispatch(setGenerateReport(true));
+            dispatch(setIsFetchingObjects(true));
+            dispatch(setIsGeneratingMaps(true));
             hasInitialized.current = true;
         } else if (!open) {
             hasInitialized.current = false;
