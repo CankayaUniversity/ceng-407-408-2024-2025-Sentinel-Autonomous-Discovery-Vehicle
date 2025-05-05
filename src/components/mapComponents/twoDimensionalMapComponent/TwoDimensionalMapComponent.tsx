@@ -188,6 +188,8 @@ const TwoDimensionalMapComponent = () => {
       function checkCompletion() {
         if (completedMaps >= totalMaps) {
           dispatch(setGenerateReport(false));
+          // TODO If somehow it becomes false before the object generation, then Objects won't be included in the report.
+          // To solve it, control map generation and objectData separately. 
         }
       }
 

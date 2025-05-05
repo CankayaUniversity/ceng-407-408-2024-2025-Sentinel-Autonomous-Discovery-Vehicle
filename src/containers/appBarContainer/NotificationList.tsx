@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Paper from '@mui/material/Paper';
@@ -8,9 +8,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import CloseIcon from '@mui/icons-material/Close';
-import { useDispatch } from 'react-redux';
-import { removeNotification } from '../../store/reducers/applicationReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeNotification, setFetchObjectWithId } from '../../store/reducers/applicationReducer';
 import { NotificationListProps } from '../../definitions/applicationTypeDefinitions';
+import { RootState } from '../../store/mainStore';
+import DetectedObjectDetailsDialog from '../../dialogs/DetectedObjectDetailsDialog';
 
 const notificationTypeStyles = {
     INFO: {
@@ -44,10 +46,13 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
         return date.toLocaleString();
     };
 
-    // TODO When Clicked on detected object notification, image should pop up.
     const renderImageIfObjectNotification = (notificationData: string, notificationId: string) => {
         if (notificationData.includes("New object detected")) {
-            console.info("CLICKED, ObjectId: ", notificationId);
+            const objectToGet = {
+                id: notificationId,
+                fetchObject: true,
+            };
+            dispatch(setFetchObjectWithId(objectToGet));
         }
     }
 
@@ -72,6 +77,11 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                                     minHeight: "80px",
                                     maxHeight: "120px",
                                     cursor: "pointer",
+                                    transition: "transform 0.2s, box-shadow 0.2s",
+                                    "&:hover": {
+                                        transform: "translateY(-2px)",
+                                        boxShadow: "0 4px 8px rgba(0,0,0,0.1)"
+                                    }
                                 }}
                                 onMouseEnter={() => setHoveredNotificationId(item.id)}
                                 onMouseLeave={() => setHoveredNotificationId(null)}
@@ -81,8 +91,8 @@ const NotificationList: React.FC<NotificationListProps> = ({ notifications }) =>
                                     {notificationTypeStyles[item.type].icon}
                                 </Box>
                                 <Box sx={{ display: "flex", position: "relative", flexDirection: "column", justifyContent: "space-between", width: "calc(100% - 50px)" }}>
-                                    <Box sx={{ fontSize: "14px" }}>
-                                        {item.data} {item.data.includes("New object detected") && ` (${item.id})`}
+                                    <Box sx={{ fontSize: "14px", fontWeight: 500 }}>
+                                        {item.data} {item.data.includes("New object detected") && ` (${item.id.substring(0, 8)}...)`}
                                     </Box>
                                     <Box sx={{ fontSize: "12px", color: "text.secondary", marginTop: "4px", }}>
                                         {formatTimestamp(item.timestamp)}

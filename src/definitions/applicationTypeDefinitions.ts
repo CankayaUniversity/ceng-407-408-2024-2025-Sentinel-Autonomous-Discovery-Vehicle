@@ -14,6 +14,8 @@ export interface ApplicationStateType {
   fetchObjectWithId: FetchObjectWithIdType;
   clickedNotificationObject: objectData;
   reportData: typeof reportTemplateData;
+  isGeneratingMaps: boolean;
+  isFetchingObjects: boolean;
 }
 
 export interface FetchObjectWithIdType {

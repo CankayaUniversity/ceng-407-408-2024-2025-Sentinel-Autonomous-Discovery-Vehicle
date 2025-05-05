@@ -21,8 +21,9 @@ import MovementContainer from "../movementContainer/MovementContainer";
 import CameraFullScreenButton from "../cameraContainer/CameraFullScreenButton";
 import DetectionFrameEnableButton from "../cameraContainer/DetectionFrameEnableButton";
 import FetchObjectData from "../../utils/FetchObjectData";
-import { setClickedNotificationObject, setReportObjectData } from "../../store/reducers/applicationReducer";
+import { resetFetchObjectFlag, setClickedNotificationObject, setReportObjectData } from "../../store/reducers/applicationReducer";
 import { objectData } from "../../definitions/reportGeneratorTypeDefinitions";
+import DetectedObjectDetailsDialog from "../../dialogs/DetectedObjectDetailsDialog";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
@@ -55,11 +56,15 @@ const AppContainer = () => {
   }, [paletteMode]);
 
   const handleObjectDataReceived = (objectData: objectData[]) => {
+    console.info(objectData);
     dispatch(setReportObjectData(objectData));
   };
 
-  const handleObjectDataWithIdReceived = (objectData: objectData) => {
-    dispatch(setClickedNotificationObject(objectData));
+  const handleObjectDataWithIdReceived = (objectData: objectData[]) => {
+    console.info("Alper");
+    dispatch(setClickedNotificationObject(objectData[0]));
+
+    dispatch(resetFetchObjectFlag());
   }
 
   return (
@@ -68,6 +73,7 @@ const AppContainer = () => {
         onObjectDataReceived={handleObjectDataReceived}
         onSpecificObjectReceived={handleObjectDataWithIdReceived}
       />
+      <DetectedObjectDetailsDialog />
       <DarkModeButton />
       <HamburgerMenuButton appBarStyles={closeAppBarStyles} />
       <Grid container>

@@ -31,6 +31,8 @@ const initialState: ApplicationStateType = {
     class: "",
   },
   reportData: reportTemplateData,
+  isGeneratingMaps: false,
+  isFetchingObjects: false,
 };
 
 const applicationSlice = createSlice({
@@ -48,6 +50,12 @@ const applicationSlice = createSlice({
     },
     setIsCameraDialogOpen: (state, action: PayloadAction<boolean>) => {
       state.isCameraDialogOpen = action.payload;
+    },
+    setIsGeneratingMaps: (state, action: PayloadAction<boolean>) => {
+      state.isGeneratingMaps = action.payload;
+    },
+    setIsFetchingObjects: (state, action: PayloadAction<boolean>) => {
+      state.isFetchingObjects = action.payload;
     },
     setIsMapDialogOpen: (state, action: PayloadAction<boolean>) => {
       state.isMapDialogOpen = action.payload;
@@ -150,7 +158,7 @@ const applicationSlice = createSlice({
     },
     resetFetchObjectFlag: (state) => {
       state.fetchObjectWithId = {
-        ...state.fetchObjectWithId,
+        id: "",
         fetchObject: false
       };
     },
@@ -212,6 +220,8 @@ export const {
   clearGeneratedMapsFromReport,
   setReportData,
   setReportObjectData,
-  resetReportData
+  resetReportData,
+  setIsGeneratingMaps,
+  setIsFetchingObjects
 } = applicationSlice.actions;
 export default applicationSlice.reducer;

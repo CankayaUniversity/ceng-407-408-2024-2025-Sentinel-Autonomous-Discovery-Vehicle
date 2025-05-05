@@ -40,8 +40,6 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
                 try {
                     const objectData = JSON.parse((responseTopicMessage as any).data);
 
-                    console.info(objectData);
-
                     dispatch(addNotification({
                         id: uuidv4(),
                         data: `Object Links Received`,
@@ -87,7 +85,6 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
             return;
         }
 
-        //TODO
         latestRequestTypeRef.current = id === "all" ? 'all' : 'specific';
 
         const detectedObjectsTopic = new ROSLIB.Topic({
@@ -101,13 +98,6 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
         });
 
         detectedObjectsTopic.publish(message);
-
-        dispatch(addNotification({
-            id: uuidv4(),
-            data: `Request sent for object data: ${id}`,
-            timestamp: new Date().toISOString(),
-            type: "INFO",
-        }));
 
         hasFetchedRef.current = true;
     };
@@ -127,7 +117,7 @@ const FetchObjectData: React.FC<FetchObjectDataProps> = ({
     }, [responseTopic]);
 
     useEffect(() => {
-        if (generateReport && isInitialized && !hasFetchedRef.current) {
+        if (generateReport && isInitialized) {
             latestRequestTypeRef.current = 'all';
             fetchObjectData("all");
         }
