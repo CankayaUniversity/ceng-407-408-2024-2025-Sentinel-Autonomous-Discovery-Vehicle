@@ -1,7 +1,7 @@
 {
   "name": "sentinel",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0-f",
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"npm run rosbridge\"",
