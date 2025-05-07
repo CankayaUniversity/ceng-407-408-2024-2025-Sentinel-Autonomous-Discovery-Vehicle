@@ -28,7 +28,6 @@
         </link>
     </xacro:macro>
 
-
     <xacro:motors prefix="left_front" />
     <xacro:motors prefix="left_rear" />
     <xacro:motors prefix="right_front" />
@@ -247,11 +246,9 @@
         </link>
     </xacro:macro>
 
-    <xacro:small_cylinder
-        prefix="left_front" />
+    <xacro:small_cylinder prefix="left_front" />
     <xacro:small_cylinder prefix="right_front" />
-    <xacro:small_cylinder
-        prefix="left_rear" />
+    <xacro:small_cylinder prefix="left_rear" />
     <xacro:small_cylinder prefix="right_rear" />
 
     <joint

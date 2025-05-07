@@ -12,12 +12,12 @@
                 <param name="device">/dev/ttyUSB0</param>
                 <param name="timeout_ms">1000</param>
                 <param name="loop_rate">30</param>
-                <param name="count_per_rev">20</param>
+                <param name="count_per_rev">823</param>
 
-                <param name="kp">100</param>
-                <param name="kd">30</param>
-                <param name="ki">10</param>
-                <param name="ko">100</param>
+                <param name="kp">12</param>
+                <param name="kd">0</param>
+                <param name="ki">5</param>
+                <param name="ko">50</param>
 
             </hardware>
             <joint name="left_front_wheel_joint">

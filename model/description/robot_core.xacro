@@ -27,7 +27,7 @@
         <color rgba="1 1 1 1.0" />
     </material>
 
-    <material name="Grey">
+    <material name="Gray">
         <color rgba="0.7 0.7 0.7 1.0" />
     </material>
 
@@ -167,16 +167,15 @@
             <xacro:inertial_box mass="${chassis_mass}" x="${chassis_total_length}"
                 y="${chassis_big_width}"
                 z="${chassis_height}">
-                <!--TODO:Check  -->
                 <origin
-                    xyz="${chassis_total_length} ${chassis_big_width} ${chassis_height}"
-                    rpy="0 0 0" />` </xacro:inertial_box>
+                    xyz="0 0 ${chassis_height}"
+                    rpy="0 0 0" />
+            </xacro:inertial_box>
         </link>
     </xacro:macro>
 
     <!-- Chassis bottom !-->
-    <xacro:chassis
-        postfix="bottom" />
+    <xacro:chassis postfix="bottom" />
     <!-- Chassis mid !-->
     <xacro:chassis postfix="mid" />
 

@@ -7,7 +7,6 @@
 
 
     <xacro:include filename="robot_core.xacro" />
-    <xacro:include filename="wheels.xacro" />
     <xacro:include filename="others.xacro" />
     <xacro:include filename="wheels.xacro" />
     <xacro:include filename="lidar.xacro" />

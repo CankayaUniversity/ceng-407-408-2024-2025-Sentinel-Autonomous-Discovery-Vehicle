@@ -3,7 +3,7 @@
     <!-- =================================================================================== -->
     <!-- |                                     Wheels                                      | -->
     <!-- =================================================================================== -->
-    <xacro:macro name="wheels" params="prefix">
+    <xacro:macro name="wheel" params="prefix">
         <link name="${prefix}_wheel">
             <visual>
                 <geometry>
@@ -25,16 +25,16 @@
         </link>
     </xacro:macro>
 
-    <xacro:wheels prefix="left_front" />
-    <xacro:wheels prefix="left_rear" />
-    <xacro:wheels prefix="right_front" />
-    <xacro:wheels prefix="right_rear" />
+    <xacro:wheel prefix="left_front" />
+    <xacro:wheel prefix="left_rear" />
+    <xacro:wheel prefix="right_front" />
+    <xacro:wheel prefix="right_rear" />
 
     <joint name="left_front_wheel_joint" type="continuous">
         <parent link="base_link" />
         <child link="left_front_wheel" />
         <origin
-            xyz="${chassis_big_length/2+(chassis_small_length+0.003)/2} ${chassis_small_width/2 + 0.015} 0.0"
+            xyz="${chassis_big_length/2+(chassis_small_length+0.003)/2} ${chassis_small_width/2 + wheel_thickness/2  + 0.015} 0.0"
             rpy="${-pi/2} 0.0 0.0" />
         <axis xyz="0 0 1" />
     </joint>
@@ -43,7 +43,7 @@
         <parent link="base_link" />
         <child link="left_rear_wheel" />
         <origin
-            xyz="-${chassis_big_length/2+(chassis_small_length+0.003)/2} ${chassis_small_width/2 + 0.015} 0.0"
+            xyz="-${chassis_big_length/2+(chassis_small_length+0.003)/2} ${chassis_small_width/2 + wheel_thickness/2+ 0.015} 0.0"
             rpy="${-pi/2} 0.0 0.0" />
         <axis xyz="0 0 1" />
     </joint>
@@ -52,7 +52,7 @@
         <parent link="base_link" />
         <child link="right_front_wheel" />
         <origin
-            xyz="${chassis_big_length/2+(chassis_small_length+0.003)/2} -${chassis_small_width/2 + 0.015} 0.0"
+            xyz="${chassis_big_length/2+(chassis_small_length+0.003)/2} -${chassis_small_width/2 + wheel_thickness/2+ 0.015} 0.0"
             rpy="${pi/2} 0.0 0.0" />
         <axis xyz="0 0 -1" />
     </joint>
@@ -61,7 +61,7 @@
         <parent link="base_link" />
         <child link="right_rear_wheel" />
         <origin
-            xyz="-${chassis_big_length/2+(chassis_small_length+0.003)/2} -${chassis_small_width/2 + 0.015} 0.0"
+            xyz="-${chassis_big_length/2+(chassis_small_length+0.003)/2} -${chassis_small_width/2 + wheel_thickness/2+ 0.015} 0.0"
             rpy="${pi/2} 0.0 0.0" />
         <axis xyz="0 0 -1" />
     </joint>
