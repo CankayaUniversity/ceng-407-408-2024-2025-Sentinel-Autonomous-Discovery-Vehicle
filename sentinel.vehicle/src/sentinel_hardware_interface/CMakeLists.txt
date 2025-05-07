@@ -14,7 +14,6 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   hardware_interface
   pluginlib
   rclcpp
-  rpm_message
 )
 
 # find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
