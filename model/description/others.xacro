@@ -7,75 +7,93 @@
     <!-- |                                   Motors                                        | -->
     <!-- =================================================================================== -->
     <!-- Motor -->
-    <xacro:macro name="motor" params="prefix">
+    <xacro:macro name="motors" params="prefix">
         <link name="${prefix}_motor">
             <visual>
                 <geometry>
-                    <box size="0.064 0.019 0.021" />
+                    <cylinder radius="${motor_radius}" length="${motor_length}" />
                 </geometry>
-                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
-                <material name="DarkGold" />
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <material name="Gray" />
             </visual>
             <collision>
                 <geometry>
-                    <box size="0.064 0.019 0.021" />
+                    <cylinder radius="${motor_radius}" length="${motor_length}" />
                 </geometry>
             </collision>
+            <xacro:inertial_cylinder mass="${motor_mass}" length="${motor_length}"
+                radius="${motor_radius}">
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+            </xacro:inertial_cylinder>
         </link>
     </xacro:macro>
 
 
-    <!-- Left Front Motor !-->
-    <xacro:motor prefix="left_front" />
-    <!-- Left Rear Motor !-->
-    <xacro:motor prefix="left_rear" />
-    <!-- Right Front Motor !-->
-    <xacro:motor prefix="right_front" />
-    <!-- Right Rear Motor !-->
-    <xacro:motor prefix="right_rear" />
+    <xacro:motors prefix="left_front" />
+    <xacro:motors prefix="left_rear" />
+    <xacro:motors prefix="right_front" />
+    <xacro:motors prefix="right_rear" />
 
-
-    <!-- Left Front Motor Joint!-->
     <joint name="left_front_motor_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="left_front_wheel" />
         <child link="left_front_motor" />
-        <origin xyz="0.0365 0.0390 0.035" rpy="0.0 0.0 0.0" />
-        <xacro:inertial_box mass="0.025" x="0.0365" y="0.0390" z="0.035">
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </xacro:inertial_box>
+        <origin xyz="0.0 0.0 -${motor_length/2 + wheel_thickness/2}" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
     </joint>
 
-    <!-- Left Rear Motor Joint!-->
     <joint name="left_rear_motor_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="left_rear_wheel" />
         <child link="left_rear_motor" />
-        <origin xyz="-0.0365 0.039 0.035" rpy="0 0 0" />
-        <xacro:inertial_box mass="0.025" x="-0.0365" y="0.0390" z="0.035">
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </xacro:inertial_box>
+        <origin xyz="0.0 0.0 -${motor_length/2 + wheel_thickness/2}" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
     </joint>
 
-    <!-- Right Front Motor Joint!-->
+
     <joint name="right_front_motor_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="right_front_wheel" />
         <child link="right_front_motor" />
-        <origin xyz="0.0365 -0.039 0.035" rpy="0 0 0" />
-        <xacro:inertial_box mass="0.025" x="0.0365" y="-0.0390" z="0.035">
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </xacro:inertial_box>
+        <origin xyz="0.0 0.0 -${motor_length/2 + wheel_thickness/2}" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
     </joint>
 
-    <!-- Right Rear Motor Joint!-->
+
     <joint name="right_rear_motor_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="right_rear_wheel" />
         <child link="right_rear_motor" />
-        <origin xyz="-0.0365 -0.039 0.035" rpy="0 0 0" />
-        <xacro:inertial_box mass="0.025" x="-0.0365" y="-0.0390" z="0.035">
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </xacro:inertial_box>
+        <origin xyz="0.0 0.0 -${motor_length/2 + wheel_thickness/2}" rpy="0 0 0" />
+        <axis xyz="0 0 1" />
     </joint>
 
 
+    <!-- =================================================================================== -->
+    <!-- |                                    Arduino                                      | -->
+    <!-- =================================================================================== -->
+    <!-- Raspberry -->
+    <link name="arduino">
+        <visual>
+            <geometry>
+                <box size="0.082 0.053 0.007" />
+            </geometry>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.082 0.053 0.007" />
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.080" x="0.082" y="0.053" z="0.007">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:inertial_box>
+    </link>
+
+    <!-- Arduino joint-->
+    <joint name="arduino_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="arduino" />
+        <origin
+            xyz="-${chassis_total_length/2 - 0.0265 - 0.03} ${chassis_small_width/2 - 0.041 - 0.015} ${0.0035 + chassis_height} "
+            rpy="0 0.0 ${pi/2}" />
+    </joint>
     <!-- =================================================================================== -->
     <!-- |                                  Battery                                        | -->
     <!-- =================================================================================== -->
@@ -86,7 +104,7 @@
                 <box size="0.075 0.065 0.035" />
             </geometry>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
-            <material name="NavyBlue" />
+            <material name="Red" />
         </visual>
         <collision>
             <geometry>
@@ -100,9 +118,11 @@
 
     <!-- Battery Mid Joint!-->
     <joint name="battery_mid_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="chassis_bottom" />
         <child link="battery" />
-        <origin xyz="-0.0455 0.0 0.0895" rpy="0.0 0.0 0.0" />
+        <origin
+            xyz="-${chassis_total_length/2 - 0.0325 - 0.035} -${chassis_small_width/2 - 0.0375 - 0.015} ${0.0175 + chassis_height}"
+            rpy="0.0 0.0 ${pi/2}" />
     </joint>
 
 
@@ -116,7 +136,7 @@
                 <box size="0.143 0.070 0.025" />
             </geometry>
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
-            <material name="BlackWheel" />
+            <material name="White" />
         </visual>
         <collision>
             <geometry>
@@ -127,11 +147,13 @@
             <origin xyz="0 0 0" rpy="0 0 0" />
         </xacro:inertial_box>
     </link>
-    <!-- Base-powerbank joint-->
-    <joint name="base_powerbank" type="fixed">
-        <parent link="base_link" />
+    <!-- powerbank joint-->
+    <joint name="powerbank_joint" type="fixed">
+        <parent link="chassis_mid" />
         <child link="powerbank" />
-        <origin xyz="0.000 0.000 0.0595" rpy="0.0 0.0 0.0" />
+        <origin
+            xyz="${chassis_total_length/2 - 0.0715 - 0.025} ${chassis_small_width/2 - 0.035 - 0.015} ${chassis_height + 0.0125}"
+            rpy="0.0 0.0 0.0" />
     </joint>
 
     <!-- =================================================================================== -->
@@ -158,9 +180,13 @@
 
     <!-- Motor Driver Joint-->
     <joint name="motor_driver_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="chassis_bottom" />
         <child link="motor_driver" />
-        <origin xyz="0.10 0.00 0.060" rpy="0.0 0.0 0.0" />
+        <origin xyz="0 0 0" rpy="0.0 0.0 0.0" />
+        <origin
+            xyz="${chassis_total_length/2 - 0.022 - 0.01} -${chassis_big_width/2 - 0.022- 0.05} 0.013"
+            rpy="0.0 0.0
+        0.0" />
     </joint>
 
 
@@ -168,7 +194,7 @@
     <!-- |                                  Raspberry                                      | -->
     <!-- =================================================================================== -->
     <!-- Raspberry -->
-    <link name="raspberry">
+    <link name="raspberry_pi">
         <visual>
             <geometry>
                 <box size="0.095 0.064 0.025" />
@@ -186,11 +212,13 @@
         </xacro:inertial_box>
     </link>
 
-    <!-- Base-raspberry joint-->
-    <joint name="base_raspberry" type="fixed">
-        <parent link="base_link" />
-        <child link="raspberry" />
-        <origin xyz="0.0455 0.00 0.0845" rpy="0.0 0.0 0.0" />
+    <!-- Raspberry joint-->
+    <joint name="raspberry_pi_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="raspberry_pi" />
+        <origin
+            xyz="${chassis_total_length/2 - 0.04745 -0.03} ${chassis_small_width/2 - 0.032 - 0.015} ${0.0125 + chassis_height}"
+            rpy="0.0 0.0 0.0" />
     </joint>
 
 
@@ -198,165 +226,65 @@
     <!-- |                               Small Cylinder                                    | -->
     <!-- =================================================================================== -->
     <!-- Small_cylinder Macro !-->
-    <xacro:macro name="small_cylinder" params="prefix">
-        <link name="base_mid_${prefix}">
+    <xacro:macro
+        name="small_cylinder" params="prefix">
+        <link name="small_cylinder_${prefix}">
             <visual>
                 <geometry>
-                    <cylinder radius="0.002" length="0.029" />
+                    <cylinder radius="0.002" length="${small_cylinder_length}" />
                 </geometry>
                 <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
                 <material name="DarkGold" />
             </visual>
             <collision>
                 <geometry>
-                    <cylinder radius="0.002" length="0.029" />
+                    <cylinder radius="0.002" length="${small_cylinder_length}" />
                 </geometry>
             </collision>
-            <xacro:inertial_cylinder mass="0.001" length="0.029" radius="0.002">
+            <xacro:inertial_cylinder mass="0.001" length="${small_cylinder_length}" radius="0.002">
                 <origin xyz="0 0 0" rpy="0 0 0" />
             </xacro:inertial_cylinder>
         </link>
     </xacro:macro>
 
-    <!-- Cylinder base-mid left front!-->
-    <xacro:small_cylinder prefix="left_front" />
-
-    <!-- Cylinder base-mid left front2!-->
-    <xacro:small_cylinder prefix="left_front_2" />
-
-    <!-- Cylinder base-mid right front!-->
+    <xacro:small_cylinder
+        prefix="left_front" />
     <xacro:small_cylinder prefix="right_front" />
+    <xacro:small_cylinder
+        prefix="left_rear" />
+    <xacro:small_cylinder prefix="right_rear" />
 
-    <!-- Cylinder base-mid right front2!-->
-    <xacro:small_cylinder prefix="right_front_2" />
-
-    <!-- Cylinder base-mid left back!-->
-    <xacro:small_cylinder prefix="left_back" />
-
-    <!-- Cylinder base-mid left back2!-->
-    <xacro:small_cylinder prefix="left_back_2" />
-
-    <!-- Cylinder base-mid right back!-->
-    <xacro:small_cylinder prefix="right_back" />
-
-    <!-- Cylinder base-mid right back2!-->
-    <xacro:small_cylinder prefix="right_back_2" />
-
-    <!-- Cylinder base-mid left front Joint!-->
-    <joint name="base_mid_left_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_left_front" />
-        <origin xyz="0.12 0.05 0.0325" rpy="0 0.0 0" />
+    <joint
+        name="small_cylinder_left_front_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="small_cylinder_left_front" />
+        <origin
+            xyz="${chassis_total_length/2 - 0.011} ${chassis_big_width/2 - 0.011} ${small_cylinder_length/2 + chassis_height/2}"
+            rpy="0 0.0 0" />
     </joint>
 
-    <!-- Cylinder base-mid left front2 Joint!-->
-    <joint name="base_mid_left_joint_2" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_left_front_2" />
-        <origin xyz="0.101 0.06 0.0325" rpy="0 0.0 0" />
+    <joint name="small_cylinder_right_front_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="small_cylinder_right_front" />
+        <origin
+            xyz="${chassis_total_length/2 - 0.011} -${chassis_big_width/2 - 0.011} ${small_cylinder_length/2 + chassis_height/2}"
+            rpy="0 0.0 0" />
     </joint>
 
-    <!-- Cylinder base-mid right front Joint!-->
-    <joint name="base_mid_right_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_right_front" />
-        <origin xyz="0.12 -0.05 0.0325" rpy="0 0.0 0" />
+    <joint name="small_cylinder_left_rear_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="small_cylinder_left_rear" />
+        <origin
+            xyz="-${chassis_total_length/2 - 0.011} ${chassis_big_width/2 - 0.011} ${small_cylinder_length/2 + chassis_height/2}"
+            rpy="0 0.0 0" />
     </joint>
 
-    <!-- Cylinder base-mid right front2 Joint!-->
-    <joint name="base_mid_right_joint_2" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_right_front_2" />
-        <origin xyz="0.101 -0.06 0.0325" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Cylinder base-mid left back Joint!-->
-    <joint name="base_mid_left_back_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_left_back" />
-        <origin xyz="-0.12 0.05 0.0325" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Cylinder base-mid left back2 Joint!-->
-    <joint name="base_mid_left_back_joint_2" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_left_back_2" />
-        <origin xyz="-0.101 0.06 0.0325" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Cylinder base-mid right back Joint!-->
-    <joint name="base_mid_right_back_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_right_back" />
-        <origin xyz="-0.12 -0.05 0.0325" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Cylinder base-mid right back2 Joint!-->
-    <joint name="base_mid_right_back_joint_2" type="fixed">
-        <parent link="base_link" />
-        <child link="base_mid_right_back_2" />
-        <origin xyz="-0.101 -0.06 0.0325" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- =================================================================================== -->
-    <!-- |                                 Big Cylinder                                    | -->
-    <!-- =================================================================================== -->
-    <!-- Big cylinder Macro !-->
-    <xacro:macro name="big_cylinder" params="prefix">
-        <link name="big_cylinder_${prefix}">
-            <visual>
-                <geometry>
-                    <cylinder radius="0.002" length="0.118" />
-                </geometry>
-                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
-                <material name="White" />
-            </visual>
-            <collision>
-                <geometry>
-                    <cylinder radius="0.002" length="0.118" />
-                </geometry>
-            </collision>
-            <xacro:inertial_cylinder mass="0.038" length="0.188" radius="0.002">
-                <origin xyz="0 0 0" rpy="0 0 0" />
-            </xacro:inertial_cylinder>
-        </link>
-    </xacro:macro>
-
-    <!-- Big Cylinder left front!-->
-    <xacro:big_cylinder prefix="left_front" />
-    <!-- Big Cylinder left back!-->
-    <xacro:big_cylinder prefix="left_back" />
-    <!-- Big Cylinder right front!-->
-    <xacro:big_cylinder prefix="right_front" />
-    <!-- Big Cylinder right back!-->
-    <xacro:big_cylinder prefix="right_back" />
-
-    <!-- Big Cylinder left front Joint!-->
-    <joint name="big_cylinder_left_front_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="big_cylinder_left_front" />
-        <origin xyz="0.093 0.035 0.1075" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Big Cylinder left back Joint!-->
-    <joint name="big_cylinder_left_back_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="big_cylinder_left_back" />
-        <origin xyz="-0.093 0.031 0.1075" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Big Cylinder right front Joint!-->
-    <joint name="big_cylinder_right_front_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="big_cylinder_right_front" />
-        <origin xyz="0.093 -0.035 0.1075" rpy="0 0.0 0" />
-    </joint>
-
-    <!-- Big Cylinder right back Joint!-->
-    <joint name="big_cylinder_right_back_joint" type="fixed">
-        <parent link="base_link" />
-        <child link="big_cylinder_right_back" />
-        <origin xyz="-0.093 -0.031 0.1075" rpy="0 0.0 0" />
+    <joint name="small_cylinder_right_rear_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="small_cylinder_right_rear" />
+        <origin
+            xyz="-${chassis_total_length/2 - 0.011} -${chassis_big_width/2 - 0.011} ${small_cylinder_length/2 + chassis_height/2}"
+            rpy="0 0.0 0" />
     </joint>
 
 

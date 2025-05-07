@@ -26,10 +26,13 @@
 
     <!-- Body & Lidar Joint !-->
     <joint name="lidar_joint" type="fixed">
-        <parent link="base_link" />
+        <parent link="chassis_mid" />
         <child link="lidar" />
-        <origin xyz="-0.04 -0.04 0.215" rpy="0.0 0.0 0.0" />
+        <origin
+            xyz="-${chassis_total_length/2 - 0.0295 - 0.045} -${chassis_small_width/2 - 0.0295 - 0.02} ${0.026 *2}"
+            rpy="0.0 0.0 0.0" />
     </joint>
+
 
     <gazebo reference="lidar">
         <sensor type="gpu_lidar" name="lidar">
