@@ -61,7 +61,6 @@ const AppContainer = () => {
   };
 
   const handleObjectDataWithIdReceived = (objectData: objectData[]) => {
-    console.info("Alper");
     dispatch(setClickedNotificationObject(objectData[0]));
 
     dispatch(resetFetchObjectFlag());

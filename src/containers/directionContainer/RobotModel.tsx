@@ -7,6 +7,9 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import { useRos } from "../../utils/RosContext";
 import ROSLIB from "roslib";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/mainStore";
+import { setObjectIdOdom } from "../../store/reducers/applicationReducer";
 
 const quaternionToYaw = (q: {
   x: number;
@@ -30,6 +33,9 @@ const RobotModel: React.FC<RobotModelProps> = ({ ref, linearSpeed }) => {
   const size = useRef<THREE.Vector3>(new THREE.Vector3());
   const wheelRadius = useRef(0.035);
   const lastTimestampRef = useRef<number | null>(null);
+  const dispatch = useDispatch();
+  const notifications = useSelector((state: RootState) => state.app.notifications);
+  const latestOdomRef = useRef<any>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -67,6 +73,8 @@ const RobotModel: React.FC<RobotModelProps> = ({ ref, linearSpeed }) => {
       const currentTime =
         message.header.stamp.sec + message.header.stamp.nanosec * 1e-9;
 
+      latestOdomRef.current = message;
+
       let deltaTime = 0;
       if (lastTimestampRef.current !== null) {
         deltaTime = currentTime - lastTimestampRef.current;
@@ -103,6 +111,20 @@ const RobotModel: React.FC<RobotModelProps> = ({ ref, linearSpeed }) => {
 
     return () => listener.unsubscribe();
   }, [ros, ref, linearSpeed]);
+
+  useEffect(() => {
+    if (notifications.length > 0) {
+      const latest = notifications[0];
+      if (latest.data.includes("New object detected") && latestOdomRef.current) {
+        let idOdomMap = {
+          id: latest.id,
+          odom: latestOdomRef.current,
+        }
+        dispatch(setObjectIdOdom(idOdomMap));
+      }
+    }
+  }, [notifications]);
+
   return (
     <group ref={ref}>
       <primitive object={scene} />

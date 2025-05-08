@@ -16,6 +16,7 @@ export interface ApplicationStateType {
   reportData: typeof reportTemplateData;
   isGeneratingMaps: boolean;
   isFetchingObjects: boolean;
+  objectIdOdomMap: any;
 }
 
 export interface FetchObjectWithIdType {

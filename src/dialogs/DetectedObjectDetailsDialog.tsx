@@ -7,12 +7,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store/mainStore';
 import CloseIcon from '@mui/icons-material/Close';
 import { resetClickedNotificationObject } from '../store/reducers/applicationReducer';
+import { useRos } from '../utils/RosContext';
+import ROSLIB from 'roslib';
 
 const DetectedObjectDetailsDialog: React.FC = () => {
 
     const [openImage, setOpenImage] = useState<boolean>(false);
     const clickedNotificationObject = useSelector((state: RootState) => state.app.clickedNotificationObject);
+    const objectIdOdomMap = useSelector((state: RootState) => state.app.objectIdOdomMap);
     const dispatch = useDispatch();
+    const { ros } = useRos();
 
     useEffect(() => {
         if (clickedNotificationObject.id !== "") {
@@ -24,6 +28,31 @@ const DetectedObjectDetailsDialog: React.FC = () => {
         dispatch(resetClickedNotificationObject());
         setOpenImage(false);
     }
+
+    const sendOdomToImageService = () => {
+        if (!ros || !clickedNotificationObject.id || !objectIdOdomMap || !objectIdOdomMap[clickedNotificationObject.id]) {
+            console.error('Cannot send data: ROS connection or odometry data not available');
+            return;
+        }
+
+        const serviceClient = new ROSLIB.Service({
+            ros: ros,
+            name: '/odom_to_image',
+            serviceType: 'OdomToImage'
+        });
+
+        const request = new ROSLIB.ServiceRequest({
+            odom: objectIdOdomMap[clickedNotificationObject.id]
+        });
+
+        serviceClient.callService(request, (result) => {
+            console.log('Service call successful, received image data:', result.image_data);
+        }, (error) => {
+            console.error('Service call failed:', error);
+        });
+
+        handleClose();
+    };
 
     return (
         <>
@@ -146,7 +175,7 @@ const DetectedObjectDetailsDialog: React.FC = () => {
                     <Button
                         variant="contained"
                         color="primary"
-                        onClick={handleClose}
+                        onClick={sendOdomToImageService}
                     >
                         Acknowledge
                     </Button>

@@ -33,6 +33,7 @@ const initialState: ApplicationStateType = {
   reportData: reportTemplateData,
   isGeneratingMaps: false,
   isFetchingObjects: false,
+  objectIdOdomMap: {},
 };
 
 const applicationSlice = createSlice({
@@ -197,6 +198,18 @@ const applicationSlice = createSlice({
     resetReportData: (state) => {
       state.reportData = JSON.parse(JSON.stringify(reportTemplateData));
     },
+    setObjectIdOdom: (
+      state,
+      action: PayloadAction<{ id: string; odom: any }>
+    ) => {
+      state.objectIdOdomMap[action.payload.id] = action.payload.odom;
+    },
+    removeObjectIdOdom: (state, action: PayloadAction<string>) => {
+      delete state.objectIdOdomMap[action.payload];
+    },
+    clearObjectIdOdomMap: (state) => {
+      state.objectIdOdomMap = {};
+    },
   },
 });
 
@@ -222,6 +235,9 @@ export const {
   setReportObjectData,
   resetReportData,
   setIsGeneratingMaps,
-  setIsFetchingObjects
+  setIsFetchingObjects,
+  setObjectIdOdom,
+  removeObjectIdOdom,
+  clearObjectIdOdomMap,
 } = applicationSlice.actions;
 export default applicationSlice.reducer;
