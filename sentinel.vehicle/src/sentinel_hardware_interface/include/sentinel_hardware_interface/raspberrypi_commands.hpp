@@ -17,7 +17,7 @@ namespace sentinel_hardware_interface
         void connect(const std::string &serial_device, int32_t timeout_ms);
         void disconnect();
         bool connected() const;
-        std::string send_command(const std::string &command, bool print_output = true);
+        std::string send_command(const std::string &command, bool print_output = false);
         void send_empty_command();
         void read_encoder_values(int &val1, int &val2);
         void set_motor_values(int speed_left, int speed_right);

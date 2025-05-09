@@ -57,8 +57,8 @@ namespace sentinel_hardware_interface
         std::string token_1 = response.substr(0, del_pos);
         std::string token_2 = response.substr(del_pos + delimiter.length());
 
-        val1 = std::atoi(token_1.c_str());
-        val2 = std::atoi(token_2.c_str());
+        val1 = std::atoi(token_1.c_str()) * -1;
+        val2 = std::atoi(token_2.c_str()) * -1;
     }
 
     void RaspberryPiCommands::set_motor_values(int left_speed, int right_speed)

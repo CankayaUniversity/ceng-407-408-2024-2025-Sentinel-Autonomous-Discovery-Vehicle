@@ -9,3 +9,4 @@
 [submodule "sentinel.vehicle/src/ydlidar_ros2_driver"]
 	path = sentinel.vehicle/src/ydlidar_ros2_driver
 	url = https://github.com/YDLIDAR/ydlidar_ros2_driver.git
+	branch = humble

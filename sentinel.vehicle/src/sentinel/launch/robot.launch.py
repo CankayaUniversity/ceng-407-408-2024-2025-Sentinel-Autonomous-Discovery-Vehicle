@@ -160,7 +160,7 @@ def load_ros2_control():
         ["ros2 param get --hide-type /robot_state_publisher robot_description"]
     )
     controller_params_file = os.path.join(
-        get_package_share_directory("model"), "config", "ros2_controllers.yaml"
+        get_package_share_directory("model"), "config", "ros2_controllers_robot.yaml"
     )
     controller_manager = Node(
         package="controller_manager",
