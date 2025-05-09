@@ -65,35 +65,6 @@
 
 
     <!-- =================================================================================== -->
-    <!-- |                                    Arduino                                      | -->
-    <!-- =================================================================================== -->
-    <!-- Raspberry -->
-    <link name="arduino">
-        <visual>
-            <geometry>
-                <box size="0.082 0.053 0.007" />
-            </geometry>
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
-        </visual>
-        <collision>
-            <geometry>
-                <box size="0.082 0.053 0.007" />
-            </geometry>
-        </collision>
-        <xacro:inertial_box mass="0.080" x="0.082" y="0.053" z="0.007">
-            <origin xyz="0 0 0" rpy="0 0 0" />
-        </xacro:inertial_box>
-    </link>
-
-    <!-- Arduino joint-->
-    <joint name="arduino_joint" type="fixed">
-        <parent link="chassis_bottom" />
-        <child link="arduino" />
-        <origin
-            xyz="-${chassis_total_length/2 - 0.0265 - 0.03} ${chassis_small_width/2 - 0.041 - 0.015} ${0.0035 + chassis_height} "
-            rpy="0 0.0 ${pi/2}" />
-    </joint>
-    <!-- =================================================================================== -->
     <!-- |                                  Battery                                        | -->
     <!-- =================================================================================== -->
     <!-- Battery -->
@@ -107,7 +78,7 @@
         </visual>
         <collision>
             <geometry>
-                <box size="0.071 0.065 0.035" />
+                <box size="0.075 0.065 0.035" />
             </geometry>
         </collision>
         <xacro:inertial_box mass="0.385" x="0.071" y="0.065" z="0.035">
@@ -120,8 +91,8 @@
         <parent link="chassis_bottom" />
         <child link="battery" />
         <origin
-            xyz="-${chassis_total_length/2 - 0.0325 - 0.035} -${chassis_small_width/2 - 0.0375 - 0.015} ${0.0175 + chassis_height}"
-            rpy="0.0 0.0 ${pi/2}" />
+            xyz="-${chassis_total_length/2 - 0.0325 - 0.088} -${chassis_big_width/2 - 0.0375 - 0.083} ${0.0175 + chassis_height}"
+            rpy="0.0 0.0 0.0" />
     </joint>
 
 
@@ -183,7 +154,7 @@
         <child link="motor_driver" />
         <origin xyz="0 0 0" rpy="0.0 0.0 0.0" />
         <origin
-            xyz="${chassis_total_length/2 - 0.022 - 0.01} -${chassis_big_width/2 - 0.022- 0.05} 0.013"
+            xyz="${chassis_total_length/2 - 0.022 - 0.01} -${chassis_big_width/2 - 0.022- 0.071} 0.013"
             rpy="0.0 0.0
         0.0" />
     </joint>
@@ -216,10 +187,38 @@
         <parent link="chassis_bottom" />
         <child link="raspberry_pi" />
         <origin
-            xyz="${chassis_total_length/2 - 0.04745 -0.03} ${chassis_small_width/2 - 0.032 - 0.015} ${0.0125 + chassis_height}"
-            rpy="0.0 0.0 0.0" />
+            xyz="-${chassis_total_length/2 - 0.032 -0.015} ${chassis_small_width/2 - 0.04745 - 0.055} ${0.0125 + chassis_height}"
+            rpy="0.0 0.0 ${pi/2}" />
     </joint>
 
+    <!-- =================================================================================== -->
+    <!-- |                                    Arduino                                      | -->
+    <!-- =================================================================================== -->
+    <link name="arduino">
+        <visual>
+            <geometry>
+                <box size="0.082 0.053 0.007" />
+            </geometry>
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.082 0.053 0.007" />
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="0.080" x="0.082" y="0.053" z="0.007">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:inertial_box>
+    </link>
+
+    <!-- Arduino joint-->
+    <joint name="arduino_joint" type="fixed">
+        <parent link="chassis_bottom" />
+        <child link="arduino" />
+        <origin
+            xyz="${chassis_total_length/2 - 0.041 - 0.001} ${chassis_big_width/2 - 0.0265 - 0.035} ${0.0035 + chassis_height} "
+            rpy="0 0.0 0.0" />
+    </joint>
 
     <!-- =================================================================================== -->
     <!-- |                               Small Cylinder                                    | -->

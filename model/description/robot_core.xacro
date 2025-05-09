@@ -60,7 +60,7 @@
     <xacro:property name="chassis_small_width" value="0.2" />
     <xacro:property name="chassis_big_width" value="0.248" />
     <xacro:property name="chassis_height" value="0.004" />
-    <xacro:property name="chassis_mass" value="0.240" />
+    <xacro:property name="chassis_mass" value="0.150" />
 
     <xacro:property name="wheel_radius" value="0.033" />
     <xacro:property name="wheel_thickness" value="0.026" />
@@ -194,5 +194,6 @@
         <child link="chassis_mid" />
         <origin xyz="0.0 0.0 ${small_cylinder_length + chassis_height}" />
     </joint>
+
 
 </robot>
