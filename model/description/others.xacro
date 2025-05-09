@@ -122,8 +122,8 @@
         <parent link="chassis_mid" />
         <child link="powerbank" />
         <origin
-            xyz="${chassis_total_length/2 - 0.0715 - 0.025} ${chassis_small_width/2 - 0.035 - 0.015} ${chassis_height + 0.0125}"
-            rpy="0.0 0.0 0.0" />
+            xyz="${chassis_total_length/2 - 0.0715 - 0.04} ${chassis_small_width/2 - 0.035 - 0.062} ${chassis_height + 0.0125}"
+            rpy="0.0 0.0 ${pi/4.5}" />
     </joint>
 
     <!-- =================================================================================== -->
@@ -206,7 +206,7 @@
                 <box size="0.082 0.053 0.007" />
             </geometry>
         </collision>
-        <xacro:inertial_box mass="0.080" x="0.082" y="0.053" z="0.007">
+        <xacro:inertial_box mass="0.044" x="0.082" y="0.053" z="0.007">
             <origin xyz="0 0 0" rpy="0 0 0" />
         </xacro:inertial_box>
     </link>

@@ -29,7 +29,7 @@
         <parent link="chassis_mid" />
         <child link="lidar" />
         <origin
-            xyz="-${chassis_total_length/2 - 0.0295 - 0.045} -${chassis_small_width/2 - 0.0295 - 0.02} ${0.026 *2}"
+            xyz="-${chassis_total_length/2 - 0.0295 - 0.045} ${chassis_small_width/2 - 0.0295 - 0.02} ${0.026 *2}"
             rpy="0.0 0.0 0.0" />
     </joint>
 
