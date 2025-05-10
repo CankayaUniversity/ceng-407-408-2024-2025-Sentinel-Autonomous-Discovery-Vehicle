@@ -1,6 +1,6 @@
 import { reportTemplateData } from "../containers/reportGenerator/ReportTemplate";
 import { NotificationItem } from "./notificationTypeDefinitions";
-import { objectData } from "./reportGeneratorTypeDefinitions";
+import { GeneratedPath, objectData } from "./reportGeneratorTypeDefinitions";
 
 export interface ApplicationStateType {
   isAppBarOpen: boolean;
@@ -17,6 +17,7 @@ export interface ApplicationStateType {
   isGeneratingMaps: boolean;
   isFetchingObjects: boolean;
   objectIdOdomMap: any;
+  generatedPaths: GeneratedPath[];
 }
 
 export interface FetchObjectWithIdType {

@@ -26,7 +26,8 @@ export interface ReportContent {
 
 export interface ReportGeneratorProps {
     content: ReportContent;
-    missionInformation: MissionInformation,
+    missionInformation: MissionInformation;
+    generatedPaths: GeneratedPath[];
 }
 
 export interface MissionInformation {
@@ -46,4 +47,9 @@ export interface ReportViewDialogProps {
     onClose: () => void;
     missionType: string;
     selectedObjects: string[];
+}
+
+export interface GeneratedPath {
+    id: string;
+    pathUrl: string;
 }

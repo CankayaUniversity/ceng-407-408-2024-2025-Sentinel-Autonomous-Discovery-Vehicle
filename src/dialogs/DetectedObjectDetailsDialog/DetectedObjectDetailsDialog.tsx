@@ -15,7 +15,7 @@ import DetectionDetails from './ObjectDialog/DetectionDetails';
 import { generatePath } from './ObjectDialog/pathService';
 import { RootState } from '../../store/mainStore';
 import { useRos } from '../../utils/RosContext';
-import { resetClickedNotificationObject } from '../../store/reducers/applicationReducer';
+import { addGeneratedPath, resetClickedNotificationObject } from '../../store/reducers/applicationReducer';
 
 const DetectedObjectDetailsDialog: React.FC = () => {
     const [openImage, setOpenImage] = useState<boolean>(false);
@@ -77,8 +77,13 @@ const DetectedObjectDetailsDialog: React.FC = () => {
     };
 
     const handleAddToReport = () => {
-        // TODO Add To Report will be implemented
-        console.log("Add to report clicked");
+        const generatedPathData = {
+            id: clickedNotificationObject.id,
+            pathUrl: pathImage,
+        }
+
+        dispatch(addGeneratedPath(generatedPathData));
+        handleClose();
     };
 
     return (

@@ -23,7 +23,6 @@ import DetectionFrameEnableButton from "../cameraContainer/DetectionFrameEnableB
 import FetchObjectData from "../../utils/FetchObjectData";
 import { resetFetchObjectFlag, setClickedNotificationObject, setReportObjectData } from "../../store/reducers/applicationReducer";
 import { objectData } from "../../definitions/reportGeneratorTypeDefinitions";
-import DetectedObjectDetailsDialog from "../../dialogs/DetectedObjectDetailsDialog/DetectedObjectDetailsDialog";
 
 const AppContainer = () => {
   const isAppbarOpen = useSelector(
@@ -72,7 +71,6 @@ const AppContainer = () => {
         onObjectDataReceived={handleObjectDataReceived}
         onSpecificObjectReceived={handleObjectDataWithIdReceived}
       />
-      <DetectedObjectDetailsDialog />
       <DarkModeButton />
       <HamburgerMenuButton appBarStyles={closeAppBarStyles} />
       <Grid container>

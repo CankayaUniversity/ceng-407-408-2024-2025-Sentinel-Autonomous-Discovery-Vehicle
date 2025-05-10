@@ -8,11 +8,12 @@ import { PDFViewer } from '@react-pdf/renderer';
 import { useSelector } from 'react-redux';
 import ReportGenerator from '../containers/reportGenerator/ReportGenerator';
 import { RootState } from '../store/mainStore';
-import { ReportViewDialogProps } from '../definitions/reportGeneratorTypeDefinitions';
+import { GeneratedPath, ReportViewDialogProps } from '../definitions/reportGeneratorTypeDefinitions';
 
 const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, missionType, selectedObjects }) => {
     const reportData = useSelector((state: RootState) => state.app.reportData);
     const generateReport = useSelector((state: RootState) => state.app.generateReport);
+    const generatedPaths: GeneratedPath[] = useSelector((state: RootState) => state.app.generatedPaths);
 
     return (
         <Dialog
@@ -52,6 +53,7 @@ const ReportViewDialog: React.FC<ReportViewDialogProps> = ({ open, onClose, miss
                                 type: missionType,
                                 objectsToBeDetected: selectedObjects,
                             }}
+                            generatedPaths={generatedPaths}
                         />
                     </PDFViewer>
                 )}

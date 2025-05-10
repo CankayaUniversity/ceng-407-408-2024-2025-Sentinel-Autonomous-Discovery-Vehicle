@@ -4,7 +4,7 @@ import { reportStyles } from './ReportGeneratorStyles';
 import { objectData, ReportGeneratorProps } from '../../definitions/reportGeneratorTypeDefinitions';
 import { StoredMapImage } from '../../definitions/twoDimensionalMapTypeDefinitions';
 
-const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInformation }) => {
+const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInformation, generatedPaths }) => {
 
     return (
         <Document>
@@ -69,6 +69,118 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                     </View>
                 </View>
 
+                <View style={reportStyles.footer} fixed>
+                    <Text render={({ pageNumber, totalPages }) => (
+                        `Generated on ${new Date().toLocaleDateString()} | Page ${pageNumber} of ${totalPages}`
+                    )} />
+                </View>
+            </Page>
+
+            {generatedPaths.length > 0 && (<Page size="A4" style={reportStyles.page}>
+                <View style={reportStyles.header}>
+                    <Text style={reportStyles.title}>Path Analysis</Text>
+                </View>
+
+                <View style={reportStyles.section}>
+                    <Text style={reportStyles.sectionTitle}>Original Images vs. Generated Paths</Text>
+                    <Text style={reportStyles.sectionContent}>
+                        This section provides a side-by-side comparison of detected objects and their corresponding generated navigation paths. The navigation paths are calculated based on the odometry data of the Sentinel, where it has detected objects.
+                    </Text>
+                    {(content.imageSections[1].images as objectData[])
+                        .filter((img) => {
+                            const cls = img.class.toLowerCase();
+                            if (missionInformation.type === "Rescue") {
+                                return ["person", "cat", "dog"].includes(cls);
+                            } else if (missionInformation.type === "Find and Detect") {
+                                return missionInformation.objectsToBeDetected
+                                    .map((o) => o.toLowerCase())
+                                    .includes(cls);
+                            }
+                            return true;
+                        })
+                        .filter(img => {
+                            return generatedPaths &&
+                                generatedPaths.some(path => path.id === img.id);
+                        })
+                        .reduce((rows: React.ReactNode[], img, index, filteredArray) => {
+                            const generatedPath = generatedPaths.find(path => path.id === img.id);
+
+                            if (index % 2 === 0) {
+                                const nextImg = filteredArray[index + 1];
+                                const nextPath = nextImg ?
+                                    generatedPaths.find(path => path.id === nextImg.id) :
+                                    null;
+
+                                rows.push(
+                                    <View key={`path-row-${index}`} style={reportStyles.tableRow}>
+                                        <View style={reportStyles.tablePair}>
+                                            <View style={reportStyles.tableCell}>
+                                                <Image
+                                                    src={img.url}
+                                                    style={reportStyles.tableImage}
+                                                />
+                                                <Text style={reportStyles.caption}>
+                                                    Original: {img.class} (ID: {img.id})
+                                                </Text>
+                                            </View>
+                                            <View style={reportStyles.tableCell}>
+                                                <Image
+                                                    src={generatedPath?.pathUrl || "/api/placeholder/300/200"}
+                                                    style={reportStyles.tableImage}
+                                                />
+                                                <Text style={reportStyles.caption}>
+                                                    Generated Path (ID: {img.id})
+                                                </Text>
+                                            </View>
+                                        </View>
+
+                                        {nextImg && nextPath && (
+                                            <View style={reportStyles.tablePair}>
+                                                <View style={reportStyles.tableCell}>
+                                                    <Image
+                                                        src={nextImg.url}
+                                                        style={reportStyles.tableImage}
+                                                    />
+                                                    <Text style={reportStyles.caption}>
+                                                        Original: {nextImg.class} (ID: {nextImg.id})
+                                                    </Text>
+                                                </View>
+                                                <View style={reportStyles.tableCell}>
+                                                    <Image
+                                                        src={nextPath?.pathUrl || "/api/placeholder/300/200"}
+                                                        style={reportStyles.tableImage}
+                                                    />
+                                                    <Text style={reportStyles.caption}>
+                                                        Generated Path (ID: {nextImg.id})
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        )}
+                                    </View>
+                                );
+                            }
+                            return rows;
+                        }, [])}
+
+                    {((content.imageSections[1].images as objectData[])
+                        .filter(img =>
+                            generatedPaths &&
+                            generatedPaths.some(path => path.id === img.id)
+                        ).length === 0) && (
+                            <Text style={reportStyles.noImageText}>
+                                No matching objects with generated paths available.
+                            </Text>
+                        )}
+                </View>
+
+                <View style={reportStyles.footer} fixed>
+                    <Text render={({ pageNumber, totalPages }) => (
+                        `Generated on ${new Date().toLocaleDateString()} | Page ${pageNumber} of ${totalPages}`
+                    )} />
+                </View>
+            </Page>)}
+
+            <Page size="A4" style={reportStyles.page}>
                 <View style={reportStyles.footer} fixed>
                     <Text render={({ pageNumber, totalPages }) => (
                         `Generated on ${new Date().toLocaleDateString()} | Page ${pageNumber} of ${totalPages}`

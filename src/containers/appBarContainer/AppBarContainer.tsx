@@ -24,6 +24,7 @@ import MissionTypeDialog from '../../dialogs/MissionTypeDialog';
 import ReportViewDialog from '../../dialogs/ReportViewDialog';
 import { RootState } from '../../store/mainStore';
 import { objectData } from '../../definitions/reportGeneratorTypeDefinitions';
+import DetectedObjectDetailsDialog from '../../dialogs/DetectedObjectDetailsDialog/DetectedObjectDetailsDialog';
 
 const AppBarContainer: React.FC = () => {
     const open = useSelector((state: RootState) => state.app.isAppBarOpen);
@@ -173,6 +174,8 @@ const AppBarContainer: React.FC = () => {
                 onConfirm={handleMissionTypeConfirm}
                 objectClasses={objectClasses}
             />
+
+            <DetectedObjectDetailsDialog />
 
             <ReportViewDialog
                 open={openReportDialog}

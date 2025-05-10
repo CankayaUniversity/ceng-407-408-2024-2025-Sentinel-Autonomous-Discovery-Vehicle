@@ -77,5 +77,28 @@ export const reportStyles = StyleSheet.create({
         width: '48%',
         marginBottom: 15,
         alignItems: 'center'
+    },
+    tableRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+        marginBottom: 20,
+        paddingBottom: 10,
+        maxHeight: 300
+    },
+    tablePair: {
+        width: '48%',
+        flexDirection: 'column',
+    },
+    tableCell: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 10
+    },
+    tableImage: {
+        width: '100%',
+        height: 120,
+        objectFit: 'contain',
+        marginBottom: 8
     }
 });

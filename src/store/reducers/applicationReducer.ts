@@ -6,7 +6,7 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { StoredMapImage } from "../../definitions/twoDimensionalMapTypeDefinitions";
 import { NotificationItem } from "../../definitions/notificationTypeDefinitions";
-import { objectData } from "../../definitions/reportGeneratorTypeDefinitions";
+import { GeneratedPath, objectData } from "../../definitions/reportGeneratorTypeDefinitions";
 import { reportTemplateData } from "../../containers/reportGenerator/ReportTemplate";
 
 const initialState: ApplicationStateType = {
@@ -34,6 +34,7 @@ const initialState: ApplicationStateType = {
   isGeneratingMaps: false,
   isFetchingObjects: false,
   objectIdOdomMap: {},
+  generatedPaths: []
 };
 
 const applicationSlice = createSlice({
@@ -210,6 +211,39 @@ const applicationSlice = createSlice({
     clearObjectIdOdomMap: (state) => {
       state.objectIdOdomMap = {};
     },
+    addGeneratedPath: (state, action: PayloadAction<GeneratedPath>) => {
+      const existingPathIndex = state.generatedPaths.findIndex(
+        path => path.id === action.payload.id
+      );
+
+      if (existingPathIndex >= 0) {
+        state.generatedPaths[existingPathIndex] = action.payload;
+      } else {
+        state.generatedPaths.push(action.payload);
+      }
+    },
+    setGeneratedPaths: (state, action: PayloadAction<GeneratedPath[]>) => {
+      state.generatedPaths = action.payload;
+    },
+    updateGeneratedPath: (
+      state,
+      action: PayloadAction<{ id: string; pathUrl: string }>
+    ) => {
+      const { id, pathUrl } = action.payload;
+      const pathIndex = state.generatedPaths.findIndex(path => path.id === id);
+
+      if (pathIndex >= 0) {
+        state.generatedPaths[pathIndex].pathUrl = pathUrl;
+      }
+    },
+    removeGeneratedPath: (state, action: PayloadAction<string>) => {
+      state.generatedPaths = state.generatedPaths.filter(
+        path => path.id !== action.payload
+      );
+    },
+    clearGeneratedPaths: (state) => {
+      state.generatedPaths = [];
+    },
   },
 });
 
@@ -239,5 +273,10 @@ export const {
   setObjectIdOdom,
   removeObjectIdOdom,
   clearObjectIdOdomMap,
+  addGeneratedPath,
+  setGeneratedPaths,
+  updateGeneratedPath,
+  removeGeneratedPath,
+  clearGeneratedPaths,
 } = applicationSlice.actions;
 export default applicationSlice.reducer;
