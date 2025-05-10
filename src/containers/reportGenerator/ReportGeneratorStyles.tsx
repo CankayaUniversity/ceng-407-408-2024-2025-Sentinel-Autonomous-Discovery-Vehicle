@@ -40,7 +40,8 @@ export const reportStyles = StyleSheet.create({
     },
     sectionContent: {
         fontSize: 12,
-        lineHeight: 1.5
+        lineHeight: 1.5,
+        marginBottom: 15
     },
     imageContainer: {
         marginVertical: 15,
@@ -78,27 +79,56 @@ export const reportStyles = StyleSheet.create({
         marginBottom: 15,
         alignItems: 'center'
     },
+    tableContainer: {
+        marginTop: 15,
+        marginBottom: 15,
+        width: '100%',
+    },
     tableRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
+        flexDirection: 'column',
         marginBottom: 20,
-        paddingBottom: 10,
-        maxHeight: 300
+        borderBottom: '1px solid #dddddd',
+        paddingBottom: 15,
     },
     tablePair: {
-        width: '48%',
-        flexDirection: 'column',
+        flexDirection: 'row',
+        width: '100%',
+        marginBottom: 10,
+        backgroundColor: '#f9f9f9',
+        borderRadius: 4,
+        padding: 8,
+        borderLeft: '3px solid #3498db',
     },
     tableCell: {
-        width: '100%',
+        width: '50%',
         alignItems: 'center',
-        marginBottom: 10
+        padding: 5,
+    },
+    tableCellDivider: {
+        width: 1,
+        backgroundColor: '#dddddd',
+        alignSelf: 'stretch',
+        marginHorizontal: 5,
     },
     tableImage: {
-        width: '100%',
+        width: '90%',
         height: 120,
         objectFit: 'contain',
-        marginBottom: 8
-    }
+        marginBottom: 8,
+        borderRadius: 3,
+        border: '1px solid #eeeeee',
+    },
+    tableRowHeader: {
+        flexDirection: 'row',
+        backgroundColor: '#f2f2f2',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginBottom: 5,
+        borderRadius: 4,
+    },
+    tableHeaderText: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: '#444',
+    },
 });

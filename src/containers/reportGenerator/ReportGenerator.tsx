@@ -86,33 +86,34 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                     <Text style={reportStyles.sectionContent}>
                         This section provides a side-by-side comparison of detected objects and their corresponding generated navigation paths. The navigation paths are calculated based on the odometry data of the Sentinel, where it has detected objects.
                     </Text>
-                    {(content.imageSections[1].images as objectData[])
-                        .filter((img) => {
-                            const cls = img.class.toLowerCase();
-                            if (missionInformation.type === "Rescue") {
-                                return ["person", "cat", "dog"].includes(cls);
-                            } else if (missionInformation.type === "Find and Detect") {
-                                return missionInformation.objectsToBeDetected
-                                    .map((o) => o.toLowerCase())
-                                    .includes(cls);
-                            }
-                            return true;
-                        })
-                        .filter(img => {
-                            return generatedPaths &&
-                                generatedPaths.some(path => path.id === img.id);
-                        })
-                        .reduce((rows: React.ReactNode[], img, index, filteredArray) => {
-                            const generatedPath = generatedPaths.find(path => path.id === img.id);
 
-                            if (index % 2 === 0) {
-                                const nextImg = filteredArray[index + 1];
-                                const nextPath = nextImg ?
-                                    generatedPaths.find(path => path.id === nextImg.id) :
-                                    null;
+                    <View style={reportStyles.tableContainer}>
+                        {(content.imageSections[1].images as objectData[])
+                            .filter((img) => {
+                                const cls = img.class.toLowerCase();
+                                if (missionInformation.type === "Rescue") {
+                                    return ["person", "cat", "dog"].includes(cls);
+                                } else if (missionInformation.type === "Find and Detect") {
+                                    return missionInformation.objectsToBeDetected
+                                        .map((o) => o.toLowerCase())
+                                        .includes(cls);
+                                }
+                                return true;
+                            })
+                            .filter(img => {
+                                return generatedPaths &&
+                                    generatedPaths.some(path => path.id === img.id);
+                            })
+                            .map((img, index) => {
+                                const generatedPath = generatedPaths.find(path => path.id === img.id);
 
-                                rows.push(
+                                return (
                                     <View key={`path-row-${index}`} style={reportStyles.tableRow}>
+                                        <View style={reportStyles.tableRowHeader}>
+                                            <Text style={reportStyles.tableHeaderText}>
+                                                Object ID: {img.id} | Class: {img.class}
+                                            </Text>
+                                        </View>
                                         <View style={reportStyles.tablePair}>
                                             <View style={reportStyles.tableCell}>
                                                 <Image
@@ -120,57 +121,34 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                                                     style={reportStyles.tableImage}
                                                 />
                                                 <Text style={reportStyles.caption}>
-                                                    Original: {img.class} (ID: {img.id})
+                                                    Original Image
                                                 </Text>
                                             </View>
+                                            <View style={reportStyles.tableCellDivider} />
                                             <View style={reportStyles.tableCell}>
                                                 <Image
                                                     src={generatedPath?.pathUrl || "/api/placeholder/300/200"}
                                                     style={reportStyles.tableImage}
                                                 />
                                                 <Text style={reportStyles.caption}>
-                                                    Generated Path (ID: {img.id})
+                                                    Generated Path
                                                 </Text>
                                             </View>
                                         </View>
-
-                                        {nextImg && nextPath && (
-                                            <View style={reportStyles.tablePair}>
-                                                <View style={reportStyles.tableCell}>
-                                                    <Image
-                                                        src={nextImg.url}
-                                                        style={reportStyles.tableImage}
-                                                    />
-                                                    <Text style={reportStyles.caption}>
-                                                        Original: {nextImg.class} (ID: {nextImg.id})
-                                                    </Text>
-                                                </View>
-                                                <View style={reportStyles.tableCell}>
-                                                    <Image
-                                                        src={nextPath?.pathUrl || "/api/placeholder/300/200"}
-                                                        style={reportStyles.tableImage}
-                                                    />
-                                                    <Text style={reportStyles.caption}>
-                                                        Generated Path (ID: {nextImg.id})
-                                                    </Text>
-                                                </View>
-                                            </View>
-                                        )}
                                     </View>
                                 );
-                            }
-                            return rows;
-                        }, [])}
+                            })}
 
-                    {((content.imageSections[1].images as objectData[])
-                        .filter(img =>
-                            generatedPaths &&
-                            generatedPaths.some(path => path.id === img.id)
-                        ).length === 0) && (
-                            <Text style={reportStyles.noImageText}>
-                                No matching objects with generated paths available.
-                            </Text>
-                        )}
+                        {((content.imageSections[1].images as objectData[])
+                            .filter(img =>
+                                generatedPaths &&
+                                generatedPaths.some(path => path.id === img.id)
+                            ).length === 0) && (
+                                <Text style={reportStyles.noImageText}>
+                                    No matching objects with generated paths available.
+                                </Text>
+                            )}
+                    </View>
                 </View>
 
                 <View style={reportStyles.footer} fixed>
