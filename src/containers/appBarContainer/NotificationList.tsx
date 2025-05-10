@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { removeNotification, setFetchObjectWithId } from '../../store/reducers/applicationReducer';
 import { NotificationListProps } from '../../definitions/applicationTypeDefinitions';
 import { RootState } from '../../store/mainStore';
-import DetectedObjectDetailsDialog from '../../dialogs/DetectedObjectDetailsDialog';
+import DetectedObjectDetailsDialog from '../../dialogs/DetectedObjectDetailsDialog/DetectedObjectDetailsDialog';
 
 const notificationTypeStyles = {
     INFO: {
