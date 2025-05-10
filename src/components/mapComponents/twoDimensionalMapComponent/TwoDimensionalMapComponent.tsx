@@ -203,9 +203,8 @@ const TwoDimensionalMapComponent = () => {
   }, [generateReport, ros]);
 
   useEffect(() => {
-
-    console.info()
-
+    console.info("isGeneratingMaps: ", isGeneratingMaps);
+    console.info("isFetchingObjects: ", isFetchingObjects);
     if (!isGeneratingMaps && !isFetchingObjects) {
       dispatch(setGenerateReport(false));
     }
