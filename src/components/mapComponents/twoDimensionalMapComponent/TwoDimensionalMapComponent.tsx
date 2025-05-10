@@ -73,6 +73,7 @@ const TwoDimensionalMapComponent = () => {
 
   useEffect(() => {
     if (generateReport === true) {
+      dispatch(setIsGeneratingMaps(true));
 
       const allTopics = [
         "/map",
@@ -90,7 +91,9 @@ const TwoDimensionalMapComponent = () => {
       ];
 
       let completedMaps = 0;
+      let erroredMaps = 0;
       const totalMaps = allTopics.length * allPalettes.length;
+
       dispatch(addNotification({
         id: uuidv4(),
         data: `Starting to generate ${totalMaps} maps...`,
@@ -98,7 +101,26 @@ const TwoDimensionalMapComponent = () => {
         type: "INFO",
       }));
 
+      let topicsProcessed = 0;
+
       allTopics.forEach(topic => {
+        if (!ros) {
+          topicsProcessed++;
+          erroredMaps += allPalettes.length;
+
+          if (topicsProcessed >= allTopics.length) {
+            dispatch(setIsGeneratingMaps(false));
+
+            dispatch(addNotification({
+              id: uuidv4(),
+              data: `Map generation completed with ${completedMaps} successful and ${erroredMaps} failed maps`,
+              timestamp: new Date().toISOString(),
+              type: "INFO",
+            }));
+          }
+          return;
+        }
+
         const listener = new ROSLIB.Topic({
           ros: ros,
           name: topic,
@@ -114,18 +136,41 @@ const TwoDimensionalMapComponent = () => {
           }));
           listener.unsubscribe();
 
-          completedMaps += allPalettes.length;
+          erroredMaps += allPalettes.length;
+          topicsProcessed++;
+
+          if (topicsProcessed >= allTopics.length) {
+            dispatch(setIsGeneratingMaps(false));
+
+            dispatch(addNotification({
+              id: uuidv4(),
+              data: `Map generation completed with ${completedMaps} successful and ${erroredMaps} failed maps`,
+              timestamp: new Date().toISOString(),
+              type: "INFO",
+            }));
+          }
         }, 5000);
 
         listener.subscribe((message: any) => {
           clearTimeout(topicTimeout);
+
+          let palettesProcessed = 0;
 
           allPalettes.forEach(palette => {
             const tempCanvas = document.createElement('canvas');
             const ctx = tempCanvas.getContext('2d');
 
             if (!ctx) {
-              completedMaps++;
+              palettesProcessed++;
+              erroredMaps++;
+
+              if (palettesProcessed >= allPalettes.length) {
+                topicsProcessed++;
+              }
+
+              if (topicsProcessed >= allTopics.length && palettesProcessed >= allPalettes.length) {
+                dispatch(setIsGeneratingMaps(false));
+              }
               return;
             }
 
@@ -178,9 +223,21 @@ const TwoDimensionalMapComponent = () => {
             dispatch(addGeneratedMapToReport(serializedMapData));
 
             completedMaps++;
+            palettesProcessed++;
 
-            if (completedMaps >= totalMaps) {
+            if (palettesProcessed >= allPalettes.length) {
+              topicsProcessed++;
+            }
+
+            if (topicsProcessed >= allTopics.length && palettesProcessed >= allPalettes.length) {
               dispatch(setIsGeneratingMaps(false));
+
+              dispatch(addNotification({
+                id: uuidv4(),
+                data: `Map generation completed with ${completedMaps} successful and ${erroredMaps} failed maps`,
+                timestamp: new Date().toISOString(),
+                type: "INFO",
+              }));
             }
           });
 
@@ -189,10 +246,10 @@ const TwoDimensionalMapComponent = () => {
       });
 
       setTimeout(() => {
-        if (completedMaps < totalMaps) {
+        if (isGeneratingMaps) {
           dispatch(addNotification({
             id: uuidv4(),
-            data: `Timed out waiting for maps. Only generated ${completedMaps}/${totalMaps}`,
+            data: `Timed out waiting for maps. Generated ${completedMaps}/${totalMaps}. Some maps may be missing.`,
             timestamp: new Date().toISOString(),
             type: "WARNING",
           }));
