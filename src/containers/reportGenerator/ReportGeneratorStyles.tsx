@@ -12,7 +12,8 @@ export const reportStyles = StyleSheet.create({
     page: {
         flexDirection: 'column',
         backgroundColor: '#ffffff',
-        padding: 30
+        padding: 30,
+        paddingBottom: 60,
     },
     header: {
         marginBottom: 20,
@@ -81,28 +82,29 @@ export const reportStyles = StyleSheet.create({
     },
     tableContainer: {
         marginTop: 15,
-        marginBottom: 15,
+        marginBottom: 30,
         width: '100%',
     },
     tableRow: {
         flexDirection: 'column',
-        marginBottom: 20,
+        marginTop: 20, // Reduced from 28 to save vertical space
+        marginBottom: 15, // Reduced from 20 to save vertical space
         borderBottom: '1px solid #dddddd',
-        paddingBottom: 15,
+        paddingBottom: 10, // Reduced from 15 to save vertical space
     },
     tablePair: {
         flexDirection: 'row',
         width: '100%',
-        marginBottom: 10,
+        marginBottom: 8, // Reduced from 10 to save vertical space
         backgroundColor: '#f9f9f9',
         borderRadius: 4,
-        padding: 8,
+        padding: 6, // Reduced from 8 to save vertical space
         borderLeft: '3px solid #3498db',
     },
     tableCell: {
         width: '50%',
         alignItems: 'center',
-        padding: 5,
+        padding: 4, // Reduced from 5 to save vertical space
     },
     tableCellDivider: {
         width: 1,
@@ -114,16 +116,16 @@ export const reportStyles = StyleSheet.create({
         width: '90%',
         height: 120,
         objectFit: 'contain',
-        marginBottom: 8,
+        marginBottom: 6,
         borderRadius: 3,
         border: '1px solid #eeeeee',
     },
     tableRowHeader: {
         flexDirection: 'row',
         backgroundColor: '#f2f2f2',
-        paddingVertical: 5,
+        paddingVertical: 4,
         paddingHorizontal: 10,
-        marginBottom: 5,
+        marginBottom: 4, // Reduced from 5 to save vertical space
         borderRadius: 4,
     },
     tableHeaderText: {

@@ -5,6 +5,14 @@ import { objectData, ReportGeneratorProps } from '../../definitions/reportGenera
 import { StoredMapImage } from '../../definitions/twoDimensionalMapTypeDefinitions';
 
 const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInformation, generatedPaths }) => {
+    const pathsPerPage = 2;
+    const pathChunks = [];
+
+    if (generatedPaths.length > 0) {
+        for (let i = 0; i < generatedPaths.length; i += pathsPerPage) {
+            pathChunks.push(generatedPaths.slice(i, i + pathsPerPage));
+        }
+    }
 
     return (
         <Document>
@@ -83,20 +91,25 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                 </View>
             </Page>
 
-            {generatedPaths.length > 0 && (
-                <Page size="A4" style={reportStyles.page}>
+            {pathChunks.map((pathChunk, chunkIndex) => (
+                <Page key={`path-page-${chunkIndex}`} size="A4" style={reportStyles.page}>
                     <View style={reportStyles.header}>
-                        <Text style={reportStyles.title}>Path Analysis</Text>
+                        <Text style={reportStyles.title}>Path Analysis {pathChunks.length > 1 ? `(${chunkIndex + 1}/${pathChunks.length})` : ''}</Text>
                     </View>
 
                     <View style={reportStyles.section}>
-                        <Text style={reportStyles.sectionTitle}>Original Images vs. Generated Paths</Text>
-                        <Text style={reportStyles.sectionContent}>
-                            This section provides a side-by-side comparison of detected objects and their corresponding generated navigation paths.
-                        </Text>
-                        <Text style={{ ...reportStyles.sectionContent, marginBottom: "5rem" }}>
-                            The navigation paths are calculated based on the odometry data of the Sentinel, where it has detected objects.
-                        </Text>
+                        {chunkIndex === 0 && (
+                            <>
+                                <Text style={reportStyles.sectionTitle}>Original Images vs. Generated Paths</Text>
+                                <Text style={reportStyles.sectionContent}>
+                                    This section provides a side-by-side comparison of detected objects and their corresponding generated navigation paths.
+                                </Text>
+                                <Text style={{ ...reportStyles.sectionContent }}>
+                                    The navigation paths are calculated based on the odometry data of the Sentinel, where it has detected objects.
+                                </Text>
+                            </>
+                        )}
+
                         <View style={reportStyles.tableContainer}>
                             {(content.imageSections[1].images as objectData[])
                                 .filter((img) => {
@@ -111,11 +124,10 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                                     return true;
                                 })
                                 .filter(img => {
-                                    return generatedPaths &&
-                                        generatedPaths.some(path => path.id === img.id);
+                                    return pathChunk.some(path => path.id === img.id);
                                 })
                                 .map((img, index) => {
-                                    const generatedPath = generatedPaths.find(path => path.id === img.id);
+                                    const generatedPath = pathChunk.find(path => path.id === img.id);
 
                                     return (
                                         <View key={`path-row-${index}`} style={reportStyles.tableRow}>
@@ -149,11 +161,9 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                                     );
                                 })}
 
-                            {((content.imageSections[1].images as objectData[])
-                                .filter(img =>
-                                    generatedPaths &&
-                                    generatedPaths.some(path => path.id === img.id)
-                                ).length === 0) && (
+                            {(content.imageSections[1].images as objectData[])
+                                .filter(img => pathChunk.some(path => path.id === img.id))
+                                .length === 0 && (
                                     <Text style={reportStyles.noImageText}>
                                         No matching objects with generated paths available.
                                     </Text>
@@ -167,7 +177,7 @@ const ReportGenerator: React.FC<ReportGeneratorProps> = ({ content, missionInfor
                         )} />
                     </View>
                 </Page>
-            )}
+            ))}
 
             <Page size="A4" style={reportStyles.page}>
                 <View style={reportStyles.footer} fixed>
