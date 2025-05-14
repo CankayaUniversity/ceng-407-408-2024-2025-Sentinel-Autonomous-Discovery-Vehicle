@@ -215,20 +215,23 @@ int runCommand() {
       moving = 0;
     }
     else moving = 1;
-
-    setEncoderDir(LEFT,arg1);
-    setEncoderDir(RIGHT,arg2);
     leftPID.TargetTicksPerFrame = arg1;
     rightPID.TargetTicksPerFrame = arg2;
     Serial.println("OK"); 
+    // Serial.print(" Error: "); 
+    // Serial.print(printError); 
+    // Serial.print(" Input: "); 
+    // Serial.print(printInput); 
+    // Serial.print(" dInput: "); 
+    // Serial.print(printDInput); 
+    // Serial.print(" output: "); 
+    // Serial.println(printOutput); 
     break;
   case MOTOR_RAW_PWM:
     /* Reset the auto stop timer */
     lastMotorCommand = millis();
     resetPID();
     moving = 0; // Sneaky way to temporarily disable the PID
-    setEncoderDir(LEFT,arg1);
-    setEncoderDir(RIGHT,arg2);
     setMotorSpeeds(arg1, arg2);
     Serial.println("OK"); 
     break;
@@ -258,17 +261,23 @@ void setup() {
 #ifdef USE_BASE
   #ifdef ARDUINO_ENC_COUNTER
     //set as inputs
-    DDRD  &= ~(1 << LEFT_ENC_PIN_A);
-    PORTD |=  (1 << LEFT_ENC_PIN_A);
-
-    // Configure pin A for right
-    DDRC  &= ~(1 << RIGHT_ENC_PIN_A);
-    PORTC |=  (1 << RIGHT_ENC_PIN_A);
-
-    // Attach PCINTs only on the A pins
-    PCMSK2 |= (1 << LEFT_ENC_PIN_A);
-    PCMSK1 |= (1 << RIGHT_ENC_PIN_A);
-
+    DDRD &= ~(1<<LEFT_ENC_PIN_A);
+    DDRD &= ~(1<<LEFT_ENC_PIN_B);
+    DDRC &= ~(1<<RIGHT_ENC_PIN_A);
+    DDRC &= ~(1<<RIGHT_ENC_PIN_B);
+    
+    //enable pull up resistors
+    PORTD |= (1<<LEFT_ENC_PIN_A);
+    PORTD |= (1<<LEFT_ENC_PIN_B);
+    PORTC |= (1<<RIGHT_ENC_PIN_A);
+    PORTC |= (1<<RIGHT_ENC_PIN_B);
+    
+    // tell pin change mask to listen to left encoder pins
+    PCMSK2 |= (1 << LEFT_ENC_PIN_A)|(1 << LEFT_ENC_PIN_B);
+    // tell pin change mask to listen to right encoder pins
+    PCMSK1 |= (1 << RIGHT_ENC_PIN_A)|(1 << RIGHT_ENC_PIN_B);
+    
+    // enable PCINT1 and PCINT2 interrupt in the general interrupt mask
     PCICR |= (1 << PCIE1) | (1 << PCIE2);
   #endif
   initMotorController();

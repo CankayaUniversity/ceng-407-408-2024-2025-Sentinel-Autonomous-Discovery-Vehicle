@@ -28,27 +28,34 @@
     else return encoders.XAxisReset();
   }
 #elif defined(ARDUINO_ENC_COUNTER)
- 
-  volatile long left_enc_pos  = 0;
-  volatile long right_enc_pos = 0;
-  volatile int  left_enc_dir  = +1;
-  volatile int  right_enc_dir = +1;
-
-  ISR(PCINT2_vect) {
-    // Just bump count by dir (+1 or -1)
-    left_enc_pos += left_enc_dir;
+  volatile long left_enc_pos = 0L;
+  volatile long right_enc_pos = 0L;
+  static const int8_t ENC_STATES [] = {0,1,-1,0,-1,0,0,1,1,0,0,-1,0,-1,1,0};  //encoder lookup table
+    
+  /* Interrupt routine for LEFT encoder, taking care of actual counting */
+  ISR (PCINT2_vect){
+  	static uint8_t enc_last=0;
+        
+	enc_last <<=2; //shift previous state two places
+	enc_last |= (PIND & (3 << 2)) >> 2; //read the current state into lowest 2 bits
+  
+  	left_enc_pos += ENC_STATES[(enc_last & 0x0f)];
   }
-
-  // ISR for right encoder channel A only
-  ISR(PCINT1_vect) {
-    right_enc_pos += right_enc_dir;
+  
+  /* Interrupt routine for RIGHT encoder, taking care of actual counting */
+  ISR (PCINT1_vect){
+        static uint8_t enc_last=0;
+          	
+	enc_last <<=2; //shift previous state two places
+	enc_last |= (PINC & (3 << 4)) >> 4; //read the current state into lowest 2 bits
+  
+  	right_enc_pos += ENC_STATES[(enc_last & 0x0f)];
   }
-
-
+  
   /* Wrap the encoder reading function */
   long readEncoder(int i) {
-    if (i == LEFT) return left_enc_pos;
-    else return right_enc_pos;
+    if (i == LEFT) return -left_enc_pos;
+    else return -right_enc_pos;
   }
 
   /* Wrap the encoder reset function */
@@ -60,11 +67,6 @@
       right_enc_pos=0L;
       return;
     }
-  }
-
-  void setEncoderDir(int i, int8_t dir) {
-    if (i == 0) left_enc_dir  = (dir >= 0 ? +1 : -1);
-    else        right_enc_dir = (dir >= 0 ? +1 : -1);
   }
 #else
   #error A encoder driver must be selected!
