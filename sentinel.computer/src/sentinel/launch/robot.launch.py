@@ -9,7 +9,7 @@ from launch.actions import (
 )
 from launch_ros.actions import Node
 from launch import LaunchDescription
-from launch.conditions import  UnlessCondition
+from launch.conditions import UnlessCondition
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -47,12 +47,11 @@ def generate_launch_description() -> LaunchDescription:
         name="camera_tunnel",
         output="screen",
         remappings=[
-            ("raspicam/raw","camera/image_raw")
-            ("raspicam/compressed","camera/image_raw/compressed")
-            ("raspicam/camera_info","camera/camera_info")
-        ]
+            ("raspicam/raw", "camera/image_raw"),
+            ("raspicam/compressed", "camera/image_raw/compressed"),
+            ("raspicam/camera_info", "camera/camera_info"),
+        ],
     )
-
 
     movement = get_launch_file(
         package_name="movement",
@@ -112,5 +111,3 @@ def get_rviz2(use_3d_map: LaunchConfiguration):
     )
 
     return rviz2_2d
-
-
