@@ -147,8 +147,10 @@ namespace sentinel_hardware_interface
       return hardware_interface::return_type::ERROR;
     }
 
+    // this->raspberry_pi_commands.read_encoder_values(
+    //     this->right_wheels[0].encoder, this->left_wheels[0].encoder);
     this->raspberry_pi_commands.read_encoder_values(
-        this->right_wheels[0].encoder, this->left_wheels[0].encoder);
+        this->left_wheels[0].encoder, this->right_wheels[0].encoder);
     double delta_seconds = period.seconds();
 
     for (auto &wheel : this->left_wheels)

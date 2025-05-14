@@ -68,6 +68,5 @@ UdpSocket *CameraPublisher::create_socket()
     {
         throw std::runtime_error("The 'computer_host' parameter is required.");
     }
-
     return new UdpSocket(vehicle_host, vehicle_port, computer_host, computer_port, chunk_size);
 }

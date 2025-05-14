@@ -142,16 +142,15 @@ def load_camera():
 
 
 def load_lidar():
-    params_file = os.path.join(
+    paramter_file = os.path.join(
         get_package_share_directory("sentinel"), "config", "lidar_params.yaml"
     )
-    return Node(
-        package="ydlidar_ros2_driver",
-        executable="ydlidar_node",
-        parameters=[params_file],
-        remappings=[
-            ("/scan", "/scan"),
-        ],
+    return get_launch_file(
+        package_name="ydlidar_ros2_driver",
+        launch_file_name="ydlidar_launch.py",
+        launch_arguments={
+            "params_file":paramter_file
+        },
     )
 
 

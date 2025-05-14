@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <iostream>
+#include <rclcpp/rclcpp.hpp>
 
 #include "base64/base64.hpp"
 #include "camera/udp_socket.hpp"
@@ -20,6 +21,7 @@ UdpSocket::UdpSocket(const std::string &vehicle_host, int vehicle_port, const st
   this->configure_vehicle();
   this->configure_computer();
   this->bind();
+  RCLCPP_INFO(rclcpp::get_logger("Camera"), "Connected to computer host:%s", computer_host.c_str());
 }
 
 UdpSocket::~UdpSocket()

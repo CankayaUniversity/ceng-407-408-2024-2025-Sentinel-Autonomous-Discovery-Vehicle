@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <csignal>
 #include <rclcpp/rclcpp.hpp>
 
@@ -21,8 +22,10 @@ int main(int argc, char const *argv[])
     camera->attach(publisher);
     camera->start();
 
-    int x;
-    std::cin >> x; // To prevent the main thread from finishing early while the camera is still publishing.
+    while (true)
+    {
+      std::this_thread::sleep_for(std::chrono::hours::max());
+    }
   }
   catch (const std::exception &e)
   {
