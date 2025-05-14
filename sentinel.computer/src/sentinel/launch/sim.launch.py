@@ -110,10 +110,17 @@ def generate_launch_description() -> LaunchDescription:
 
     rviz2 = get_rviz2(use_3d_map)
 
+    path_finder = Node(
+        package="path_finder", executable="run", name="path_finder", output="screen"
+    )
+
     ros2_control = load_ros2_control(use_ros2_control)
 
     timer_action = TimerAction(
-        period=timer_period, actions=ros2_control + [movement, mapping, object_detection] + rviz2
+        period=timer_period,
+        actions=ros2_control
+        + [movement, mapping, object_detection, path_finder]
+        + rviz2,
     )
 
     ld = LaunchDescription(declare_args())

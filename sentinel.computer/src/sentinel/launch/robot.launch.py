@@ -72,10 +72,7 @@ def generate_launch_description() -> LaunchDescription:
     )
 
     path_finder = Node(
-        package="path_finder",
-        executable="run",
-        name="path_finder",
-        output='screen'
+        package="path_finder", executable="run", name="path_finder", output="screen"
     )
 
     rviz2 = get_rviz2(use_3d_map)
