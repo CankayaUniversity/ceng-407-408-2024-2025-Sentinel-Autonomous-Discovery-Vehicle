@@ -71,6 +71,13 @@ def generate_launch_description() -> LaunchDescription:
         output="screen",
     )
 
+    path_finder = Node(
+        package="path_finder",
+        executable="run",
+        name="path_finder",
+        output='screen'
+    )
+
     rviz2 = get_rviz2(use_3d_map)
 
     ld = LaunchDescription(declare_args())
@@ -78,7 +85,7 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(movement)
     ld.add_action(rviz2)
     ld.add_action(object_detection)
-
+    ld.add_action(path_finder)
     return ld
 
 
