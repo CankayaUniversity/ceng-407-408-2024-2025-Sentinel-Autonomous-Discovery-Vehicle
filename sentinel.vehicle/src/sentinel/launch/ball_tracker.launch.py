@@ -38,6 +38,11 @@ def declare_args() -> List[DeclareLaunchArgument]:
             default_value="3.0",
             description="Timer Period",
         ),
+        DeclareLaunchArgument(
+            "tune_detection",
+            default_value="false",
+            description="Timer Period",
+        ),
     ]
 
 
@@ -48,6 +53,7 @@ def generate_launch_description() -> LaunchDescription:
 
     use_autonomous = "false"
     use_manual = "true"
+    tune_detection = LaunchConfiguration("tune_detection")
     use_builtin = LaunchConfiguration("use_builtin")
     timer_period = LaunchConfiguration("timer_period")
 
@@ -76,13 +82,30 @@ def generate_launch_description() -> LaunchDescription:
         package_name="ball_tracker",
         launch_file_name="ball_tracker.launch.py",
         launch_arguments={
+            "tune_detection": tune_detection,
             "use_sim_time": use_sim_time,
             "image_topic": "/camera/image_raw",
             "cmd_vel_topic": "/cmd_vel_tracker",
             "params_file": PathJoinSubstitution(
-                [FindPackageShare("ball_tracker"), "config", "ball_tracker_params_robot.yaml"]
+                [
+                    FindPackageShare("ball_tracker"),
+                    "config",
+                    "ball_tracker_params_robot.yaml",
+                ]
             ),
         },
+    )
+
+    camera_tunnel = Node(
+        package="camera_tunnel",
+        executable="run",
+        name="camera_tunnel",
+        output="screen",
+        remappings=[
+            ("raspicam/raw", "camera/image_raw"),
+            ("raspicam/compressed", "camera/image_raw/compressed"),
+            ("raspicam/camera_info", "camera/camera_info"),
+        ],
     )
 
     camera = load_camera()
@@ -103,7 +126,7 @@ def generate_launch_description() -> LaunchDescription:
     delayed_joint_broad_spawner = RegisterEventHandler(
         event_handler=OnProcessStart(
             target_action=controller_manager,
-            on_start=[joint_spawner],
+            on_start=[joint_spawner, ball_tracker],
         )
     )
 
@@ -114,7 +137,7 @@ def generate_launch_description() -> LaunchDescription:
     ld.add_action(delayed_joint_broad_spawner)
     ld.add_action(movement)
     ld.add_action(camera)
-    ld.add_action(ball_tracker)
+    ld.add_action(camera_tunnel)
     return ld
 
 
@@ -133,7 +156,9 @@ def get_launch_file(
 
 def load_camera():
     params_file = os.path.join(
-        get_package_share_directory("sentinel"), "config", "camera_params.yaml"
+        get_package_share_directory("sentinel"),
+        "config",
+        "camera_params_ball_tracker.yaml",
     )
     return Node(
         package="camera_publisher",
@@ -141,6 +166,7 @@ def load_camera():
         name="camera_publisher",
         parameters=[params_file],
     )
+
 
 def load_ros2_control():
     robot_description = Command(
